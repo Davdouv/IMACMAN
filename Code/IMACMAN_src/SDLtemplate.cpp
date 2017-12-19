@@ -2,6 +2,8 @@
 #include <GL/glew.h>
 #include <iostream>
 
+#include <project/hello.hpp>
+
 using namespace glimac;
 
 int main(int argc, char** argv) {
@@ -21,6 +23,8 @@ int main(int argc, char** argv) {
     /*********************************
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
+
+    printHello();
 
     // Application loop:
     bool done = false;
