@@ -21,9 +21,9 @@ $ ./IMACMAN_src/IMACMAN_NAME_OF_SRC_FILE
 
 The main file is in the folder Code/IMACMAN_src
 All other files that you include in your main must be placed in :
--glimac/src/project for .cpp files
--glimac/include/project for .hpp files
--assets for all assets files (.png, .mp3, .obj etc...)
+- glimac/src/project for .cpp files
+- glimac/include/project for .hpp files
+- assets for all assets files (.png, .mp3, .obj etc...)
 
 
 ## Tech
