@@ -33,4 +33,5 @@ All other files that you include in your main must be placed in :
 
 ## Language
 
-- C
+- C++
+- GLSL
