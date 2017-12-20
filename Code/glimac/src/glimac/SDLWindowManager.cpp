@@ -48,7 +48,7 @@ float SDLWindowManager::getTime() const {
     return 0.001f * SDL_GetTicks();
 }
 
-float getRatio()
+float SDLWindowManager::getRatio()
 {
     return (float)m_width/m_height;
 }
