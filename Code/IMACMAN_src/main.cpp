@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     // Projection Matrix (world) : vertical view angle, window ratio, near, far
     ProjMatrix = glm::perspective(glm::radians(70.f), windowManager.getRatio(), 0.1f, 100.f);
     // ModelView Matrix (camera)
-    MVMatrix = glm::translate((1.f), glm::vec3(0.0f, 0.0f, -5.f));
+    MVMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.f));
     // Normal Matrix in the camera landmark
     NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
