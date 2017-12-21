@@ -26,6 +26,8 @@ public:
     // loads a file and converts it to a Cell matrix
     int load();
 
+    int loadJSON();
+
     // displays the map
     void display();
 };
