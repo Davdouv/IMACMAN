@@ -2,8 +2,7 @@
 
 #include "glimac/Geometry.hpp"
 
-class Wall 
-{
+class Wall {
 
 public:
 

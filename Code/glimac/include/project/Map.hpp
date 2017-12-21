@@ -1,18 +1,16 @@
 #pragma once
-#include <iostream>
+#include "Cell.hpp"
 
 class Map {
 
-
 private:
-    static int m_nbX = 10;
-    static int m_nbY = 10;
-    int Map[m_nbX][m_nbY];
+    static const int m_nbX = 10;
+    static const int m_nbY = 10;
+    Cell cells[Map::m_nbX][Map::m_nbY];
+    char * fileMap;
 
 public:
-    Map();
-    
-    // getter
-    loadMap(char*);
 
-}
+    Map();
+
+};
