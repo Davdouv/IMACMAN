@@ -2,19 +2,19 @@
 
 #include <vector>
 
-#include "common.hpp"
+#include "glimac/common.hpp"
 
 namespace glimac {
 
 class Cube 
 {
     // Allocates and constructs the data (implementation in the .cpp)
-    void build(GLsizei width, GLsizei height, GLsizei thickness);
+    void build(GLfloat width, GLfloat height, GLfloat thickness);
 
 public:
     // Constructor: allocates the data array and builds the vertex attributes
     Cube() { build (1,1,1); }
-    Cube(GLsizei width, GLsizei height, GLsizei thickness)
+    Cube(GLfloat width, GLfloat height, GLfloat thickness)
     {
         build(width, height, thickness); // Construction (see the .cpp)
     }
@@ -36,7 +36,7 @@ public:
 
     // Returns the number of Index (of Triangles)
     size_t getIndexCount() const {
-        return 32;
+        return 36;
     }
 
     // Draw the Cube
@@ -44,9 +44,13 @@ public:
         glDrawElements(GL_TRIANGLES, this->getIndexCount(), GL_UNSIGNED_INT, 0);
     }
 
+    GLuint getVBO();
+    GLuint getIBO();
+    GLuint getVAO(GLuint* ibo, GLuint* vbo);
+
 private:
     Vertex3D m_VertexBuffer[8];
-    unsigned int m_IndexBuffer[32];
+    uint32_t m_IndexBuffer[32];
 };
 
 }

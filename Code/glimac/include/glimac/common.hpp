@@ -18,20 +18,12 @@ struct Vertex3D {
     glm::vec2 texCoords;
 };
 
-float norm(glm::vec3 V)
-{
-	return sqrt((V.x * V.x) + (V.y * V.y) + (V.z * V.z));
-}
+float norm(glm::vec3 V);
 
-glm::vec3 normalize(glm::vec3 V)
-{
-	float normf = norm(V);
-	glm::vec3 vector;
-	vector.x = V.x / normf;
-	vector.y = V.y / normf;
-    vector.z = V.z / normf;
+glm::vec3 normalize(glm::vec3 V);
 
-	return vector;
-}
+GLuint VBO(GLsizeiptr size, const GLvoid* data);
+GLuint IBO(GLsizeiptr size, const GLvoid* data);
+GLuint VAO(GLuint* ibo, GLuint* vbo);
 
 }

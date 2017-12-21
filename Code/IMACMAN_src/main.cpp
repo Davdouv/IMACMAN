@@ -6,11 +6,13 @@
 
 #include "glimac/Cube.hpp"
 
+#include "glimac/TrackballCamera.hpp"
+
 using namespace glimac;
 
 int main(int argc, char** argv) {
     // Initialize SDL and open a window
-    SDLWindowManager windowManager(1280, 720, "GLImac");
+    SDLWindowManager windowManager(800, 600, "GLImac");
 
     // Initialize glew for OpenGL3+ support
     GLenum glewInitError = glewInit();
@@ -37,15 +39,17 @@ int main(int argc, char** argv) {
     uTexture = glGetUniformLocation(program.getGLId(), "uTexture");
 
     // Enable GPU depth test for 3D rendering
-    glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
 
     // Matrix declaration
     glm::mat4 ProjMatrix, MVMatrix, NormalMatrix;
+    TrackballCamera camera = TrackballCamera();
 
     // Projection Matrix (world) : vertical view angle, window ratio, near, far
     ProjMatrix = glm::perspective(glm::radians(70.f), windowManager.getRatio(), 0.1f, 100.f);
     // ModelView Matrix (camera)
-    MVMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.f));
+    MVMatrix = camera.getViewMatrix();
+    //MVMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.f));
     // Normal Matrix in the camera landmark
     NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
@@ -55,40 +59,13 @@ int main(int argc, char** argv) {
 
     Cube cube = Cube();
 
-     // VBO
-
-    GLuint vbo;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-     
-    // Nombre de vertex * taille des données du vertex
-    glBufferData(GL_ARRAY_BUFFER, cube.getVertexCount() * sizeof(Vertex3D), cube.getVertexBuffer(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // VAO
-
-    GLuint vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    const GLuint VERTEX_ATTR_POSITION = 0;
-    const GLuint VERTEX_ATTR_NORMAL = 1;
-    const GLuint VERTEX_ATTR_TEXCOORD = 2;
-    glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
-    glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
-    glEnableVertexAttribArray(VERTEX_ATTR_TEXCOORD);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    
-    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (const GLvoid*) 0);
-    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (const GLvoid*) offsetof(Vertex3D, normal));
-    glVertexAttribPointer(VERTEX_ATTR_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (const GLvoid*) offsetof(Vertex3D, texCoords));
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    GLuint vbo = cube.getVBO();
+    GLuint ibo = cube.getIBO();
+    GLuint vao = cube.getVAO(&ibo, &vbo);
 
     // Application loop:
+    glm::ivec2 previousMousePosition = windowManager.getMousePosition();
+    glm::ivec2 mousePosition = windowManager.getMousePosition();
     bool done = false;
     while(!done) {
         // Event loop:
@@ -97,23 +74,66 @@ int main(int argc, char** argv) {
             if(e.type == SDL_QUIT) {
                 done = true; // Leave the loop after this iteration
             }
+                // button can SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT and SDL_BUTTON_MIDDLE
+            if (windowManager.isMouseButtonPressed(SDL_BUTTON_RIGHT))
+            {
+                // On récupére la position de la souris
+                mousePosition = windowManager.getMousePosition();
+                if (mousePosition.x < previousMousePosition.x)
+                {
+                    camera.rotateLeft(0.01);
+                }
+                else if (mousePosition.x > previousMousePosition.x)
+                {
+                    camera.rotateLeft(-0.01);
+                }
+                if (mousePosition.y < previousMousePosition.y)
+                {
+                    camera.rotateUp(0.01);
+                }
+                else if (mousePosition.y > previousMousePosition.y)
+                {
+                    camera.rotateUp(-0.01);
+                }
+            }
+            else if (windowManager.isMouseButtonPressed(SDL_BUTTON_MIDDLE))
+            {
+                // On récupére la position de la souris
+                mousePosition = windowManager.getMousePosition();
+                if (mousePosition.y < previousMousePosition.y)
+                {
+                    camera.moveFront(-0.02);
+                }
+                else if (mousePosition.y > previousMousePosition.y)
+                {
+                    camera.moveFront(0.02);
+                }
+            }
         }
+
+        previousMousePosition = mousePosition;
 
         /*********************************
          * HERE SHOULD COME THE RENDERING CODE
          *********************************/
 
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glBindVertexArray(vao);
+
+        // On récupére la ViewMatrix à chaque tour de boucle
+        glm::mat4 globalMVMatrix = camera.getViewMatrix();
+
         // On applique les transformations
-        glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, 
-            glm::value_ptr(MVMatrix));
-        glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, 
-            glm::value_ptr(glm::transpose(glm::inverse(MVMatrix))));
-        glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, 
-            glm::value_ptr(ProjMatrix * MVMatrix));
+        glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(globalMVMatrix));
+        glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(globalMVMatrix))));
+        glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * globalMVMatrix));
 
          // We draw
         cube.drawCube();
+    
 
+        glBindVertexArray(0);
         // Update the display
         windowManager.swapBuffers();
     }
