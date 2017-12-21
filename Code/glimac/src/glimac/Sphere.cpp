@@ -24,7 +24,7 @@ void Sphere::build(GLfloat r, GLsizei discLat, GLsizei discLong) {
     GLfloat rcpLat = 1.f / discLat, rcpLong = 1.f / discLong;
     GLfloat dPhi = 2 * glm::pi<float>() * rcpLat, dTheta = glm::pi<float>() * rcpLong;
     
-    std::vector<ShapeVertex> data;
+    std::vector<Vertex3D> data;
     
     // Construit l'ensemble des vertex
     for(GLsizei j = 0; j <= discLong; ++j) {
@@ -32,7 +32,7 @@ void Sphere::build(GLfloat r, GLsizei discLat, GLsizei discLong) {
         GLfloat sinTheta = sin(-glm::pi<float>() / 2 + j * dTheta);
         
         for(GLsizei i = 0; i <= discLat; ++i) {
-            ShapeVertex vertex;
+            Vertex3D vertex;
             
             vertex.texCoords.x = i * rcpLat;
             vertex.texCoords.y = 1.f - j * rcpLong;
@@ -47,7 +47,7 @@ void Sphere::build(GLfloat r, GLsizei discLat, GLsizei discLong) {
         }
     }
 
-    m_nVertexCount = discLat * discLong * 6;
+    m_VertexBuffer = data;
     
     GLuint idx = 0;
     // Construit les vertex finaux en regroupant les données en triangles:
@@ -57,17 +57,35 @@ void Sphere::build(GLfloat r, GLsizei discLat, GLsizei discLong) {
     for(GLsizei j = 0; j < discLong; ++j) {
         GLsizei offset = j * (discLat + 1);
         for(GLsizei i = 0; i < discLat; ++i) {
-            m_Vertices.push_back(data[offset + i]);
-            m_Vertices.push_back(data[offset + (i + 1)]);
-            m_Vertices.push_back(data[offset + discLat + 1 + (i + 1)]);
-            m_Vertices.push_back(data[offset + i]);
-            m_Vertices.push_back(data[offset + discLat + 1 + (i + 1)]);
-            m_Vertices.push_back(data[offset + i + discLat + 1]);
+            m_IndexBuffer.push_back(offset + i);
+            m_IndexBuffer.push_back(offset + (i + 1));
+            m_IndexBuffer.push_back(offset + discLat + 1 + (i + 1));
+            m_IndexBuffer.push_back(offset + i);
+            m_IndexBuffer.push_back(offset + discLat + 1 + (i + 1));
+            m_IndexBuffer.push_back(offset + i + discLat + 1);
         }
     }
     
     // Attention ! dans cette implantation on duplique beaucoup de sommets. Une meilleur stratégie est de passer
     // par un Index Buffer Object, que nous verrons dans les prochains TDs
+
+
 }
+
+GLuint Sphere::getVBO()
+{
+    return VBO(this->getVertexCount(), this->getVertexBuffer());
+}
+
+GLuint Sphere::getIBO()
+{
+    return IBO(this->getIndexCount(), this->getIndexBuffer());
+}
+
+GLuint Sphere::getVAO(GLuint* ibo, GLuint* vbo)
+{
+    return VAO(ibo, vbo);
+}
+
 
 }

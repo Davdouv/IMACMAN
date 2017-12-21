@@ -5,6 +5,7 @@
 #include <glimac/FilePath.hpp>
 
 #include "glimac/Cube.hpp"
+#include "glimac/Sphere.hpp"
 
 #include "glimac/TrackballCamera.hpp"
 
@@ -12,7 +13,7 @@ using namespace glimac;
 
 int main(int argc, char** argv) {
     // Initialize SDL and open a window
-    SDLWindowManager windowManager(800, 600, "GLImac");
+    SDLWindowManager windowManager(1280, 720, "GLImac");
 
     // Initialize glew for OpenGL3+ support
     GLenum glewInitError = glewInit();
@@ -39,7 +40,7 @@ int main(int argc, char** argv) {
     uTexture = glGetUniformLocation(program.getGLId(), "uTexture");
 
     // Enable GPU depth test for 3D rendering
-    //glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
 
     // Matrix declaration
     glm::mat4 ProjMatrix, MVMatrix, NormalMatrix;
@@ -49,7 +50,6 @@ int main(int argc, char** argv) {
     ProjMatrix = glm::perspective(glm::radians(70.f), windowManager.getRatio(), 0.1f, 100.f);
     // ModelView Matrix (camera)
     MVMatrix = camera.getViewMatrix();
-    //MVMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.f));
     // Normal Matrix in the camera landmark
     NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
@@ -59,9 +59,15 @@ int main(int argc, char** argv) {
 
     Cube cube = Cube();
 
-    GLuint vbo = cube.getVBO();
-    GLuint ibo = cube.getIBO();
-    GLuint vao = cube.getVAO(&ibo, &vbo);
+    GLuint cubeVBO = cube.getVBO();
+    GLuint cubeIBO = cube.getIBO();
+    GLuint cubeVAO = cube.getVAO(&cubeIBO, &cubeVBO);
+
+    Sphere sphere = Sphere();
+
+    GLuint sphereVBO = sphere.getVBO();
+    GLuint sphereIBO = sphere.getIBO();
+    GLuint sphereVAO = sphere.getVAO(&sphereIBO, &sphereVBO);
 
     // Application loop:
     glm::ivec2 previousMousePosition = windowManager.getMousePosition();
@@ -119,28 +125,30 @@ int main(int argc, char** argv) {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glBindVertexArray(vao);
 
+// CUBE
+        //glBindVertexArray(cubeVAO);
+        glBindVertexArray(sphereVAO);
         // On récupére la ViewMatrix à chaque tour de boucle
         glm::mat4 globalMVMatrix = camera.getViewMatrix();
-
         // On applique les transformations
         glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(globalMVMatrix));
         glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(globalMVMatrix))));
         glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * globalMVMatrix));
-
          // We draw
-        cube.drawCube();
-    
-
+        //cube.drawCube();
+        sphere.drawSphere();
         glBindVertexArray(0);
+
         // Update the display
         windowManager.swapBuffers();
     }
 
     // LIBERATION DES RESSOURCES
-    glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &vao);
+    glDeleteBuffers(1, &cubeVBO);
+    glDeleteVertexArrays(1, &cubeVAO);
+    glDeleteBuffers(1, &sphereVBO);
+    glDeleteVertexArrays(1, &sphereVAO);
 
     return EXIT_SUCCESS;
 }

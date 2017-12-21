@@ -50,7 +50,7 @@ public:
 
 private:
     Vertex3D m_VertexBuffer[8];
-    uint32_t m_IndexBuffer[32];
+    uint32_t m_IndexBuffer[36];
 };
 
 }
