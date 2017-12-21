@@ -1,34 +1,31 @@
 #pragma once
-
-enum staticElementType {
-
-    EMPTY = 0,
-    WALL = 1,
-    GUM = 2,
-    SUPER_GUM = 3
-};
+#include "Utilities.hpp"
 
 class Cell {
 
 public:
 
     // construcor
-    Cell(int, int, int);
-
+    Cell(int, int, char);
+    Cell();
+    
     // getters
     int getPosX() const;
     int getPosY() const;
-    int getStaticElement() const;
+    char getStaticElement() const;
 
     // setters
     void setPosX(int);
     void setPosY(int);
-    void setStaticElement(int);
+    void setStaticElement(char);
+
+    // displays a cell 
+    void display();
 
 private:
 
     int m_posX;
     int m_posY;
-    int m_staticElement;
+    char m_staticElement;
 
 };
