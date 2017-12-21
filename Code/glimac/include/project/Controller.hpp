@@ -13,9 +13,9 @@ public:
 
     void updateController();
 
-    Key getPlayerAction();
-    Key getCameraAction();
-    Key getInterfaceAction();
+    Key getPlayerAction() const;
+    Key getCameraAction() const;
+    Key getInterfaceAction() const;
 
 private:
     Key playerAction;

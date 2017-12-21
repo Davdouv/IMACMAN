@@ -31,16 +31,17 @@ glm::mat4 TrackballCamera::getViewMatrix() const
 void TrackballCamera::cameraController(Controller* controller)
 {
 	Controller::Key action = controller->getCameraAction();
+	float speed = 0.0005;
 
 	switch (action)
 	{
-		case Controller::UP : this->rotateUp(0.001);
+		case Controller::UP : this->rotateUp(speed);
 			break;
-		case Controller::DOWN : this->rotateUp(-0.001);
+		case Controller::DOWN : this->rotateUp(-speed);
 			break;
-		case Controller::LEFT : this->rotateLeft(0.001);
+		case Controller::LEFT : this->rotateLeft(speed);
 			break;
-		case Controller::RIGHT : this->rotateLeft(-0.001);
+		case Controller::RIGHT : this->rotateLeft(-speed);
 			break;
 		default :
 			break;

@@ -40,7 +40,8 @@ public:
     }
 
     // Draw the Cube
-    void drawCube() {
+    void drawCube() const
+    {
         glDrawElements(GL_TRIANGLES, this->getIndexCount(), GL_UNSIGNED_INT, 0);
     }
 

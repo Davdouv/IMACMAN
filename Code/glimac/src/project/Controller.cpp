@@ -84,15 +84,15 @@ void Controller::updateController()
 }
 
 // Getters
-Controller::Key Controller::getPlayerAction()
+Controller::Key Controller::getPlayerAction() const
 {
     return playerAction;
 }
-Controller::Key Controller::getCameraAction()
+Controller::Key Controller::getCameraAction() const
 {
     return cameraAction;
 }
-Controller::Key Controller::getInterfaceAction()
+Controller::Key Controller::getInterfaceAction() const
 {
     return interfaceAction;
 }

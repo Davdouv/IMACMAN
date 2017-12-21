@@ -37,7 +37,8 @@ public:
     }
 
     // Draw the Sphere
-    void drawSphere() {
+    void drawSphere() const
+    {
         glDrawElements(GL_TRIANGLES, this->getIndexCount(), GL_UNSIGNED_INT, 0);
     }
 
