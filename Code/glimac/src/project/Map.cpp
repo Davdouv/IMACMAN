@@ -45,7 +45,7 @@ int Map::save() {
     else {
         for (int i = 0; i < m_nbX; i++) {
             for (int j = 0; i < m_nbY; j++) {
-                file << m_cells[i][j]
+                file << m_cells[i][j].getStaticElement();
             }
             file << std::endl;
         }
