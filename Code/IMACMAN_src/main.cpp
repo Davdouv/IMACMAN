@@ -8,6 +8,7 @@
 #include "glimac/Sphere.hpp"
 
 #include "glimac/TrackballCamera.hpp"
+#include "project/Controller.hpp"
 
 using namespace glimac;
 
@@ -69,9 +70,8 @@ int main(int argc, char** argv) {
     GLuint sphereIBO = sphere.getIBO();
     GLuint sphereVAO = sphere.getVAO(&sphereIBO, &sphereVBO);
 
+    Controller controller = Controller(&windowManager);
     // Application loop:
-    glm::ivec2 previousMousePosition = windowManager.getMousePosition();
-    glm::ivec2 mousePosition = windowManager.getMousePosition();
     bool done = false;
     while(!done) {
         // Event loop:
@@ -80,44 +80,11 @@ int main(int argc, char** argv) {
             if(e.type == SDL_QUIT) {
                 done = true; // Leave the loop after this iteration
             }
-                // button can SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT and SDL_BUTTON_MIDDLE
-            if (windowManager.isMouseButtonPressed(SDL_BUTTON_RIGHT))
-            {
-                // On récupére la position de la souris
-                mousePosition = windowManager.getMousePosition();
-                if (mousePosition.x < previousMousePosition.x)
-                {
-                    camera.rotateLeft(0.01);
-                }
-                else if (mousePosition.x > previousMousePosition.x)
-                {
-                    camera.rotateLeft(-0.01);
-                }
-                if (mousePosition.y < previousMousePosition.y)
-                {
-                    camera.rotateUp(0.01);
-                }
-                else if (mousePosition.y > previousMousePosition.y)
-                {
-                    camera.rotateUp(-0.01);
-                }
-            }
-            else if (windowManager.isMouseButtonPressed(SDL_BUTTON_MIDDLE))
-            {
-                // On récupére la position de la souris
-                mousePosition = windowManager.getMousePosition();
-                if (mousePosition.y < previousMousePosition.y)
-                {
-                    camera.moveFront(-0.02);
-                }
-                else if (mousePosition.y > previousMousePosition.y)
-                {
-                    camera.moveFront(0.02);
-                }
-            }
+            
+            controller.updateController();
         }
 
-        previousMousePosition = mousePosition;
+        camera.cameraController(&controller);
 
         /*********************************
          * HERE SHOULD COME THE RENDERING CODE
@@ -127,8 +94,8 @@ int main(int argc, char** argv) {
 
 
 // CUBE
-        //glBindVertexArray(cubeVAO);
-        glBindVertexArray(sphereVAO);
+        glBindVertexArray(cubeVAO);
+        //glBindVertexArray(sphereVAO);
         // On récupére la ViewMatrix à chaque tour de boucle
         glm::mat4 globalMVMatrix = camera.getViewMatrix();
         // On applique les transformations
@@ -136,8 +103,8 @@ int main(int argc, char** argv) {
         glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(globalMVMatrix))));
         glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * globalMVMatrix));
          // We draw
-        //cube.drawCube();
-        sphere.drawSphere();
+        cube.drawCube();
+        //sphere.drawSphere();
         glBindVertexArray(0);
 
         // Update the display

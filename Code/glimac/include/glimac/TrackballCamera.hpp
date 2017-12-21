@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glimac/glm.hpp>
+#include "project/Controller.hpp"
 
 namespace glimac {
 
@@ -15,6 +16,8 @@ public:
     void rotateUp(float degrees); // permettant de tourner verticalement autour du centre de vision.
 
 	glm::mat4 getViewMatrix() const; // calcule la ViewMatrix de la caméra
+
+	void cameraController(Controller* controller);
 
 private:
 	float m_fDistance;		// Distance par rapport au centre de la scène

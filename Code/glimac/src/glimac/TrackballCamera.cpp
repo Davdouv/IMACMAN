@@ -9,7 +9,6 @@ using namespace glimac;
 void TrackballCamera::moveFront(float delta)
 {
 	m_fDistance += delta;
-	//std::cout << m_fDistance << std::endl;
 }
 void TrackballCamera::rotateLeft(float degrees)
 {
@@ -27,4 +26,23 @@ glm::mat4 TrackballCamera::getViewMatrix() const
 	MVMatrix = glm::rotate(MVMatrix, m_fAngleY, glm::vec3(1, 0, 0));
 
 	return MVMatrix;
+}
+
+void TrackballCamera::cameraController(Controller* controller)
+{
+	Controller::Key action = controller->getCameraAction();
+
+	switch (action)
+	{
+		case Controller::UP : this->rotateUp(0.001);
+			break;
+		case Controller::DOWN : this->rotateUp(-0.001);
+			break;
+		case Controller::LEFT : this->rotateLeft(0.001);
+			break;
+		case Controller::RIGHT : this->rotateLeft(-0.001);
+			break;
+		default :
+			break;
+	}
 }
