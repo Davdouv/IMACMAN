@@ -1,11 +1,11 @@
 #include "../include/project/Map.hpp"
 #include "../include/project/Wall.hpp"
 #include "../include/project/Edible.hpp"
+#include "../include/project/Controller.hpp"
+#include <string>
 #include <iostream>
 
-Map::Map() { 
-
-}
+Map::Map() { }
 std::string Map::getFileMap() const { return m_fileMap; }
 
 void Map::setFileMap(std::string fileName) { m_fileMap = fileName; }
@@ -32,6 +32,11 @@ int Map::load() {
                 switch(tmp[j]) {
 
                     case 'P' : o = new Pacman(i, j, 10, 10, 1);
+                        m_pacman.setPosX(i);
+                        m_pacman.setPosY(j);
+                        m_pacman.setWidth(10);
+                        m_pacman.setHeight(10);
+                        m_pacman.setSpeed(1); 
                         break;
                     case 'W' : o = new Wall(i, j, 10, 10);
                         m_cells[i][j].setAccess(0);
@@ -94,6 +99,68 @@ int Map::save() {
     file.close();
     return 1;
 }
+
+void Map::play() {
+
+    bool play = true;
+    std::string line;
+    while (play) {
+        display();
+        std::cout << "Your move : " << std::endl;
+        getline(std::cin, line);
+        if (line == "Z") {
+            if (m_cells[m_pacman.getPosX()][m_pacman.getPosY()+1].getAccess()) {
+                m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
+                m_pacman.moveUp();
+            } 
+            m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
+        }
+        if (line == "Q") {
+            if (m_cells[m_pacman.getPosX()][m_pacman.getPosY()-1].getAccess()) {
+                m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
+                m_pacman.moveLeft();
+            }
+            m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
+        }
+        if (line == "S") {
+            if (m_cells[m_pacman.getPosX()][m_pacman.getPosY()-1].getAccess()) {
+                m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
+                m_pacman.moveDown();
+            }
+            m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
+        }
+        if (line == "D") {
+            if (m_cells[m_pacman.getPosX()+1][m_pacman.getPosY()].getAccess()) {
+                m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
+                m_pacman.moveRight();
+            }
+            m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
+        }
+        if (line == "C") play = false;
+    }
+}
+
+/*
+
+void Map::play(Controller* controller)
+{
+	Controller::Key action = controller->updatePlayerAction();
+
+	switch (action)
+	{
+		case Controller::UP : this->rotateUp(speed);
+			break;
+		case Controller::DOWN : this->rotateUp(-speed);
+			break;
+		case Controller::LEFT : this->rotateLeft(speed);
+			break;
+		case Controller::RIGHT : this->rotateLeft(-speed);
+			break;
+		default :
+			break;
+	}
+}
+*/
 
 void Map::display() {
 

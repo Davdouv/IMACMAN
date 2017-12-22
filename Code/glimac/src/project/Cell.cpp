@@ -12,7 +12,7 @@ void Cell::setStaticElement(char e) { m_staticElement = e; }
 void Cell::setAccess(bool access) { m_access = access; }
 void Cell::setEmpty(bool empty) { m_empty = empty; }
 void Cell::display() {
-    std::cout << m_staticElement;
+    std::cout << m_staticElement << " ";
 }
 
 void Cell::addObject(Object *o) {

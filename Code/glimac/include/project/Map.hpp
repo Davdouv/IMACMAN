@@ -8,8 +8,8 @@
 class Map {
 
 private:
-    static const int m_nbX = 30;
-    static const int m_nbY = 35;
+    static const int m_nbX = 10;
+    static const int m_nbY = 10;
 
     Pacman m_pacman;
     std::vector<Ghost> m_ghosts;
@@ -34,4 +34,6 @@ public:
     
     // displays the map
     void display();
+
+    void play();
 };

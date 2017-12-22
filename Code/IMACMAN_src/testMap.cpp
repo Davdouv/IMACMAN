@@ -7,5 +7,6 @@ int main() {
     m.setFileMap("/home/laure/IMACMAN/Code/data/mapTest.txt");
     m.load();
     m.display();
+    m.play();
     return 0;
 }
