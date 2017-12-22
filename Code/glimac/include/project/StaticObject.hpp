@@ -6,7 +6,7 @@ class StaticObject : public Object {
 public:
 
     // constructor 
-    StaticObject(int, int);
+    StaticObject(int, int, int, int);
     StaticObject();
 
 };

@@ -2,12 +2,17 @@
 #include "Cell.hpp"
 #include <string>
 #include <fstream>
+#include "Pacman.hpp"
+#include "Ghost.hpp"
 
 class Map {
 
 private:
     static const int m_nbX = 30;
     static const int m_nbY = 35;
+
+    Pacman m_pacman;
+    std::vector<Ghost> m_ghosts;
     Cell m_cells[Map::m_nbX][Map::m_nbY];
     std::string m_fileMap;
 
@@ -27,8 +32,6 @@ public:
     int load();
     int save();
     
-    int loadJSON();
-
     // displays the map
     void display();
 };

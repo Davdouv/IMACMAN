@@ -1,4 +1,6 @@
 #include "../include/project/Map.hpp"
+#include "../include/project/Wall.hpp"
+#include "../include/project/Edible.hpp"
 #include <iostream>
 
 Map::Map() { 
@@ -23,10 +25,47 @@ int Map::load() {
         while (!file.eof()) {
             getline(file, tmp);
             for (int j = 0; j < tmp.size(); j++) {
+                Object *o;
                 if (!isStaticElement(tmp[j])) tmp[j] = 'V';
-                Cell c(tmp[j]);
-                m_cells[i][j] = c;
+                m_cells[i][j].setAccess(1);
+                m_cells[i][j].setStaticElement(tmp[j]);
+                switch(tmp[j]) {
 
+                    case 'P' : o = new Pacman(i, j, 10, 10, 1);
+                        break;
+                    case 'W' : o = new Wall();
+                        m_cells[i][j].setAccess(0);
+                        break;
+                    case 'A' : o = new Ghost();
+                        break;
+                    case 'B' : o = new Ghost();
+                        break;
+                    case 'C' : o = new Ghost();
+                        break;
+                    case 'D' : o = new Ghost();
+                        break;
+                    case '1' : o = new Edible();
+                        o = new Ghost();
+                        break;
+                    case '2' : o = new Edible();
+                        o = new Ghost();
+                        break;
+                    case '3' : o = new Edible();
+                        o = new Ghost();
+                        break;
+                    case '4' : o = new Edible();
+                        o = new Ghost();
+                        break;
+                    case 'G' : o = new Edible();
+                        break;
+                    case 'S' : o = new Edible();
+                        break;
+                    case 'O' : o = new Edible();
+                        break;
+                    case 'V' :
+                        break;
+                    default : break;
+                }
             }
             i++;
         }

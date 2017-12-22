@@ -1,6 +1,6 @@
 #include "../include/project/Object.hpp"
 
-Object::Object(int width, int height) : m_width(width), m_height(height) {}
+Object::Object(int posX, int posY, int width, int height) : m_posX(posX), m_posY(posY), m_width(width), m_height(height) {}
 Object::Object() {}
 
 int Object::getWidth() const { return m_width; }

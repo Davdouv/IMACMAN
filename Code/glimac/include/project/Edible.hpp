@@ -9,7 +9,7 @@ private:
 public:
 
     // constructor
-    Edible(int, int, int);
+    Edible(int, int, int, int, int);
     Edible();
 
     // getter

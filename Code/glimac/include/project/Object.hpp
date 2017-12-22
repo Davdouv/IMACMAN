@@ -11,7 +11,7 @@ private:
 public:
 
     // constructor 
-    Object(int, int);
+    Object(int, int, int, int);
     Object();
 
     // getter
