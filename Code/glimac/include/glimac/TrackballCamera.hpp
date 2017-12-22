@@ -7,7 +7,8 @@ namespace glimac {
 
 class TrackballCamera {
 public:
-	TrackballCamera(float distance = 5.f, float angleX = 0.f, float angleY = 0.f) : m_fDistance(distance), m_fAngleX(angleX),  m_fAngleY(angleY) {}
+	TrackballCamera(float distance = 5.f, float hauteur = 0.f, float angleX = 0.f, float angleY = 0.f) :
+	m_fDistance(distance), m_fHauteur(hauteur), m_fAngleX(angleX), m_fAngleY(angleY) {}
 
 	~TrackballCamera() {}
 
@@ -21,6 +22,7 @@ public:
 
 private:
 	float m_fDistance;		// Distance par rapport au centre de la scène
+	float m_fHauteur;		// Hauteur de la caméra par rapport au centre de la scène
 	float m_fAngleX;		// Angle effectuée par la caméra autour de l'axe X de la scène
 	float m_fAngleY;		// Angle effectuée par la caméra autour de l'axe Y de la scène
 };

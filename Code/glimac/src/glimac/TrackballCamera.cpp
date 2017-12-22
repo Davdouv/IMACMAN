@@ -21,7 +21,8 @@ void TrackballCamera::rotateUp(float degrees)
 
 glm::mat4 TrackballCamera::getViewMatrix() const
 {
-	glm::mat4 MVMatrix = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, 0.0f, -m_fDistance));
+	// MODIFIER CETTE LIGNE POUR ZOOMER SUR PACMAN : 1er parametre du glm::vec3
+	glm::mat4 MVMatrix = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, -m_fHauteur, -m_fDistance));
 	MVMatrix = glm::rotate(MVMatrix, m_fAngleX, glm::vec3(0, 1, 0));
 	MVMatrix = glm::rotate(MVMatrix, m_fAngleY, glm::vec3(1, 0, 0));
 
@@ -31,18 +32,29 @@ glm::mat4 TrackballCamera::getViewMatrix() const
 void TrackballCamera::cameraController(Controller* controller)
 {
 	Controller::Key action = controller->getCameraAction();
-	float speed = 0.0005;
+	float speed = -0.005;
 
 	switch (action)
 	{
-		case Controller::UP : this->rotateUp(speed);
+		case Controller::UP : 
+			this->moveFront(speed);
 			break;
-		case Controller::DOWN : this->rotateUp(-speed);
+		case Controller::DOWN : 
+			this->moveFront(-speed);
 			break;
-		case Controller::LEFT : this->rotateLeft(speed);
-			break;
-		case Controller::RIGHT : this->rotateLeft(-speed);
-			break;
+		// case Controller::UP : 
+		// 	this->rotateUp(speed);
+		// 	break;
+		// case Controller::DOWN : 
+		// 	this->rotateUp(-speed);
+		// 	std::cout << m_fAngleY << std::endl;
+		// 	break;
+		// case Controller::LEFT : 
+		// 	this->rotateLeft(speed);
+		// 	break;
+		// case Controller::RIGHT : 
+		// 	this->rotateLeft(-speed);
+		// 	break;
 		default :
 			break;
 	}

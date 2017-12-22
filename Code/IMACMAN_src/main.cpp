@@ -8,6 +8,7 @@
 #include "glimac/Sphere.hpp"
 
 #include "glimac/TrackballCamera.hpp"
+#include "glimac/FreeflyCamera.hpp"
 #include "project/Controller.hpp"
 
 using namespace glimac;
@@ -30,9 +31,9 @@ int main(int argc, char** argv) {
     program.use();
 
     // Get the uniforms
-    GLint uMVPMatrix;
-    GLint uMVMatrix;
-    GLint uNormalMatrix;
+    GLint uMVPMatrix;       // ModelViewProjection Matrix        
+    GLint uMVMatrix;        // ModelView Matrix             Camera Space
+    GLint uNormalMatrix;    // Normal Matrix                For Light
     GLint uTexture;
 
     uMVPMatrix = glGetUniformLocation(program.getGLId(), "uMVPMatrix");
@@ -44,8 +45,10 @@ int main(int argc, char** argv) {
     glEnable(GL_DEPTH_TEST);
 
     // Matrix declaration
+    //TrackballCamera camera = TrackballCamera(30,0,0.0f,1.57f);    // CAMERA VUE 2D
+    TrackballCamera camera = TrackballCamera(30,0,0.0f,1.0f);
+
     glm::mat4 ProjMatrix, MVMatrix, NormalMatrix;
-    TrackballCamera camera = TrackballCamera();
 
     // Projection Matrix (world) : vertical view angle, window ratio, near, far
     ProjMatrix = glm::perspective(glm::radians(70.f), windowManager.getRatio(), 0.1f, 100.f);
@@ -93,19 +96,63 @@ int main(int argc, char** argv) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-// CUBE
-        glBindVertexArray(cubeVAO);
-        //glBindVertexArray(sphereVAO);
         // On récupére la ViewMatrix à chaque tour de boucle
         glm::mat4 globalMVMatrix = camera.getViewMatrix();
-        // On applique les transformations
-        glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(globalMVMatrix));
-        glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(globalMVMatrix))));
-        glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * globalMVMatrix));
-         // We draw
-        cube.drawCube();
-        //sphere.drawSphere();
+
+        // CUBES
+        glBindVertexArray(cubeVAO);
+        glm::mat4 cubeMatrix;
+
+        for (int i = -15; i < 15; i++)
+        {            
+            // Transformations
+            cubeMatrix = glm::translate(globalMVMatrix, glm::vec3(i,0,-15));
+            // On applique les transformations
+            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * cubeMatrix));
+            glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(cubeMatrix));
+            glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(cubeMatrix))));
+            // We draw
+            cube.drawCube();
+        }
+        for (int i = 0; i < 30; i++)
+        {            
+            cubeMatrix = glm::translate(globalMVMatrix, glm::vec3(-15,0,-14+i));
+            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * cubeMatrix));
+            glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(cubeMatrix));
+            glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(cubeMatrix))));
+            cube.drawCube();
+        }
+        for (int i = 0; i < 30; i++)
+        {            
+            cubeMatrix = glm::translate(globalMVMatrix, glm::vec3(14,0,-14+i));
+            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * cubeMatrix));
+            glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(cubeMatrix));
+            glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(cubeMatrix))));
+            cube.drawCube();
+        }
+        for (int i = -15; i < 15; i++)
+        {            
+            cubeMatrix = glm::translate(globalMVMatrix, glm::vec3(i,0,16));
+            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * cubeMatrix));
+            glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(cubeMatrix));
+            glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(cubeMatrix))));
+            cube.drawCube();
+        }
+        
         glBindVertexArray(0);
+
+
+        // // SPHERES
+        // glBindVertexArray(sphereVAO);
+        // // On récupére la ViewMatrix à chaque tour de boucle
+        // glm::mat4 sphereMVMatrix = camera.getViewMatrix();
+        // // On applique les transformations
+        // glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(sphereMVMatrix));
+        // glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(sphereMVMatrix))));
+        // glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * sphereMVMatrix));
+        //  // We draw
+        // sphere.drawSphere();
+        // glBindVertexArray(0);
 
         // Update the display
         windowManager.swapBuffers();
