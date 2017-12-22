@@ -6,8 +6,8 @@
 class Map {
 
 private:
-    static const int m_nbX = 10;
-    static const int m_nbY = 10;
+    static const int m_nbX = 30;
+    static const int m_nbY = 35;
     Cell m_cells[Map::m_nbX][Map::m_nbY];
     std::string m_fileMap;
 

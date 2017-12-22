@@ -24,8 +24,9 @@ int Map::load() {
             getline(file, tmp);
             for (int j = 0; j < tmp.size(); j++) {
                 if (!isStaticElement(tmp[j])) tmp[j] = 'V';
-                Cell c(i, j, tmp[j]);
+                Cell c(tmp[j]);
                 m_cells[i][j] = c;
+
             }
             i++;
         }

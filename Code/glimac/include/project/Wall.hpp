@@ -1,8 +1,9 @@
 #pragma once
 
 #include "glimac/Geometry.hpp"
+#include "StaticObject.hpp"
 
-class Wall {
+class Wall : public StaticObject {
 
 public:
 
