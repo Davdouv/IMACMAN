@@ -25,6 +25,18 @@ public:
 
     // Return the time in seconds
     float getTime() const;
+
+    float getRatio();
+
+    uint32_t getWidth();
+    uint32_t getHeight();
+
+    void setWidth(uint32_t width);
+    void setHeight(uint32_t height);
+
+private:
+    uint32_t m_width;
+    uint32_t m_height;
 };
 
 }

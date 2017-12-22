@@ -13,6 +13,8 @@ SDLWindowManager::SDLWindowManager(uint32_t width, uint32_t height, const char* 
         return;
     }
     SDL_WM_SetCaption(title, nullptr);
+    m_width = width;
+    m_height = height;
 }
 
 SDLWindowManager::~SDLWindowManager() {
@@ -44,6 +46,29 @@ void SDLWindowManager::swapBuffers() {
 
 float SDLWindowManager::getTime() const {
     return 0.001f * SDL_GetTicks();
+}
+
+float SDLWindowManager::getRatio()
+{
+    return (float)m_width/m_height;
+}
+
+uint32_t SDLWindowManager::getWidth()
+{
+    return m_width;
+}
+uint32_t SDLWindowManager::getHeight()
+{
+    return m_height;
+}
+
+void SDLWindowManager::setWidth(uint32_t width)
+{
+    m_width = width;
+}
+void SDLWindowManager::setHeight(uint32_t height)
+{
+    m_height = height;
 }
 
 }
