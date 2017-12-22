@@ -33,39 +33,40 @@ int Map::load() {
 
                     case 'P' : o = new Pacman(i, j, 10, 10, 1);
                         break;
-                    case 'W' : o = new Wall();
+                    case 'W' : o = new Wall(i, j, 10, 10);
                         m_cells[i][j].setAccess(0);
                         break;
-                    case 'A' : o = new Ghost();
+                    case 'A' : o = new Ghost(i, j, 10, 10, 1, 1);
                         break;
-                    case 'B' : o = new Ghost();
+                    case 'B' : o = new Ghost(i, j, 10, 10, 1, 2);
                         break;
-                    case 'C' : o = new Ghost();
+                    case 'C' : o = new Ghost(i, j, 10, 10, 1, 3);
                         break;
-                    case 'D' : o = new Ghost();
+                    case 'D' : o = new Ghost(i, j, 10, 10, 1, 4);
                         break;
-                    case '1' : o = new Edible();
-                        o = new Ghost();
+                    case '1' : o = new Edible(i, j, 10, 10, 1);
+                        m_cells[i][j].addObject(o);
+                        o = new Ghost(i, j, 10, 10, 1, 1);
                         break;
-                    case '2' : o = new Edible();
-                        o = new Ghost();
+                    case '2' : o = new Edible(i, j, 10, 10, 2);
+                        o = new Ghost(i, j, 10, 10, 1, 1);
+                        m_cells[i][j].addObject(o);
                         break;
-                    case '3' : o = new Edible();
-                        o = new Ghost();
+                    case '3' : o = new Edible(i, j, 10, 10, 3);
+                        m_cells[i][j].addObject(o);
+                        o = new Ghost(i, j, 10, 10, 1, 1);
                         break;
-                    case '4' : o = new Edible();
-                        o = new Ghost();
+                    case 'G' : o = new Edible(i, j, 10, 10, 1);
                         break;
-                    case 'G' : o = new Edible();
+                    case 'S' : o = new Edible(i, j, 10, 10, 2);
                         break;
-                    case 'S' : o = new Edible();
+                    case 'O' : o = new Edible(i, j, 10, 10, 3);
                         break;
-                    case 'O' : o = new Edible();
-                        break;
-                    case 'V' :
+                    case 'V' : m_cells[i][j].setEmpty(true);
                         break;
                     default : break;
                 }
+                if (!m_cells[i][j].getEmpty()) m_cells[i][j].addObject(o);
             }
             i++;
         }

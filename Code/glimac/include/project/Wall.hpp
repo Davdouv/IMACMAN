@@ -5,8 +5,9 @@
 
 class Wall : public StaticObject {
 
-public:
-
 private:
-    
+
+public:
+    Wall(int, int, int, int);
+    Wall();
 };
