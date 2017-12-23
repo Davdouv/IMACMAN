@@ -120,6 +120,7 @@ void RenderManager::updateMVMatrix(Camera* camera)
 // GLSL PROGRAM FUNCTIONS
 // ---------------
 
+// Use the correct program associated to the shader
 void RenderManager::useProgram(FS shader)
 {
     switch (shader)
@@ -138,14 +139,20 @@ void RenderManager::useProgram(FS shader)
 // MATRIX TRANSFORMATIONS
 // ---------------
 
-glm::mat4 RenderManager::translateToPosition(int x, int y)
+// Do the correct transformations
+glm::mat4 RenderManager::transformMatrix(Object* object)
 {
     glm::mat4 matrix;
-    matrix = glm::translate(m_MVMatrix, glm::vec3(m_gameCorner.x + x, 0, m_gameCorner.y + y));
-    
+
+    // Translate to correct Position
+    matrix = glm::translate(m_MVMatrix, glm::vec3(m_gameCorner.x + object->getPosX(), 0, m_gameCorner.y + object->getPosY()));
+    // Scale the object
+    matrix = glm::scale(matrix, glm::vec3(object->getWidth(), object->getHeight(), object->getWidth()));
+
     return matrix;
 }
 
+// Apply Transformations, Update Uniforms
 void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
 {
     switch (shader)

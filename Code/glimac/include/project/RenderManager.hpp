@@ -5,6 +5,7 @@
 #include <glimac/SDLWindowManager.hpp>
 #include "glimac/Camera.hpp"
 
+#include "project/Object.hpp"
 #include "project/GLSLProgram.hpp"
 
 using namespace glimac;
@@ -67,6 +68,6 @@ public:
     void useProgram(FS shader);
 
     // Matrix Transformations
-    glm::mat4 translateToPosition(int x, int y);
+    glm::mat4 transformMatrix(Object* object);
     void applyTransformations(FS shader, glm::mat4 matrix);
 };

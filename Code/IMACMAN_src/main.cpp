@@ -52,10 +52,10 @@ int main(int argc, char** argv) {
     Controller controller = Controller(&windowManager);
 
 
-    Wall wall1(0,0);
-    Wall wall2(30,0);
-    Wall wall3(0,30);
-    Wall wall4(30,30);
+    Wall wall1(0,0,1,1);
+    Wall wall2(30,0,1,1);
+    Wall wall3(0,30,1,1);
+    Wall wall4(30,30,1,1);
 
     // Enable program
     renderManager.useProgram(NORMAL);
@@ -87,6 +87,10 @@ int main(int argc, char** argv) {
 
         // SPHERE
         renderManager.bindSphereVAO();
+        glm::mat4 transformationMatrix;
+
+        // On fait les transformations
+        //transformationMatrix = renderManager.transformMatrix(&sphere);
         // On applique les transformations
         renderManager.applyTransformations(NORMAL, viewMatrix);
          // We draw
@@ -95,26 +99,25 @@ int main(int argc, char** argv) {
 
         // WALL TEST
         renderManager.bindCubeVAO();
-        glm::mat4 wallMatrix;
-
+        
         // Wall 1
-        wallMatrix = renderManager.translateToPosition(wall1.getPosX(), wall1.getPosY());
-        renderManager.applyTransformations(NORMAL, wallMatrix);
+        transformationMatrix = renderManager.transformMatrix(&wall1);
+        renderManager.applyTransformations(NORMAL, transformationMatrix);
         renderManager.getCubePtr()->drawCube();
 
         // Wall 2
-        wallMatrix = renderManager.translateToPosition(wall2.getPosX(), wall2.getPosY());
-        renderManager.applyTransformations(NORMAL, wallMatrix);
+        transformationMatrix = renderManager.transformMatrix(&wall2);
+        renderManager.applyTransformations(NORMAL, transformationMatrix);
         renderManager.getCubePtr()->drawCube();
 
         // Wall 3
-        wallMatrix = renderManager.translateToPosition(wall3.getPosX(), wall3.getPosY());
-        renderManager.applyTransformations(NORMAL, wallMatrix);
+        transformationMatrix = renderManager.transformMatrix(&wall3);
+        renderManager.applyTransformations(NORMAL, transformationMatrix);
         renderManager.getCubePtr()->drawCube();
 
         // Wall 4
-        wallMatrix = renderManager.translateToPosition(wall4.getPosX(), wall4.getPosY());
-        renderManager.applyTransformations(NORMAL, wallMatrix);
+        transformationMatrix = renderManager.transformMatrix(&wall4);
+        renderManager.applyTransformations(NORMAL, transformationMatrix);
         renderManager.getCubePtr()->drawCube();
 
         renderManager.debindVAO();
