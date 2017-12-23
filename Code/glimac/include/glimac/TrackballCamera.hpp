@@ -1,11 +1,13 @@
 #pragma once
 
 #include <glimac/glm.hpp>
+
+#include "glimac/Camera.hpp"
 #include "project/Controller.hpp"
 
 namespace glimac {
 
-class TrackballCamera {
+class TrackballCamera : public Camera {
 public:
 	TrackballCamera(float distance = 5.f, float hauteur = 0.f, float angleX = 0.f, float angleY = 0.f) :
 	m_fDistance(distance), m_fHauteur(hauteur), m_fAngleX(angleX), m_fAngleY(angleY) {}
