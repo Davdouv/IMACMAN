@@ -1,10 +1,11 @@
 #pragma once
 
 #include <glimac/glm.hpp>
+#include "glimac/Camera.hpp"
 
 namespace glimac {
 
-class FreeflyCamera {
+class FreeflyCamera : public Camera {
 public:
 	FreeflyCamera();
 	FreeflyCamera(glm::vec3 position, float phi, float theta);

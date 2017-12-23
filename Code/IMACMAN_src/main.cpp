@@ -4,8 +4,7 @@
 #include <glimac/Program.hpp>
 #include <glimac/FilePath.hpp>
 
-#include "glimac/Cube.hpp"
-#include "glimac/Sphere.hpp"
+#include "project/RenderManager.hpp"
 
 #include "glimac/TrackballCamera.hpp"
 #include "glimac/FreeflyCamera.hpp"
@@ -48,30 +47,11 @@ int main(int argc, char** argv) {
     //TrackballCamera camera = TrackballCamera(30,0,0.0f,1.57f);    // CAMERA VUE 2D
     TrackballCamera camera = TrackballCamera(30,0,0.0f,1.0f);
 
-    glm::mat4 ProjMatrix, MVMatrix, NormalMatrix;
-
-    // Projection Matrix (world) : vertical view angle, window ratio, near, far
-    ProjMatrix = glm::perspective(glm::radians(70.f), windowManager.getRatio(), 0.1f, 100.f);
-    // ModelView Matrix (camera)
-    MVMatrix = camera.getViewMatrix();
-    // Normal Matrix in the camera landmark
-    NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
-
     /*********************************
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
 
-    Cube cube = Cube();
-
-    GLuint cubeVBO = cube.getVBO();
-    GLuint cubeIBO = cube.getIBO();
-    GLuint cubeVAO = cube.getVAO(&cubeIBO, &cubeVBO);
-
-    Sphere sphere = Sphere();
-
-    GLuint sphereVBO = sphere.getVBO();
-    GLuint sphereIBO = sphere.getIBO();
-    GLuint sphereVAO = sphere.getVAO(&sphereIBO, &sphereVBO);
+    RenderManager renderManager = RenderManager(&windowManager, &camera);
 
     Controller controller = Controller(&windowManager);
     // Application loop:
@@ -97,72 +77,69 @@ int main(int argc, char** argv) {
 
 
         // On récupére la ViewMatrix à chaque tour de boucle
-        glm::mat4 globalMVMatrix = camera.getViewMatrix();
+        renderManager.updateMVMatrix(&camera);
 
         // CUBES
-        glBindVertexArray(cubeVAO);
+        renderManager.bindCubeVAO();
         glm::mat4 cubeMatrix;
 
         for (int i = -15; i < 15; i++)
         {            
             // Transformations
-            cubeMatrix = glm::translate(globalMVMatrix, glm::vec3(i,0,-15));
+            cubeMatrix = glm::translate(*renderManager.getMVMatrix(), glm::vec3(i,0,-15));
             // On applique les transformations
-            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * cubeMatrix));
+            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(*renderManager.getProjMatrix() * cubeMatrix));
             glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(cubeMatrix));
             glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(cubeMatrix))));
             // We draw
-            cube.drawCube();
+            renderManager.getCubePtr()->drawCube();
         }
         for (int i = 0; i < 30; i++)
         {            
-            cubeMatrix = glm::translate(globalMVMatrix, glm::vec3(-15,0,-14+i));
-            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * cubeMatrix));
+            cubeMatrix = glm::translate(*renderManager.getMVMatrix(), glm::vec3(-15,0,-14+i));
+            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(*renderManager.getProjMatrix() * cubeMatrix));
             glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(cubeMatrix));
             glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(cubeMatrix))));
-            cube.drawCube();
+            renderManager.getCubePtr()->drawCube();
         }
         for (int i = 0; i < 30; i++)
         {            
-            cubeMatrix = glm::translate(globalMVMatrix, glm::vec3(14,0,-14+i));
-            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * cubeMatrix));
+            cubeMatrix = glm::translate(*renderManager.getMVMatrix(), glm::vec3(14,0,-14+i));
+            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(*renderManager.getProjMatrix() * cubeMatrix));
             glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(cubeMatrix));
             glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(cubeMatrix))));
-            cube.drawCube();
+            renderManager.getCubePtr()->drawCube();
         }
         for (int i = -15; i < 15; i++)
         {            
-            cubeMatrix = glm::translate(globalMVMatrix, glm::vec3(i,0,16));
-            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * cubeMatrix));
+            cubeMatrix = glm::translate(*renderManager.getMVMatrix(), glm::vec3(i,0,16));
+            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(*renderManager.getProjMatrix() * cubeMatrix));
             glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(cubeMatrix));
             glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(cubeMatrix))));
-            cube.drawCube();
+            renderManager.getCubePtr()->drawCube();
         }
         
-        glBindVertexArray(0);
+        renderManager.debindVAO();
 
 
-        // // SPHERES
-        // glBindVertexArray(sphereVAO);
-        // // On récupére la ViewMatrix à chaque tour de boucle
-        // glm::mat4 sphereMVMatrix = camera.getViewMatrix();
-        // // On applique les transformations
-        // glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(sphereMVMatrix));
-        // glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(sphereMVMatrix))));
-        // glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * sphereMVMatrix));
-        //  // We draw
-        // sphere.drawSphere();
-        // glBindVertexArray(0);
+        // SPHERES
+        renderManager.bindSphereVAO();
+        // On récupére la ViewMatrix à chaque tour de boucle
+        glm::mat4 sphereMVMatrix = camera.getViewMatrix();
+        // On applique les transformations
+        glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(sphereMVMatrix));
+        glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(sphereMVMatrix))));
+        glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(*renderManager.getProjMatrix() * sphereMVMatrix));
+         // We draw
+        renderManager.getSpherePtr()->drawSphere();
+        renderManager.debindVAO();
 
         // Update the display
         windowManager.swapBuffers();
     }
 
-    // LIBERATION DES RESSOURCES
-    glDeleteBuffers(1, &cubeVBO);
-    glDeleteVertexArrays(1, &cubeVAO);
-    glDeleteBuffers(1, &sphereVBO);
-    glDeleteVertexArrays(1, &sphereVAO);
+    // FREE RESSOURCES
+    // See ~renderManager destructor
 
     return EXIT_SUCCESS;
 }
