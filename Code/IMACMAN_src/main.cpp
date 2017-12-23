@@ -10,11 +10,17 @@
 #include "glimac/FreeflyCamera.hpp"
 #include "project/Controller.hpp"
 
+#include "project/Wall.hpp"
+#include "project/GLSLProgram.hpp"
+
 using namespace glimac;
 
 int main(int argc, char** argv) {
+    // Default window size
+    glm::vec2 defaultWindowSize = glm::vec2(1280,720);
+
     // Initialize SDL and open a window
-    SDLWindowManager windowManager(1280, 720, "GLImac");
+    SDLWindowManager windowManager(defaultWindowSize.x, defaultWindowSize.y, "GLImac");
 
     // Initialize glew for OpenGL3+ support
     GLenum glewInitError = glewInit();
@@ -23,37 +29,37 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    // Enable Program
+    // Create Programs
     FilePath applicationPath(argv[0]);
-    Program program = loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl",
-                                  applicationPath.dirPath() + "shaders/normal.fs.glsl");
-    program.use();
-
-    // Get the uniforms
-    GLint uMVPMatrix;       // ModelViewProjection Matrix        
-    GLint uMVMatrix;        // ModelView Matrix             Camera Space
-    GLint uNormalMatrix;    // Normal Matrix                For Light
-    GLint uTexture;
-
-    uMVPMatrix = glGetUniformLocation(program.getGLId(), "uMVPMatrix");
-    uMVMatrix = glGetUniformLocation(program.getGLId(), "uMVMatrix");
-    uNormalMatrix = glGetUniformLocation(program.getGLId(), "uNormalMatrix");
-    uTexture = glGetUniformLocation(program.getGLId(), "uTexture");
+    NormalProgram normalProgram(applicationPath);
+    ProgramList programList;
+    programList.normalProgram = &normalProgram;
 
     // Enable GPU depth test for 3D rendering
     glEnable(GL_DEPTH_TEST);
-
-    // Matrix declaration
-    //TrackballCamera camera = TrackballCamera(30,0,0.0f,1.57f);    // CAMERA VUE 2D
-    TrackballCamera camera = TrackballCamera(30,0,0.0f,1.0f);
 
     /*********************************
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
 
-    RenderManager renderManager = RenderManager(&windowManager, &camera);
+    // Game Infos
+    glm::vec2 gameSize = glm::vec2(30,30);
+    glm::vec2 gameCorner = glm::vec2(-(gameSize.x / 2), -(gameSize.y / 2));
 
+    //TrackballCamera tbCamera = TrackballCamera(30,0,0.0f,1.57f);    // CAMERA VUE 2D
+    TrackballCamera tbCamera = TrackballCamera(30,0,0.0f,1.0f);
+    RenderManager renderManager = RenderManager(&windowManager, &tbCamera, &programList, gameSize);
     Controller controller = Controller(&windowManager);
+
+
+    Wall wall1(0,0);
+    Wall wall2(30,0);
+    Wall wall3(0,30);
+    Wall wall4(30,30);
+
+    // Enable program
+    renderManager.useProgram(NORMAL);
+
     // Application loop:
     bool done = false;
     while(!done) {
@@ -67,7 +73,7 @@ int main(int argc, char** argv) {
             controller.updateController();
         }
 
-        camera.cameraController(&controller);
+        tbCamera.cameraController(&controller);
 
         /*********************************
          * HERE SHOULD COME THE RENDERING CODE
@@ -75,63 +81,42 @@ int main(int argc, char** argv) {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
         // On récupére la ViewMatrix à chaque tour de boucle
-        renderManager.updateMVMatrix(&camera);
+        renderManager.updateMVMatrix(&tbCamera);
+        glm::mat4 viewMatrix = renderManager.getMVMatrix();
 
-        // CUBES
-        renderManager.bindCubeVAO();
-        glm::mat4 cubeMatrix;
-
-        for (int i = -15; i < 15; i++)
-        {            
-            // Transformations
-            cubeMatrix = glm::translate(*renderManager.getMVMatrix(), glm::vec3(i,0,-15));
-            // On applique les transformations
-            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(*renderManager.getProjMatrix() * cubeMatrix));
-            glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(cubeMatrix));
-            glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(cubeMatrix))));
-            // We draw
-            renderManager.getCubePtr()->drawCube();
-        }
-        for (int i = 0; i < 30; i++)
-        {            
-            cubeMatrix = glm::translate(*renderManager.getMVMatrix(), glm::vec3(-15,0,-14+i));
-            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(*renderManager.getProjMatrix() * cubeMatrix));
-            glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(cubeMatrix));
-            glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(cubeMatrix))));
-            renderManager.getCubePtr()->drawCube();
-        }
-        for (int i = 0; i < 30; i++)
-        {            
-            cubeMatrix = glm::translate(*renderManager.getMVMatrix(), glm::vec3(14,0,-14+i));
-            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(*renderManager.getProjMatrix() * cubeMatrix));
-            glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(cubeMatrix));
-            glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(cubeMatrix))));
-            renderManager.getCubePtr()->drawCube();
-        }
-        for (int i = -15; i < 15; i++)
-        {            
-            cubeMatrix = glm::translate(*renderManager.getMVMatrix(), glm::vec3(i,0,16));
-            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(*renderManager.getProjMatrix() * cubeMatrix));
-            glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(cubeMatrix));
-            glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(cubeMatrix))));
-            renderManager.getCubePtr()->drawCube();
-        }
-        
-        renderManager.debindVAO();
-
-
-        // SPHERES
+        // SPHERE
         renderManager.bindSphereVAO();
-        // On récupére la ViewMatrix à chaque tour de boucle
-        glm::mat4 sphereMVMatrix = camera.getViewMatrix();
         // On applique les transformations
-        glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(sphereMVMatrix));
-        glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(sphereMVMatrix))));
-        glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(*renderManager.getProjMatrix() * sphereMVMatrix));
+        renderManager.applyTransformations(NORMAL, viewMatrix);
          // We draw
         renderManager.getSpherePtr()->drawSphere();
+        renderManager.debindVAO();
+
+        // WALL TEST
+        renderManager.bindCubeVAO();
+        glm::mat4 wallMatrix;
+
+        // Wall 1
+        wallMatrix = renderManager.translateToPosition(wall1.getPosX(), wall1.getPosY());
+        renderManager.applyTransformations(NORMAL, wallMatrix);
+        renderManager.getCubePtr()->drawCube();
+
+        // Wall 2
+        wallMatrix = renderManager.translateToPosition(wall2.getPosX(), wall2.getPosY());
+        renderManager.applyTransformations(NORMAL, wallMatrix);
+        renderManager.getCubePtr()->drawCube();
+
+        // Wall 3
+        wallMatrix = renderManager.translateToPosition(wall3.getPosX(), wall3.getPosY());
+        renderManager.applyTransformations(NORMAL, wallMatrix);
+        renderManager.getCubePtr()->drawCube();
+
+        // Wall 4
+        wallMatrix = renderManager.translateToPosition(wall4.getPosX(), wall4.getPosY());
+        renderManager.applyTransformations(NORMAL, wallMatrix);
+        renderManager.getCubePtr()->drawCube();
+
         renderManager.debindVAO();
 
         // Update the display

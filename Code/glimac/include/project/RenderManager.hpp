@@ -5,6 +5,8 @@
 #include <glimac/SDLWindowManager.hpp>
 #include "glimac/Camera.hpp"
 
+#include "project/GLSLProgram.hpp"
+
 using namespace glimac;
 
 class RenderManager {
@@ -27,9 +29,16 @@ private:
     glm::mat4 m_MVMatrix;
     glm::mat4 m_NormalMatrix;
 
+    // GLSL Programs
+    ProgramList* m_programList;
+
+    // Game Size Infos
+    glm::vec2 m_gameSize;
+    glm::vec2 m_gameCorner;
+
 public:
-    // Constructor
-    RenderManager(SDLWindowManager* windowManager, Camera* camera);
+    // Constructor - SDLWindowManager for Ratio - Camera for viewMatrix - FilePath for Shaders
+    RenderManager(SDLWindowManager* windowManager, Camera* camera, ProgramList* programList, glm::vec2 gameSize);
     // Destructor
     ~RenderManager();
 
@@ -48,9 +57,16 @@ public:
 
     // Matrix functions
     // Getters
-    glm::mat4* getProjMatrix();
-    glm::mat4* getMVMatrix();
-    glm::mat4* getNormalMatrix();
+    glm::mat4 getProjMatrix() const;
+    glm::mat4 getMVMatrix() const;
+    glm::mat4 getNormalMatrix() const;
     // Update
     void updateMVMatrix(Camera* camera);
+
+    // GLSL Programs functions
+    void useProgram(FS shader);
+
+    // Matrix Transformations
+    glm::mat4 translateToPosition(int x, int y);
+    void applyTransformations(FS shader, glm::mat4 matrix);
 };

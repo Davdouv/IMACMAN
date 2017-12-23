@@ -1,9 +1,11 @@
+#include <iostream>
+
 #include "project/RenderManager.hpp"
 
 using namespace glimac;
 
 // Constructor
-RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera)
+RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, ProgramList* programList, glm::vec2 gameSize)
 {
     // Cube
     m_cube = Cube();
@@ -21,10 +23,16 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera)
     // Projection Matrix (world) : vertical view angle, window ratio, near, far
     m_ProjMatrix = glm::perspective(glm::radians(70.f), windowManager->getRatio(), 0.1f, 100.f);
     // ModelView Matrix (camera)
-    //m_MVMatrix = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, 0.0f, -5.f));
     m_MVMatrix = camera->getViewMatrix();
     // Normal Matrix in the camera landmark
     m_NormalMatrix = glm::transpose(glm::inverse(m_MVMatrix));
+
+    // GLSL Program
+    m_programList = programList;
+
+    // Game Size Infos
+    m_gameSize = gameSize;
+    m_gameCorner = glm::vec2(-(gameSize.x / 2), -(gameSize.y / 2));
 }
 
 // Destructor
@@ -41,12 +49,12 @@ RenderManager::~RenderManager()
 // CUBE FUNCTIONS
 // ---------------
 
-// Return pointer of cube object
+// Returns pointer of cube object
 Cube* RenderManager::getCubePtr()
 {
     return &m_cube;
 }
-// Return pointer of cube VAO
+// Returns pointer of cube VAO
 GLuint* RenderManager::getCubeVAOPtr()
 {
     return &m_cubeVAO;
@@ -56,12 +64,12 @@ GLuint* RenderManager::getCubeVAOPtr()
 // SPHERE FUNCTIONS
 // ---------------
 
-// Return pointer of sphere object
+// Returns pointer of sphere object
 Sphere* RenderManager::getSpherePtr()
 {
     return &m_sphere;
 }
-// Return pointer of sphere VAO
+// Returns pointer of sphere VAO
 GLuint* RenderManager::getSphereVAOPtr()
 {
     return &m_sphereVAO;
@@ -89,21 +97,71 @@ void RenderManager::debindVAO()
 // ---------------
 
 // Getters
-glm::mat4* RenderManager::getProjMatrix()
+glm::mat4 RenderManager::getProjMatrix() const
 {
-    return &m_ProjMatrix;
+    return m_ProjMatrix;
 }
-glm::mat4* RenderManager::getMVMatrix()
+glm::mat4 RenderManager::getMVMatrix() const
 {
-    return &m_MVMatrix;
+    return m_MVMatrix;
 }
-glm::mat4* RenderManager::getNormalMatrix()
+glm::mat4 RenderManager::getNormalMatrix() const
 {
-    return &m_NormalMatrix;
+    return m_NormalMatrix;
 }
 
 // Update
 void RenderManager::updateMVMatrix(Camera* camera)
 {
     m_MVMatrix = camera->getViewMatrix();
+}
+
+// ---------------
+// GLSL PROGRAM FUNCTIONS
+// ---------------
+
+void RenderManager::useProgram(FS shader)
+{
+    switch (shader)
+    {
+        case NORMAL :
+            m_programList->normalProgram->m_Program.use();
+            break;
+
+        default :
+            m_programList->normalProgram->m_Program.use();
+            break;
+    }
+}
+
+// ---------------
+// MATRIX TRANSFORMATIONS
+// ---------------
+
+glm::mat4 RenderManager::translateToPosition(int x, int y)
+{
+    glm::mat4 matrix;
+    matrix = glm::translate(m_MVMatrix, glm::vec3(m_gameCorner.x + x, 0, m_gameCorner.y + y));
+    
+    return matrix;
+}
+
+void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
+{
+    switch (shader)
+    {
+        case NORMAL :
+            glUniformMatrix4fv(m_programList->normalProgram->uMVPMatrix, 1, GL_FALSE, 
+            glm::value_ptr(m_ProjMatrix * matrix));
+
+            glUniformMatrix4fv(m_programList->normalProgram->uMVMatrix, 1, GL_FALSE, 
+            glm::value_ptr(matrix));
+
+            glUniformMatrix4fv(m_programList->normalProgram->uNormalMatrix, 1, GL_FALSE, 
+            glm::value_ptr(glm::transpose(glm::inverse(matrix))));
+            break;
+
+        default :
+            break;
+    }
 }

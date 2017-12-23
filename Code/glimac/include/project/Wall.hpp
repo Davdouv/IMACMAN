@@ -8,6 +8,7 @@ class Wall : public StaticObject {
 private:
 
 public:
-    Wall(int, int, int, int);
+    // Constructors
+    Wall(int posX, int posY, int width = 1, int height = 1);
     Wall();
 };
