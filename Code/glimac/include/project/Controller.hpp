@@ -28,7 +28,13 @@ private:
     Key interfaceAction;
     // Pointer on the windowManager to get the events
     SDLWindowManager* m_windowManager;
+    // Store mouse position
+    glm::ivec2 m_mousePosition;
 
+    // Tell if the mouse goes Up or Down
+    bool isMouseUp();
+    bool isMouseDown();
+    // Update Actions, called each frame
     void updatePlayerAction();
     void updateCameraAction();
     void updateInterfaceAction();
