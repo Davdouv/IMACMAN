@@ -9,6 +9,6 @@ private:
 
 public:
     // Constructors
-    Wall(int posX, int posY, int width = 1, int height = 1);
+    Wall(int posX, int posY, float width = 1.0, float height = 1.0/*, Orientation orientation = RIGHT*/);
     Wall();
 };

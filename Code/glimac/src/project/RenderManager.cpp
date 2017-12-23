@@ -7,6 +7,9 @@ using namespace glimac;
 // Constructor
 RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, ProgramList* programList, glm::vec2 gameSize)
 {
+    // Window Manager
+    m_windowManager = windowManager;
+
     // Cube
     m_cube = Cube();
     m_cubeVBO = m_cube.getVBO();
@@ -142,10 +145,12 @@ void RenderManager::useProgram(FS shader)
 // Do the correct transformations
 glm::mat4 RenderManager::transformMatrix(Object* object)
 {
-    glm::mat4 matrix;
+    glm::mat4 matrix = m_MVMatrix;
 
     // Translate to correct Position
-    matrix = glm::translate(m_MVMatrix, glm::vec3(m_gameCorner.x + object->getPosX(), 0, m_gameCorner.y + object->getPosY()));
+    matrix = glm::translate(matrix, glm::vec3(m_gameCorner.x + object->getPosX(), 0, m_gameCorner.y + object->getPosY()));
+    // Rotate the object - Orientation
+    matrix = glm::rotate(matrix, (float)object->getOrientation() * glm::pi<float>()/180, glm::vec3(0, 1, 0));
     // Scale the object
     matrix = glm::scale(matrix, glm::vec3(object->getWidth(), object->getHeight(), object->getWidth()));
 

@@ -3,13 +3,17 @@
 
 class Edible : public StaticObject {
 
+public:
+  enum Type {PAC_GOMME, SUPER_PAC_GOMME, FRUIT};
+
 private:
   int m_type;
+  // Type m_type;
 
 public:
 
     // constructor
-    Edible(int, int, int, int, int);
+    Edible(int, int, float, float, int);
     Edible();
 
     // getter

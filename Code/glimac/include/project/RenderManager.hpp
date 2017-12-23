@@ -13,6 +13,9 @@ using namespace glimac;
 class RenderManager {
 
 private:
+    // Window Manager
+    SDLWindowManager* m_windowManager;
+
     // Cube
     Cube m_cube;
     GLuint m_cubeVBO;
