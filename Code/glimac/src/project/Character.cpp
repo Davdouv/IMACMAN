@@ -1,7 +1,7 @@
 #include "../include/project/Character.hpp"
 
 
-Character::Character(int posX, int posY, int width, int height, int speed) : Object(posX, posY, width, height), m_speed(speed) { }
+Character::Character(int posX, int posY, int width, int height, int speed, Orientation orientation) : Object(posX, posY, width, height, orientation), m_speed(speed) { }
 Character::Character() { }
 
 int Character::getSpeed() const { return m_speed; }

@@ -13,7 +13,7 @@ private:
 public:
 
     // constructor
-    Edible(int, int, float, float, int);
+    Edible(int, int, float, float, int, Orientation);
     Edible();
 
     // getter

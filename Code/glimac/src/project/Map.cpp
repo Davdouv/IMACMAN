@@ -1,3 +1,4 @@
+#include "../include/project/Object.hpp"
 #include "../include/project/Map.hpp"
 #include "../include/project/Wall.hpp"
 #include "../include/project/Edible.hpp"
@@ -31,41 +32,41 @@ int Map::load() {
                 m_cells[i][j].setStaticElement(tmp[j]);
                 switch(tmp[j]) {
 
-                    case 'P' : o = new Pacman(i, j, 10, 10, 1);
+                    case 'P' : o = new Pacman(i, j, 10, 10, 1, Object::Orientation::LEFT);
                         m_pacman.setPosX(i);
                         m_pacman.setPosY(j);
                         m_pacman.setWidth(10);
                         m_pacman.setHeight(10);
                         m_pacman.setSpeed(1); 
                         break;
-                    case 'W' : o = new Wall(i, j, 10, 10);
+                    case 'W' : o = new Wall(i, j, 10, 10,  Object::Orientation::LEFT);
                         m_cells[i][j].setAccess(0);
                         break;
-                    case 'A' : o = new Ghost(i, j, 10, 10, 1, 1);
+                    case 'A' : o = new Ghost(i, j, 10, 10, 1, 1,  Object::Orientation::LEFT);
                         break;
-                    case 'B' : o = new Ghost(i, j, 10, 10, 1, 2);
+                    case 'B' : o = new Ghost(i, j, 10, 10, 1, 2,  Object::Orientation::LEFT);
                         break;
-                    case 'C' : o = new Ghost(i, j, 10, 10, 1, 3);
+                    case 'C' : o = new Ghost(i, j, 10, 10, 1, 3,  Object::Orientation::LEFT);
                         break;
-                    case 'D' : o = new Ghost(i, j, 10, 10, 1, 4);
+                    case 'D' : o = new Ghost(i, j, 10, 10, 1, 4,  Object::Orientation::LEFT);
                         break;
-                    case '1' : o = new Edible(i, j, 10, 10, 1);
+                    case '1' : o = new Edible(i, j, 10, 10, 1,  Object::Orientation::LEFT);
                         m_cells[i][j].addObject(o);
-                        o = new Ghost(i, j, 10, 10, 1, 1);
+                        o = new Ghost(i, j, 10, 10, 1, 1,  Object::Orientation::LEFT);
                         break;
-                    case '2' : o = new Edible(i, j, 10, 10, 2);
-                        o = new Ghost(i, j, 10, 10, 1, 1);
+                    case '2' : o = new Edible(i, j, 10, 10, 2,  Object::Orientation::LEFT);
                         m_cells[i][j].addObject(o);
+                        o = new Ghost(i, j, 10, 10, 1, 1, Object::Orientation::LEFT);
                         break;
-                    case '3' : o = new Edible(i, j, 10, 10, 3);
+                    case '3' : o = new Edible(i, j, 10, 10, 3, Object::Orientation::LEFT);
                         m_cells[i][j].addObject(o);
-                        o = new Ghost(i, j, 10, 10, 1, 1);
+                        o = new Ghost(i, j, 10, 10, 1, 1, Object::Orientation::LEFT);
                         break;
-                    case 'G' : o = new Edible(i, j, 10, 10, 1);
+                    case 'G' : o = new Edible(i, j, 10, 10, 1, Object::Orientation::LEFT);
                         break;
-                    case 'S' : o = new Edible(i, j, 10, 10, 2);
+                    case 'S' : o = new Edible(i, j, 10, 10, 2, Object::Orientation::LEFT);
                         break;
-                    case 'O' : o = new Edible(i, j, 10, 10, 3);
+                    case 'O' : o = new Edible(i, j, 10, 10, 3, Object::Orientation::LEFT);
                         break;
                     case 'V' : m_cells[i][j].setEmpty(true);
                         break;

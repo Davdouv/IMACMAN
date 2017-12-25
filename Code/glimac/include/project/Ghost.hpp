@@ -8,7 +8,7 @@ private:
 public: 
 
     // constructor
-    Ghost(int, int, int, int, int, int);
+    Ghost(int, int, int, int, int, int, Orientation);
     Ghost();
 
     // getter
