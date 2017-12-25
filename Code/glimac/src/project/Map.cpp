@@ -109,12 +109,13 @@ void Map::play() {
         display();
         std::cout << "Your move : " << std::endl;
         getline(std::cin, line);
-        if (line == "Z") {
+        if (line == "Z") {            
             if (m_cells[m_pacman.getPosX()][m_pacman.getPosY()+1].getAccess()) {
                 m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
                 m_pacman.moveUp();
             } 
             m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
+
         }
         if (line == "Q") {
             if (m_cells[m_pacman.getPosX()][m_pacman.getPosY()-1].getAccess()) {
@@ -142,20 +143,39 @@ void Map::play() {
 }
 
 /*
-
 void Map::play(Controller* controller)
 {
 	Controller::Key action = controller->updatePlayerAction();
 
 	switch (action)
 	{
-		case Controller::UP : this->rotateUp(speed);
+		case Controller::UP :
+            if (m_cells[m_pacman.getPosX()][m_pacman.getPosY()+1].getAccess()) {
+                m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
+                m_pacman.moveUp();
+            } 
+            m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
 			break;
-		case Controller::DOWN : this->rotateUp(-speed);
+		case Controller::DOWN :
+            if (m_cells[m_pacman.getPosX()][m_pacman.getPosY()-1].getAccess()) {
+                m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
+                m_pacman.moveDown();
+            }
+            m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
 			break;
-		case Controller::LEFT : this->rotateLeft(speed);
+		case Controller::LEFT :
+            if (m_cells[m_pacman.getPosX()+1][m_pacman.getPosY()].getAccess()) {
+                m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
+                m_pacman.moveRight();
+            }
+            m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
 			break;
-		case Controller::RIGHT : this->rotateLeft(-speed);
+		case Controller::RIGHT :
+            if (m_cells[m_pacman.getPosX()][m_pacman.getPosY()-1].getAccess()) {
+                m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
+                m_pacman.moveLeft();
+            }
+            m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
 			break;
 		default :
 			break;
@@ -170,3 +190,26 @@ void Map::display() {
         std::cout << std::endl;
     }
 }
+
+void Map::pacmanGhostCollision() {
+
+    for (int i = 0; i < m_ghosts.size(); i++) {
+        if (m_pacman.collision(m_ghosts[i])) m_ghosts[i].reset();
+    }
+}
+
+bool Map::ghostCollision() {
+
+    for (int i = 0; i < m_ghosts.size(); i++) {
+        for (int j = 0; j < m_ghosts.size() && j!=i; j++) {
+               if (m_ghosts[i].collision(m_ghosts[j])) return true; 
+        }
+    }
+    return false;
+}
+
+bool Map::wallCollision(Cell c) {
+    return (c.getAccess());
+}
+
+

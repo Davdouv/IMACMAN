@@ -31,4 +31,7 @@ public:
     void setPosX(int);
     void setPosY(int);
     void setOrientation(Orientation);
+
+    // collision
+    bool collision(Object);
 };

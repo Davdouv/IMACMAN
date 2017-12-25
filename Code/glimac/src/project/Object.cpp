@@ -15,3 +15,8 @@ void Object::setHeight(float height) { m_height = height; }
 void Object::setPosX(int x) { m_posX = x; }
 void Object::setPosY(int y) { m_posY = y; }
 void Object::setOrientation(Orientation orientation) { m_orientation = orientation; }
+
+bool Object::collision(Object c) {
+    if ((this->getPosX() == c.getPosX()) && (this->getPosX() == c.getPosX())) return true;
+    return false; 
+} 

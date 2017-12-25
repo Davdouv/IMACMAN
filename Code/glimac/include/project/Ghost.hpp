@@ -16,5 +16,6 @@ public:
 
     // setter
     void setType(int);
+    void reset();
 
 };

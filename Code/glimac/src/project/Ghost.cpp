@@ -7,3 +7,4 @@ Ghost::Ghost() { }
 int Ghost::getType() const { return m_type; }
 
 void Ghost::setType(int type) { m_type = type;}
+void Ghost::reset() { }

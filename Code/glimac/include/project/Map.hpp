@@ -36,4 +36,10 @@ public:
     void display();
 
     void play();
+
+    // collisions
+    void pacmanGhostCollision();
+    bool ghostCollision();
+    bool wallCollision(Cell);
+
 };
