@@ -8,7 +8,7 @@ private:
 
 public:
 
-    Pacman(int, int, int, int, int, Orientation);
+    Pacman(int, int, float, float, int, Orientation);
     Pacman();
 
     void display() override;

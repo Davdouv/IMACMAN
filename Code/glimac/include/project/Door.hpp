@@ -9,8 +9,8 @@ private:
 public:
 
     // constructor
-    Edible(int, int, float, float, int, Orientation);
-    Edible();
+    Door(int, int, float, float, int, Orientation);
+    Door();
 
     // getter
     int getType() const;
