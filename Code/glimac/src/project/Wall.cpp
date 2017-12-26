@@ -2,7 +2,7 @@
 
 // Constructors
 Wall::Wall(int posX, int posY, float width, float height, Orientation orientation) :
-    StaticObject(posX, posY, width, height, orientation) { }
+    StaticObject('W', posX, posY, width, height, orientation) { }
 Wall::Wall() { }
 
 

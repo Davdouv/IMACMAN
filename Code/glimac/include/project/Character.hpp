@@ -9,7 +9,7 @@ private:
 public:
 
     // constructor 
-    Character(int, int, int, int, int, Orientation);
+    Character(char, int, int, int, int, int, Orientation);
     Character();
 
     // getter

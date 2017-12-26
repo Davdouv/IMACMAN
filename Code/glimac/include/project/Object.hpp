@@ -17,7 +17,7 @@ private:
 public:
 
     // constructor 
-    Object(int, int, float = 1.0, float = 1.0, Orientation = LEFT);
+    Object(char, int, int, float = 1.0, float = 1.0, Orientation = LEFT);
     Object();
 
     // getter
@@ -37,7 +37,7 @@ public:
     void setOrientation(Orientation);
 
     // collision
-    bool collision(Object);
+    bool collision(Object*);
 
     // display 
     virtual void display();

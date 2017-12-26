@@ -33,6 +33,13 @@ int Map::load() {
         getline(file,tmp);
         Pacman *p = new Pacman(charToInt(tmp[1]), charToInt(tmp[2]), 10, 10, 1, Object::Orientation::LEFT);
         this->setPacman(*p);
+        std::vector<Ghost> tabGhost;
+        for (int i = 0; i < 4; i++) {   
+            getline(file,tmp);
+            Ghost *g = new Ghost(charToInt(tmp[1]), charToInt(tmp[2]), 10, 10, 1, i+1, Object::Orientation::LEFT);
+            tabGhost.push_back(*g);
+        }
+        this->setGhosts(tabGhost);
         while (!file.eof()) {
             getline(file, tmp);
             std::vector<StaticObject*> row;
@@ -41,15 +48,15 @@ int Map::load() {
                 if (!isStaticElement(tmp[j])) tmp[j] = 'V';
                 switch(tmp[j]) {
 
-                    case 'W' : o = new Wall(i, j, 10, 10,  Object::Orientation::LEFT);
+                    case 'W' : o = new Wall(j, i, 10, 10,  Object::Orientation::LEFT);
                         break;
-                    case 'G' : o = new Edible(i, j, 10, 10, 1,  Object::Orientation::LEFT);
+                    case 'G' : o = new Edible(j, i, 10, 10, 1,  Object::Orientation::LEFT);
                         break;
-                    case 'S' : o = new Edible(i, j, 10, 10, 2,  Object::Orientation::LEFT);
+                    case 'S' : o = new Edible(j, i, 10, 10, 2,  Object::Orientation::LEFT);
                         break;
-                    case 'B' : o = new Edible(i, j, 10, 10, 3, Object::Orientation::LEFT);
+                    case 'B' : o = new Edible(j, i, 10, 10, 3, Object::Orientation::LEFT);
                         break;
-                    case 'V' : o = NULL;
+                    case 'V' : o = new StaticObject('V', j, i, 10, 10, Object::Orientation::LEFT);
                         break;
                     default : break;
                 }
@@ -64,6 +71,7 @@ int Map::load() {
     return 1;
 }
 
+/*
 void Map::movePacman(Controller* controller)
 {
 	Controller::Key action = controller->updatePlayerAction();
@@ -102,7 +110,8 @@ int Map::save() {
     file.close();
     return 1;
 }
-/*
+
+*/
 void Map::play() {
 
     bool play = true;
@@ -112,35 +121,19 @@ void Map::play() {
         std::cout << "Your move : " << std::endl;
         getline(std::cin, line);
         if (line == "Z") {            
-            if (m_cells[m_pacman.getPosX()][m_pacman.getPosY()+1].getAccess()) {
-                m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
-                m_pacman.moveUp();
-            } 
-            m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
-
+            if (!pacmanWallCollision('Z')) m_pacman.moveUp();
         }
-        if (line == "Q") {
-            if (m_cells[m_pacman.getPosX()][m_pacman.getPosY()-1].getAccess()) {
-                m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
-                m_pacman.moveLeft();
-            }
-            m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
+        if (line == "Q") {    
+            if (!pacmanWallCollision('Q')) m_pacman.moveLeft();
         }
-        if (line == "S") {
-            if (m_cells[m_pacman.getPosX()][m_pacman.getPosY()-1].getAccess()) {
-                m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
-                m_pacman.moveDown();
-            }
-            m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
+        if (line == "S") {   
+            if (!pacmanWallCollision('S')) m_pacman.moveDown();
         }
-        if (line == "D") {
-            if (m_cells[m_pacman.getPosX()+1][m_pacman.getPosY()].getAccess()) {
-                m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
-                m_pacman.moveRight();
-            }
-            m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
+        if (line == "D") {    
+            if (!pacmanWallCollision('D')) m_pacman.moveRight();
         }
         if (line == "C") play = false;
+        pacmanGhostCollision();
     }
 }
 
@@ -187,21 +180,34 @@ void Map::play(Controller* controller)
 */
 void Map::display() {
 
+    bool ghost = false;
     m_pacman.display();
-    for (int i = 0; i < 10; i++) {
-        std::vector<StaticObject*> tmp = m_staticObjects.at(i);
-        for (int  j = 0; j < 10; j++) {
-            if (tmp.at(j) != NULL)tmp.at(j)->display();
-            else std::cout << "Vide" << std::endl;
+    if (m_staticObjects.empty()) std::cout << "It's empty!" << std::endl;
+    else {
+        for (int i = 0; i < 10; i++) {
+            std::vector<StaticObject*> tmp = m_staticObjects.at(i);
+            for (int  j = 0; j < 10; j++) {
+                ghost = false;
+                for (int k = 0; k < m_ghosts.size(); k++) {
+                    if (m_ghosts[k].collision(tmp.at(j))) {std::cout << k+1 << " ";
+                    ghost = true;}
+                }
+                if (m_pacman.collision(tmp.at(j))) std::cout << m_pacman.getType() << " ";
+                else if ((tmp.at(j) != NULL) && (!ghost)) std::cout << tmp.at(j)->getType() << " ";
+                else if (!ghost) std::cout << "V ";
+            }
+            std::cout << std::endl;
         }
-        std::cout << std::endl;
     }
 }
 
 void Map::pacmanGhostCollision() {
 
     for (int i = 0; i < m_ghosts.size(); i++) {
-        if (m_pacman.collision(m_ghosts[i])) m_ghosts[i].reset();
+        if (m_pacman.collision(&m_ghosts[i])) {
+            std::cout << "WOow that ghost took 1 life from ya " << std::endl;
+            m_ghosts[i].reset();
+        }
     }
 }
 
@@ -209,14 +215,32 @@ bool Map::ghostCollision() {
 
     for (int i = 0; i < m_ghosts.size(); i++) {
         for (int j = 0; j < m_ghosts.size() && j!=i; j++) {
-               if (m_ghosts[i].collision(m_ghosts[j])) return true;
+               if (m_ghosts[i].collision(&m_ghosts[j])) return true;
         }
     }
     return false;
 }
 
-bool Map::wallCollision(Cell c) {
-    return (c.getAccess());
+bool Map::pacmanWallCollision(char direction) {
+    switch(direction) {
+        case 'Z': 
+            if (m_pacman.getPosY() == 0) return true;
+            return (m_staticObjects[m_pacman.getPosY()-1][m_pacman.getPosX()]->getType()=='W');
+        case 'Q':
+            if (m_pacman.getPosX() == 0) return true;
+            return (m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()-1]->getType()=='W');
+        case 'D':
+            if (m_pacman.getPosX() == 9) return true;
+            return (m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()+1]->getType()=='W');
+        case 'S':
+            if (m_pacman.getPosY() == 9) return true;
+            return (m_staticObjects[m_pacman.getPosY()+1][m_pacman.getPosX()]->getType()=='W');
+    }
+    return false;
 }
 
+
+bool Map::ghostWallCollision() {
+    return true;
+}
 

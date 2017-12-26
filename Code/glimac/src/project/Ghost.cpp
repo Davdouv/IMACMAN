@@ -1,7 +1,7 @@
 #include "../include/project/Ghost.hpp"
 
 
-Ghost::Ghost(int posX, int posY, int width, int height, int speed, int type, Orientation orientation) : Character(posX, posY, width, height, speed, orientation), m_type(type) { }
+Ghost::Ghost(int posX, int posY, int width, int height, int speed, int type2, Orientation orientation) : Character('G', posX, posY, width, height, speed, orientation), m_type(type2) { }
 Ghost::Ghost() { }
 
 int Ghost::getType() const { return m_type; }

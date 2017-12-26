@@ -46,11 +46,12 @@ public:
     
     void play();
 
-    void movePacman(Controller*);
+    //void movePacman(Controller*);
 
     // collisions
     void pacmanGhostCollision();
     bool ghostCollision();
-    bool wallCollision(Cell);
+    bool pacmanWallCollision(char);
+    bool ghostWallCollision();
 
 };
