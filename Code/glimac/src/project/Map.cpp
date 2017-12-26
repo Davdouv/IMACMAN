@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 
+Pacman Map::getPacman() const { return m_pacman; }
 Map::Map() { }
 std::string Map::getFileMap() const { return m_fileMap; }
 

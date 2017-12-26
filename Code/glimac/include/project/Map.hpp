@@ -24,6 +24,7 @@ public:
 
     // getters
     std::string getFileMap() const;
+    Pacman getPacman() const;
 
     // setters
     void setFileMap(std::string);
