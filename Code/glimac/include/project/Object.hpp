@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 class Object {
 
@@ -6,6 +7,7 @@ public:
     enum Orientation {LEFT = 180, RIGHT = 0, UP = 90, DOWN = 270};
 
 private:
+    char m_type;
     float m_width;
     float m_height;
     int m_posX;
@@ -19,6 +21,7 @@ public:
     Object();
 
     // getter
+    char getType() const;
     float getWidth() const;
     float getHeight() const;
     int getPosX() const;
@@ -26,6 +29,7 @@ public:
     Orientation getOrientation() const;
 
     // setter
+    void setType(char);
     void setWidth(float);
     void setHeight(float);
     void setPosX(int);
@@ -34,4 +38,7 @@ public:
 
     // collision
     bool collision(Object);
+
+    // display 
+    virtual void display();
 };

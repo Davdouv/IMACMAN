@@ -32,3 +32,6 @@ void Character::moveDown() {
     setOrientation(Object::Orientation::DOWN);
 }
 
+void Character::display() {
+    std::cout << "Character" << std::endl;
+}

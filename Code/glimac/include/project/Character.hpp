@@ -26,4 +26,5 @@ public:
     void moveDown();
 
 
+    void display() override;
 };

@@ -7,3 +7,8 @@ Edible::Edible() { }
 int Edible::getType() const { return m_type; }
 
 void Edible::setType(int type) { m_type = type;}
+
+
+void Edible::display() {
+    std::cout << "Edible" << std::endl;
+}

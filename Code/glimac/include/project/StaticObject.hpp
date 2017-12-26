@@ -9,4 +9,5 @@ public:
     StaticObject(int, int, float, float, Orientation);
     StaticObject();
 
+    void display() override;
 };

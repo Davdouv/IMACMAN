@@ -2,15 +2,20 @@
 #include "../include/project/Map.hpp"
 #include "../include/project/Wall.hpp"
 #include "../include/project/Edible.hpp"
-#include "../include/project/Controller.hpp"
 #include <string>
 #include <iostream>
 
-Pacman Map::getPacman() const { return m_pacman; }
 Map::Map() { }
+
 std::string Map::getFileMap() const { return m_fileMap; }
+Pacman Map::getPacman() const { return m_pacman; }
+std::vector<Ghost> Map::getGhosts() const { return m_ghosts; }
+std::vector<std::vector<StaticObject*>> Map::getStaticObjects() const { return m_staticObjects; }
 
 void Map::setFileMap(std::string fileName) { m_fileMap = fileName; }
+void Map::setPacman(Pacman pacman) { m_pacman = pacman; }
+void Map::setGhosts(std::vector<Ghost> tabGhosts) { m_ghosts = tabGhosts; }
+void Map::setStaticObjects(std::vector<std::vector<StaticObject*>> tabObjects) { m_staticObjects = tabObjects;}
 
 int Map::load() {
 
@@ -21,67 +26,63 @@ int Map::load() {
         return 0;
     }
     else {
+        std::vector<std::vector<StaticObject*>> vec;
         int i = 0;
         std::string tmp;
         file.seekg(0);
+        getline(file,tmp);
+        Pacman *p = new Pacman(charToInt(tmp[1]), charToInt(tmp[2]), 10, 10, 1, Object::Orientation::LEFT);
+        this->setPacman(*p);
         while (!file.eof()) {
             getline(file, tmp);
+            std::vector<StaticObject*> row;
             for (int j = 0; j < tmp.size(); j++) {
-                Object *o;
+                StaticObject *o;
                 if (!isStaticElement(tmp[j])) tmp[j] = 'V';
-                m_cells[i][j].setAccess(1);
-                m_cells[i][j].setStaticElement(tmp[j]);
                 switch(tmp[j]) {
 
-                    case 'P' : o = new Pacman(i, j, 10, 10, 1, Object::Orientation::LEFT);
-                        m_pacman.setPosX(i);
-                        m_pacman.setPosY(j);
-                        m_pacman.setWidth(10);
-                        m_pacman.setHeight(10);
-                        m_pacman.setSpeed(1); 
-                        break;
                     case 'W' : o = new Wall(i, j, 10, 10,  Object::Orientation::LEFT);
-                        m_cells[i][j].setAccess(0);
                         break;
-                    case 'A' : o = new Ghost(i, j, 10, 10, 1, 1,  Object::Orientation::LEFT);
+                    case 'G' : o = new Edible(i, j, 10, 10, 1,  Object::Orientation::LEFT);
                         break;
-                    case 'B' : o = new Ghost(i, j, 10, 10, 1, 2,  Object::Orientation::LEFT);
+                    case 'S' : o = new Edible(i, j, 10, 10, 2,  Object::Orientation::LEFT);
                         break;
-                    case 'C' : o = new Ghost(i, j, 10, 10, 1, 3,  Object::Orientation::LEFT);
+                    case 'B' : o = new Edible(i, j, 10, 10, 3, Object::Orientation::LEFT);
                         break;
-                    case 'D' : o = new Ghost(i, j, 10, 10, 1, 4,  Object::Orientation::LEFT);
-                        break;
-                    case '1' : o = new Edible(i, j, 10, 10, 1,  Object::Orientation::LEFT);
-                        m_cells[i][j].addObject(o);
-                        o = new Ghost(i, j, 10, 10, 1, 1,  Object::Orientation::LEFT);
-                        break;
-                    case '2' : o = new Edible(i, j, 10, 10, 2,  Object::Orientation::LEFT);
-                        m_cells[i][j].addObject(o);
-                        o = new Ghost(i, j, 10, 10, 1, 1, Object::Orientation::LEFT);
-                        break;
-                    case '3' : o = new Edible(i, j, 10, 10, 3, Object::Orientation::LEFT);
-                        m_cells[i][j].addObject(o);
-                        o = new Ghost(i, j, 10, 10, 1, 1, Object::Orientation::LEFT);
-                        break;
-                    case 'G' : o = new Edible(i, j, 10, 10, 1, Object::Orientation::LEFT);
-                        break;
-                    case 'S' : o = new Edible(i, j, 10, 10, 2, Object::Orientation::LEFT);
-                        break;
-                    case 'O' : o = new Edible(i, j, 10, 10, 3, Object::Orientation::LEFT);
-                        break;
-                    case 'V' : m_cells[i][j].setEmpty(true);
+                    case 'V' : o = NULL;
                         break;
                     default : break;
                 }
-                if (!m_cells[i][j].getEmpty()) m_cells[i][j].addObject(o);
+                row.push_back(o);
             }
+            vec.push_back(row);
             i++;
         }
+        this->setStaticObjects(vec);
     }   
     file.close();
     return 1;
 }
 
+void Map::movePacman(Controller* controller)
+{
+	Controller::Key action = controller->updatePlayerAction();
+
+	switch (action)
+	{
+		case Controller::UP : m_pacman.moveUp();
+			break;
+		case Controller::DOWN : m_pacman.moveDown();
+			break;
+		case Controller::LEFT : m_pacman.moveLeft();
+			break;
+		case Controller::RIGHT : m_pacman.moveRight();
+			break;
+		default :
+			break;
+	}
+}
+/*
 int Map::save() {
 
     std::fstream file;
@@ -101,7 +102,7 @@ int Map::save() {
     file.close();
     return 1;
 }
-
+/*
 void Map::play() {
 
     bool play = true;
@@ -182,12 +183,17 @@ void Map::play(Controller* controller)
 			break;
 	}
 }
-*/
 
+*/
 void Map::display() {
 
-    for (int i = 0; i < m_nbX; i++) {
-        for (int  j = 0; j < m_nbY; j++) m_cells[i][j].display();
+    m_pacman.display();
+    for (int i = 0; i < 10; i++) {
+        std::vector<StaticObject*> tmp = m_staticObjects.at(i);
+        for (int  j = 0; j < 10; j++) {
+            if (tmp.at(j) != NULL)tmp.at(j)->display();
+            else std::cout << "Vide" << std::endl;
+        }
         std::cout << std::endl;
     }
 }
@@ -203,7 +209,7 @@ bool Map::ghostCollision() {
 
     for (int i = 0; i < m_ghosts.size(); i++) {
         for (int j = 0; j < m_ghosts.size() && j!=i; j++) {
-               if (m_ghosts[i].collision(m_ghosts[j])) return true; 
+               if (m_ghosts[i].collision(m_ghosts[j])) return true;
         }
     }
     return false;

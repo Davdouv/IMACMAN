@@ -4,6 +4,8 @@
 #include <fstream>
 #include "Pacman.hpp"
 #include "Ghost.hpp"
+#include "StaticObject.hpp"
+#include "Controller.hpp"
 
 class Map {
 
@@ -13,7 +15,7 @@ private:
 
     Pacman m_pacman;
     std::vector<Ghost> m_ghosts;
-    Cell m_cells[Map::m_nbX][Map::m_nbY];
+    std::vector<std::vector<StaticObject*>> m_staticObjects;
     std::string m_fileMap;
 
 public:
@@ -25,9 +27,15 @@ public:
     // getters
     std::string getFileMap() const;
     Pacman getPacman() const;
+    std::vector<Ghost> getGhosts() const;
+    std::vector<std::vector<StaticObject*>> getStaticObjects() const;
+
 
     // setters
     void setFileMap(std::string);
+    void setPacman(Pacman);
+    void setGhosts(std::vector<Ghost>);
+    void setStaticObjects(std::vector<std::vector<StaticObject*>>);
 
     // loads a file and converts it to a Cell matrix
     int load();
@@ -35,8 +43,10 @@ public:
     
     // displays the map
     void display();
-
+    
     void play();
+
+    void movePacman(Controller*);
 
     // collisions
     void pacmanGhostCollision();

@@ -18,4 +18,5 @@ public:
     void setType(int);
     void reset();
 
+    void display() override;
 };

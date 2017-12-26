@@ -21,4 +21,6 @@ public:
 
     // setter
     void setType(int);
+
+    void display() override;
 };

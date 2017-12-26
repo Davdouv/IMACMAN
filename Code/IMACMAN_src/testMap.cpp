@@ -5,8 +5,7 @@ int main() {
 
     Map m;
     m.setFileMap("/home/laure/IMACMAN/Code/data/mapTest.txt");
-    m.load();
+    m.load();std::cout << "done" << std::endl;
     m.display();
-    m.play();
     return 0;
 }

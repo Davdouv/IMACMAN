@@ -4,6 +4,7 @@ Object::Object(int posX, int posY, float width, float height, Orientation orient
 m_posX(posX), m_posY(posY), m_width(width), m_height(height), m_orientation(orientation) {}
 Object::Object() {}
 
+char Object::getType() const { return m_type; }
 float Object::getWidth() const { return m_width; }
 float Object::getHeight() const { return m_height; }
 int Object::getPosX() const { return m_posX; }
@@ -20,3 +21,9 @@ bool Object::collision(Object c) {
     if ((this->getPosX() == c.getPosX()) && (this->getPosX() == c.getPosX())) return true;
     return false; 
 } 
+
+void Object::display() {
+
+    std::cout << "Objet : ";
+}
+

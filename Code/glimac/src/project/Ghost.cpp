@@ -8,3 +8,8 @@ int Ghost::getType() const { return m_type; }
 
 void Ghost::setType(int type) { m_type = type;}
 void Ghost::reset() { }
+
+
+void Ghost::display() {
+    std::cout << "Ghost" << std::endl;
+}
