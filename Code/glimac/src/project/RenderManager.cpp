@@ -139,7 +139,7 @@ void RenderManager::useProgram(FS shader)
 }
 
 // ---------------
-// MATRIX TRANSFORMATIONS
+// GENERAL MATRIX TRANSFORMATIONS
 // ---------------
 
 // Do the correct transformations
@@ -176,4 +176,19 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
         default :
             break;
     }
+}
+
+// ---------------
+// SPECIFIC MATRIX TRANSFORMATIONS
+// ---------------
+void RenderManager::drawWall(Object* object)
+{
+
+}
+
+void RenderManager::drawPacman(Pacman* pacman)
+{
+    glm::mat4 transformationMatrix = transformMatrix(pacman);
+    applyTransformations(NORMAL, transformationMatrix);
+    m_sphere.drawSphere();
 }

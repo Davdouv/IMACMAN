@@ -5,10 +5,12 @@
 #include <string>
 #include <iostream>
 
+using namespace glimac;
+
 Map::Map() { }
 
 std::string Map::getFileMap() const { return m_fileMap; }
-Pacman Map::getPacman() const { return m_pacman; }
+Pacman* Map::getPacman() { return &m_pacman; }
 std::vector<Ghost> Map::getGhosts() const { return m_ghosts; }
 std::vector<std::vector<StaticObject*>> Map::getStaticObjects() const { return m_staticObjects; }
 
@@ -31,12 +33,12 @@ int Map::load() {
         std::string tmp;
         file.seekg(0);
         getline(file,tmp);
-        Pacman *p = new Pacman(charToInt(tmp[1]), charToInt(tmp[2]), 10, 10, 1, Object::Orientation::LEFT);
+        Pacman *p = new Pacman(charToInt(tmp[1]), charToInt(tmp[2]), 1, 1, 1, Object::Orientation::LEFT);
         this->setPacman(*p);
         std::vector<Ghost> tabGhost;
         for (int i = 0; i < 4; i++) {   
             getline(file,tmp);
-            Ghost *g = new Ghost(charToInt(tmp[1]), charToInt(tmp[2]), 10, 10, 1, i+1, Object::Orientation::LEFT);
+            Ghost *g = new Ghost(charToInt(tmp[1]), charToInt(tmp[2]), 1, 1, 1, i+1, Object::Orientation::LEFT);
             tabGhost.push_back(*g);
         }
         this->setGhosts(tabGhost);
@@ -48,15 +50,15 @@ int Map::load() {
                 if (!isStaticElement(tmp[j])) tmp[j] = 'V';
                 switch(tmp[j]) {
 
-                    case 'W' : o = new Wall(j, i, 10, 10,  Object::Orientation::LEFT);
+                    case 'W' : o = new Wall(j, i, 1, 1,  Object::Orientation::LEFT);
                         break;
-                    case 'G' : o = new Edible(j, i, 10, 10, 1,  Object::Orientation::LEFT);
+                    case 'G' : o = new Edible(j, i, 0.5, 0.5, 1,  Object::Orientation::LEFT);
                         break;
-                    case 'S' : o = new Edible(j, i, 10, 10, 2,  Object::Orientation::LEFT);
+                    case 'S' : o = new Edible(j, i, 1, 1, 2,  Object::Orientation::LEFT);
                         break;
-                    case 'B' : o = new Edible(j, i, 10, 10, 3, Object::Orientation::LEFT);
+                    case 'B' : o = new Edible(j, i, 1, 1, 3, Object::Orientation::LEFT);
                         break;
-                    case 'V' : o = new StaticObject('V', j, i, 10, 10, Object::Orientation::LEFT);
+                    case 'V' : o = new StaticObject('V', j, i, 1, 1, Object::Orientation::LEFT);
                         break;
                     default : break;
                 }
@@ -137,35 +139,35 @@ void Map::play() {
     }
 }
 
-/*
+/*  ANCIENNE VERSION
 void Map::play(Controller* controller)
 {
-	Controller::Key action = controller->updatePlayerAction();
+    Controller::Key action = controller->getPlayerAction();
 
 	switch (action)
 	{
-		case Controller::UP :
+		case Controller::Z :
             if (m_cells[m_pacman.getPosX()][m_pacman.getPosY()+1].getAccess()) {
                 m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
                 m_pacman.moveUp();
             } 
             m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
 			break;
-		case Controller::DOWN :
+		case Controller::S :
             if (m_cells[m_pacman.getPosX()][m_pacman.getPosY()-1].getAccess()) {
                 m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
                 m_pacman.moveDown();
             }
             m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
 			break;
-		case Controller::LEFT :
+		case Controller::Q :
             if (m_cells[m_pacman.getPosX()+1][m_pacman.getPosY()].getAccess()) {
                 m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
                 m_pacman.moveRight();
             }
             m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
 			break;
-		case Controller::RIGHT :
+		case Controller::D :
             if (m_cells[m_pacman.getPosX()][m_pacman.getPosY()-1].getAccess()) {
                 m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
                 m_pacman.moveLeft();
@@ -176,17 +178,40 @@ void Map::play(Controller* controller)
 			break;
 	}
 }
-
 */
+
+// NOUVELLE VERSION
+void Map::play(Controller* controller) {
+    Controller::Key action = controller->getPlayerAction();
+
+	switch (action)
+	{
+		case Controller::Z :
+            if (!pacmanWallCollision('Z')) m_pacman.moveUp();
+			break;
+		case Controller::Q :
+           if (!pacmanWallCollision('Q')) m_pacman.moveLeft();
+			break;
+		case Controller::S :
+            if (!pacmanWallCollision('S')) m_pacman.moveDown();
+			break;
+		case Controller::D :
+            if (!pacmanWallCollision('D')) m_pacman.moveRight();
+			break;
+		default :
+			break;
+	}
+}
+
 void Map::display() {
 
     bool ghost = false;
     m_pacman.display();
     if (m_staticObjects.empty()) std::cout << "It's empty!" << std::endl;
     else {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < m_nbX; i++) {
             std::vector<StaticObject*> tmp = m_staticObjects.at(i);
-            for (int  j = 0; j < 10; j++) {
+            for (int  j = 0; j < m_nbY; j++) {
                 ghost = false;
                 for (int k = 0; k < m_ghosts.size(); k++) {
                     if (m_ghosts[k].collision(tmp.at(j))) {std::cout << k+1 << " ";

@@ -6,6 +6,7 @@
 #include "glimac/Camera.hpp"
 
 #include "project/Object.hpp"
+#include "project/Pacman.hpp"
 #include "project/GLSLProgram.hpp"
 
 using namespace glimac;
@@ -73,4 +74,8 @@ public:
     // Matrix Transformations
     glm::mat4 transformMatrix(Object* object);
     void applyTransformations(FS shader, glm::mat4 matrix);
+
+    // Specific Transformations
+    void drawWall(Object* object);
+    void drawPacman(Pacman* pacman);
 };
