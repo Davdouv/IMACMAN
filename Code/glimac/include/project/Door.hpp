@@ -1,14 +1,10 @@
 #pragma once
 #include "StaticObject.hpp"
 
-class Edible : public StaticObject {
-
-public:
-  enum Type {PAC_GOMME, SUPER_PAC_GOMME, FRUIT};
+class Door : public StaticObject {
 
 private:
-  int m_type;
-  // Type m_type;
+  int m_destination;
 
 public:
 

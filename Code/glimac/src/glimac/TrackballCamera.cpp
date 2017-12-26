@@ -6,19 +6,23 @@
 
 using namespace glimac;
 
+// Move the camera towards
 void TrackballCamera::moveFront(float delta)
 {
 	m_fDistance += delta;
 }
+// Rotate the camera on the X axis
 void TrackballCamera::rotateLeft(float degrees)
 {
 	m_fAngleX += degrees;
 }
+// Rotate the camera on the Y axis
 void TrackballCamera::rotateUp(float degrees)
 {
 	m_fAngleY += degrees;
 }
 
+// Returns the ViewMatrix of the camera, called each frame
 glm::mat4 TrackballCamera::getViewMatrix() const
 {
 	// MODIFIER CETTE LIGNE POUR ZOOMER SUR PACMAN : 1er parametre du glm::vec3
@@ -29,6 +33,23 @@ glm::mat4 TrackballCamera::getViewMatrix() const
 	return MVMatrix;
 }
 
+// Tells if we can zoom or not
+bool TrackballCamera::zoomMax()
+{
+	if (m_fDistance <= 2.0)
+		return true;
+	else
+		return false;
+}
+bool TrackballCamera::zoomMin()
+{
+	if (m_fDistance >= 50.0)
+		return true;
+	else
+		return false;
+}
+
+// Control the camera
 void TrackballCamera::cameraController(Controller* controller)
 {
 	Controller::Key action = controller->getCameraAction();
@@ -37,10 +58,12 @@ void TrackballCamera::cameraController(Controller* controller)
 	switch (action)
 	{
 		case Controller::UP : 
-			this->moveFront(speed);
+			if(!zoomMax())
+				this->moveFront(speed);
 			break;
 		case Controller::DOWN : 
-			this->moveFront(-speed);
+			if(!zoomMin())
+				this->moveFront(-speed);
 			break;
 		// case Controller::UP : 
 		// 	this->rotateUp(speed);

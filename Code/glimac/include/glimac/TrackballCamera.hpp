@@ -27,6 +27,10 @@ private:
 	float m_fHauteur;		// Hauteur de la caméra par rapport au centre de la scène
 	float m_fAngleX;		// Angle effectuée par la caméra autour de l'axe X de la scène
 	float m_fAngleY;		// Angle effectuée par la caméra autour de l'axe Y de la scène
+
+	// Returns true if zoom is max/min, false if not
+	bool zoomMax();
+	bool zoomMin();
 };
 
 }

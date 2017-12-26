@@ -9,7 +9,7 @@ private:
 public:
 
     // constructor 
-    Character(int, int, int, int, int);
+    Character(int, int, int, int, int, Orientation);
     Character();
 
     // getter
@@ -24,5 +24,6 @@ public:
     void moveLeft();
     void moveUp();
     void moveDown();
+
 
 };

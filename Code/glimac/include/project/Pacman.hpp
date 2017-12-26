@@ -6,7 +6,7 @@ private:
 
 public:
 
-    Pacman(int, int, int, int, int);
+    Pacman(int, int, int, int, int, Orientation);
     Pacman();
 
 };
