@@ -16,19 +16,29 @@ void Cube::build(GLfloat width = 1.0, GLfloat height = 1.0, GLfloat thickness = 
     m_VertexBuffer[0].position = glm::vec3(-w, -h, t);     // Bottom Left
     m_VertexBuffer[1].position = glm::vec3(w, -h, t);      // Bottom Right
     m_VertexBuffer[2].position = glm::vec3(w, h, t);       // Up Right
-    m_VertexBuffer[3].position = glm::vec3(-w, h, t);      // UP Left
+    m_VertexBuffer[3].position = glm::vec3(-w, h, t);      // Up Left
     // Back Face
     m_VertexBuffer[4].position = glm::vec3(-w, -h, -t);     // Bottom Left
     m_VertexBuffer[5].position = glm::vec3(w, -h, -t);      // Bottom Right
     m_VertexBuffer[6].position = glm::vec3(w, h, -t);       // Up Right
-    m_VertexBuffer[7].position = glm::vec3(-w, h, -t);      // UP Left
+    m_VertexBuffer[7].position = glm::vec3(-w, h, -t);      // Up Left
 
     // Calculate normals
     for (unsigned int i = 0; i < 8; i++)
     {
         m_VertexBuffer[i].normal = normalize(m_VertexBuffer[i].position);
-        m_VertexBuffer[i].texCoords = glm::vec2(0,0);
     }
+
+    // Texture Coordinates
+    m_VertexBuffer[0].texCoords = glm::vec2(0,1);
+    m_VertexBuffer[1].texCoords = glm::vec2(1,1);
+    m_VertexBuffer[2].texCoords = glm::vec2(1,0);
+    m_VertexBuffer[3].texCoords = glm::vec2(0,0);
+
+    m_VertexBuffer[4].texCoords = glm::vec2(1,1);
+    m_VertexBuffer[5].texCoords = glm::vec2(0,1);
+    m_VertexBuffer[6].texCoords = glm::vec2(0,0);
+    m_VertexBuffer[7].texCoords = glm::vec2(1,0);
 
     // Front face
     m_IndexBuffer[0] = 0;
