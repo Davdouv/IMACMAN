@@ -488,9 +488,10 @@ void Map::pokeyAI() {
 
 }
 
-void Map::shortestWay(int x, int y) {
+void Map::shortestWay(int ghostType, int x, int y) {
 
-
+    float gx = m_ghosts[ghostType].getPosX();
+    float gy = m_ghosts[ghostType].getPosY();
 }
 
 void Map::ghostMove() {

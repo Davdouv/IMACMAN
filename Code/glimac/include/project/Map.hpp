@@ -85,5 +85,5 @@ public:
     void ghostMove();
     
     // Shortest way
-    void shortestWay(int x, int y);
+    void shortestWay(int, int, int);
 };
