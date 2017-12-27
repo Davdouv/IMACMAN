@@ -11,10 +11,20 @@ Map::Map() { }
 
 Map::~Map()
 {
+    /* // BUG -> "invalid pointer"
+    std::cout << "Debut" << std::endl;
+    delete(&m_staticObjects[3]);
+    std::cout << "Fin" << std::endl;
+    /*
+
+    /*
     for (unsigned int i = 0; i < m_staticObjects.size(); ++i)
     {
+        std::cout << "Milieu" << std::endl;
         delete(&m_staticObjects[i]);
+        std::cout << "Fin" << std::endl;
     }
+    */
 }
 
 int Map::getNbX() const { return m_nbX; }
