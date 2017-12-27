@@ -6,7 +6,8 @@
 #include "Ghost.hpp"
 #include "StaticObject.hpp"
 #include "Controller.hpp"
-
+#include "Edible.hpp"
+#include "Wall.hpp"
 using namespace glimac;
 
 class Map {
@@ -32,6 +33,12 @@ public:
     std::vector<Ghost> getGhosts() const;
     std::vector<std::vector<StaticObject*>> getStaticObjects() const;
 
+
+    // get map elements
+    std::vector<Edible*> getPacGommes();
+    std::vector<Edible*> getSuperPacGommes();
+    std::vector<Edible*> getFruits();
+    std::vector<Wall*> getWalls();
 
     // setters
     void setFileMap(std::string);

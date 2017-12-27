@@ -17,10 +17,10 @@ public:
     Edible();
 
     // getter
-    int getType() const;
+    int getTypeEdible() const;
 
     // setter
-    void setType(int);
+    void setTypeEdible(int);
 
     void display() override;
 };

@@ -19,6 +19,67 @@ void Map::setPacman(Pacman pacman) { m_pacman = pacman; }
 void Map::setGhosts(std::vector<Ghost> tabGhosts) { m_ghosts = tabGhosts; }
 void Map::setStaticObjects(std::vector<std::vector<StaticObject*>> tabObjects) { m_staticObjects = tabObjects;}
 
+// object getter
+
+std::vector<Wall*> Map::getWalls() {
+
+    std::vector<Wall*> walls;
+    for (int i = 0; i < m_nbX; i++) {
+        for (int j = 0; j < m_nbY; j++) {
+            if (m_staticObjects[i][j]->getType() == 'W') walls.push_back((Wall*)m_staticObjects[i][j]);
+        }
+    }
+    return walls;
+}
+
+std::vector<Edible*> Map::getSuperPacGommes() {
+
+    std::vector<Edible*> superpacgomme;
+    for (int i = 0; i < m_nbX; i++) {
+        for (int j = 0; j < m_nbY; j++) {
+            if (m_staticObjects[i][j]->getType() == 'E') {
+                Edible *e;
+                e = (Edible*)m_staticObjects[i][j];
+                if (e->getTypeEdible() == Edible::Type::SUPER_PAC_GOMME)
+                superpacgomme.push_back(e);
+            }
+        }
+    }
+    return superpacgomme;
+}
+
+std::vector<Edible*> Map::getPacGommes() {
+
+    std::vector<Edible*> pacgomme;
+    for (int i = 0; i < m_nbX; i++) {
+        for (int j = 0; j < m_nbY; j++) {
+            if (m_staticObjects[i][j]->getType() == 'E') {
+                Edible *e;
+                e = (Edible*)m_staticObjects[i][j];
+                if (e->getTypeEdible() == Edible::Type::PAC_GOMME)
+                pacgomme.push_back(e);
+            }
+        }
+    }
+    return pacgomme;
+}
+
+std::vector<Edible*> Map::getFruits() {
+
+    std::vector<Edible*> fruits;
+    for (int i = 0; i < m_nbX; i++) {
+        for (int j = 0; j < m_nbY; j++) {
+            if (m_staticObjects[i][j]->getType() == 'E') {
+                Edible *e;
+                e = (Edible*)m_staticObjects[i][j];
+                if (e->getTypeEdible() == Edible::Type::FRUIT)
+                fruits.push_back(e);
+            }
+        }
+    }
+    return fruits;
+}
+
 int Map::load() {
 
     std::fstream file;
@@ -52,11 +113,11 @@ int Map::load() {
 
                     case 'W' : o = new Wall(j, i, 1, 1,  Object::Orientation::LEFT);
                         break;
-                    case 'G' : o = new Edible(j, i, 0.5, 0.5, 1,  Object::Orientation::LEFT);
+                    case 'G' : o = new Edible(j, i, 0.5, 0.5, Edible::Type::PAC_GOMME, Object::Orientation::LEFT);
                         break;
-                    case 'S' : o = new Edible(j, i, 1, 1, 2,  Object::Orientation::LEFT);
+                    case 'S' : o = new Edible(j, i, 1, 1, Edible::Type::SUPER_PAC_GOMME, Object::Orientation::LEFT);
                         break;
-                    case 'B' : o = new Edible(j, i, 1, 1, 3, Object::Orientation::LEFT);
+                    case 'B' : o = new Edible(j, i, 1, 1, Edible::Type::FRUIT, Object::Orientation::LEFT);
                         break;
                     case 'V' : o = new StaticObject('V', j, i, 1, 1, Object::Orientation::LEFT);
                         break;
