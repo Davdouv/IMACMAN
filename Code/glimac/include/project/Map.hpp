@@ -7,6 +7,8 @@
 #include "StaticObject.hpp"
 #include "Controller.hpp"
 
+using namespace glimac;
+
 class Map {
 
 private:
@@ -26,7 +28,7 @@ public:
 
     // getters
     std::string getFileMap() const;
-    Pacman getPacman() const;
+    Pacman* getPacman();
     std::vector<Ghost> getGhosts() const;
     std::vector<std::vector<StaticObject*>> getStaticObjects() const;
 
@@ -45,6 +47,7 @@ public:
     void display();
     
     void play();
+    void play(Controller* controller);
 
     //void movePacman(Controller*);
 

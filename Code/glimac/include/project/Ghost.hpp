@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Character.hpp"
 
 class Ghost : public Character {
@@ -8,7 +10,7 @@ private:
 public: 
 
     // constructor
-    Ghost(int, int, int, int, int, int, Orientation);
+    Ghost(int, int, float, float, int, int, Orientation);
     Ghost();
 
     // getter

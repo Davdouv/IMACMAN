@@ -139,7 +139,7 @@ void RenderManager::useProgram(FS shader)
 }
 
 // ---------------
-// MATRIX TRANSFORMATIONS
+// GENERAL MATRIX TRANSFORMATIONS
 // ---------------
 
 // Do the correct transformations
@@ -176,4 +176,56 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
         default :
             break;
     }
+}
+
+// ---------------
+// SPECIFIC TRANSFORMATIONS & PROGRAMS (shader)
+// ---------------
+
+// Draw Wall - Cube - Shader : NORMAL
+void RenderManager::drawWall(Wall* wall)
+{
+    glm::mat4 transformationMatrix = transformMatrix(wall);
+    applyTransformations(NORMAL, transformationMatrix);
+    m_cube.drawCube();
+}
+
+// Draw Pacman - Sphere - Shader : NORMAL
+void RenderManager::drawPacman(Pacman* pacman)
+{
+    glm::mat4 transformationMatrix = transformMatrix(pacman);
+    applyTransformations(NORMAL, transformationMatrix);
+    m_sphere.drawSphere();
+}
+
+// Draw Ghost - Sphere - Shader : NORMAL
+void RenderManager::drawGhost(Ghost* ghost)
+{
+    glm::mat4 transformationMatrix = transformMatrix(ghost);
+    applyTransformations(NORMAL, transformationMatrix);
+    m_sphere.drawSphere();
+}
+
+// Draw PacGomme - Sphere - Shader : NORMAL
+void RenderManager::drawPacGomme(Edible* edible)
+{
+    glm::mat4 transformationMatrix = transformMatrix(edible);
+    applyTransformations(NORMAL, transformationMatrix);
+    m_sphere.drawSphere();
+}
+
+// Draw Super PacGomme - Sphere - Shader : NORMAL
+void RenderManager::drawSuperPacGomme(Edible* edible)
+{
+    glm::mat4 transformationMatrix = transformMatrix(edible);
+    applyTransformations(NORMAL, transformationMatrix);
+    m_sphere.drawSphere();
+}
+
+// Draw Fruit - Sphere - Shader : NORMAL
+void RenderManager::drawFruit(Edible* edible)
+{
+    glm::mat4 transformationMatrix = transformMatrix(edible);
+    applyTransformations(NORMAL, transformationMatrix);
+    m_sphere.drawSphere();
 }
