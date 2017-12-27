@@ -113,44 +113,22 @@ int main(int argc, char** argv) {
 
         // On update la ViewMatrix à chaque tour de boucle
         renderManager.updateMVMatrix(camera);
-        glm::mat4 viewMatrix = renderManager.getMVMatrix();
 
-        // Matrix to do the transformations
-        glm::mat4 transformationMatrix;
-
-        // SPHERE
+        // --- SPHERE --- //
         // Bind Sphere VAO
         renderManager.bindSphereVAO();
 
-        // On fait les transformations
-        //transformationMatrix = renderManager.transformMatrix(&sphere);
-        // On applique les transformations
-        //renderManager.applyTransformations(NORMAL, viewMatrix);
-        // We draw
-        //renderManager.getSpherePtr()->drawSphere();
-
         renderManager.drawPacman(map.getPacman());
-
-        for (unsigned int i = 0; i < map.getPacGommes().size(); ++i)
-        {
-            renderManager.drawPacGomme(map.getPacGommes()[i]);
-        }
-
-        for (unsigned int i = 0; i < map.getSuperPacGommes().size(); ++i)
-        {
-            renderManager.drawSuperPacGomme(map.getSuperPacGommes()[i]);
-        }
+        renderManager.drawPacGommes(map.getPacGommes());
+        renderManager.drawSuperPacGommes(map.getSuperPacGommes());
 
         // De-bind Sphere VAO
         renderManager.debindVAO();
 
-        // WALL TEST
+        // --- CUBE --- //
         renderManager.bindCubeVAO();
 
-        for (unsigned int i = 0; i < map.getWalls().size(); ++i)
-        {
-            renderManager.drawWall(map.getWalls()[i]);
-        }
+        renderManager.drawWalls(map.getWalls());
 
         renderManager.debindVAO();
 

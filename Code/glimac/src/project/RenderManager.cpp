@@ -196,13 +196,7 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
 // SPECIFIC TRANSFORMATIONS & PROGRAMS (shader)
 // ---------------
 
-// Draw Wall - Cube - Shader : NORMAL
-void RenderManager::drawWall(Wall* wall)
-{
-    glm::mat4 transformationMatrix = transformMatrix(wall);
-    applyTransformations(NORMAL, transformationMatrix);
-    m_cube.drawCube();
-}
+// CHARACTERS
 
 // Draw Pacman - Sphere - Shader : NORMAL
 void RenderManager::drawPacman(Pacman* pacman)
@@ -218,6 +212,18 @@ void RenderManager::drawGhost(Ghost* ghost)
     glm::mat4 transformationMatrix = transformMatrix(ghost);
     applyTransformations(NORMAL, transformationMatrix);
     m_sphere.drawSphere();
+}
+
+// STATIC OBJECTS
+
+// ---- 1 OBJECT ----- //
+
+// Draw Wall - Cube - Shader : NORMAL
+void RenderManager::drawWall(Wall* wall)
+{
+    glm::mat4 transformationMatrix = transformMatrix(wall);
+    applyTransformations(NORMAL, transformationMatrix);
+    m_cube.drawCube();
 }
 
 // Draw PacGomme - Sphere - Shader : NORMAL
@@ -242,4 +248,38 @@ void RenderManager::drawFruit(Edible* edible)
     glm::mat4 transformationMatrix = transformMatrix(edible);
     applyTransformations(NORMAL, transformationMatrix);
     m_sphere.drawSphere();
+}
+
+// ---- ALL OBJECTS ----- //
+
+void RenderManager::drawWalls(std::vector<Wall*> wall)
+{
+    for (unsigned int i = 0; i < wall.size(); ++i)
+    {
+        drawWall(wall[i]);
+    }
+}
+
+void RenderManager::drawPacGommes(std::vector<Edible*> edible)
+{
+    for (unsigned int i = 0; i < edible.size(); ++i)
+    {
+        drawPacGomme(edible[i]);
+    }
+}
+
+void RenderManager::drawSuperPacGommes(std::vector<Edible*> edible)
+{
+    for (unsigned int i = 0; i < edible.size(); ++i)
+    {
+        drawSuperPacGomme(edible[i]);
+    }
+}
+
+void RenderManager::drawFruits(std::vector<Edible*> edible)
+{
+    for (unsigned int i = 0; i < edible.size(); ++i)
+    {
+        drawFruit(edible[i]);
+    }
 }
