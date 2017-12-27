@@ -630,8 +630,31 @@ void Map::pokeyAI() {
 
 // Shortest way for a ghost to get to the position (x, y)
 void Map::shortestWay(int ghostType, float x, float y) {
+/*
+    float gx = m_ghosts[ghostType].getPosX();
+    float gy = m_ghosts[ghostType].getPosY();
+    if ((gx != x) && (gy != y)) {
 
+        if (gx - x < 0) {
+            if (m_ghosts[ghostType].getOrientation() == Object::Orientation::LEFT) {
+                if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
+                else {
+                    
+                }
+            }
+        }
+        else if (gx - x > 0) {
 
+        }
+        
+        if (gy - y < 0) {
+
+        }
+        else {
+
+        }
+    }
+*/
 }
 
 void Map::ghostMove() {
