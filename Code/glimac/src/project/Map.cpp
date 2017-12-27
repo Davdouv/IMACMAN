@@ -9,6 +9,16 @@ using namespace glimac;
 
 Map::Map() { }
 
+Map::~Map()
+{
+    for (unsigned int i = 0; i < m_staticObjects.size(); ++i)
+    {
+        delete(&m_staticObjects[i]);
+    }
+}
+
+int Map::getNbX() const { return m_nbX; }
+int Map::getNbY() const { return m_nbY; }
 std::string Map::getFileMap() const { return m_fileMap; }
 Pacman* Map::getPacman() { return &m_pacman; }
 std::vector<Ghost> Map::getGhosts() const { return m_ghosts; }
@@ -97,7 +107,7 @@ int Map::load() {
         std::string delimiter = ",";
         std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
         std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-        Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 1, 1, 1, Object::Orientation::LEFT);
+        Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.005, Object::Orientation::LEFT);
         this->setPacman(*p);
         std::vector<Ghost> tabGhost;
         for (int i = 0; i < 4; i++) {   
@@ -105,8 +115,9 @@ int Map::load() {
             std::string delimiter = ",";
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 1, 1, 1, i+1, Object::Orientation::LEFT);
+            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.005, i+1, Object::Orientation::LEFT);
             tabGhost.push_back(*g);
+            delete(g);
         }
         this->setGhosts(tabGhost);
         while (!file.eof()) {
@@ -119,9 +130,9 @@ int Map::load() {
 
                     case 'W' : o = new Wall(j, i, 1, 1,  Object::Orientation::LEFT);
                         break;
-                    case 'G' : o = new Edible(j, i, 0.5, 0.5, Edible::Type::PAC_GOMME, Object::Orientation::LEFT);
+                    case 'G' : o = new Edible(j, i, 0.15, 0.15, Edible::Type::PAC_GOMME, Object::Orientation::LEFT);
                         break;
-                    case 'S' : o = new Edible(j, i, 1, 1, Edible::Type::SUPER_PAC_GOMME, Object::Orientation::LEFT);
+                    case 'S' : o = new Edible(j, i, 0.25, 0.25, Edible::Type::SUPER_PAC_GOMME, Object::Orientation::LEFT);
                         break;
                     case 'B' : o = new Edible(j, i, 1, 1, Edible::Type::FRUIT, Object::Orientation::LEFT);
                         break;
@@ -135,6 +146,7 @@ int Map::load() {
             i++;
         }
         this->setStaticObjects(vec);
+        delete(p);
     }   
     file.close();
     return 1;
@@ -314,19 +326,21 @@ bool Map::ghostCollision() {
 }
 
 bool Map::pacmanWallCollision(char direction) {
+    int posX = (int)m_pacman.getPosX();
+    int posY = (int)m_pacman.getPosY();
     switch(direction) {
         case 'Z': 
-            if (m_pacman.getPosY() == 0) return true;
-            return (m_staticObjects[m_pacman.getPosY()-1][m_pacman.getPosX()]->getType()=='W');
+            if (posY == 0) return true;
+            return (m_staticObjects[posY-1][posX]->getType()=='W');
         case 'Q':
-            if (m_pacman.getPosX() == 0) return true;
-            return (m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()-1]->getType()=='W');
+            if (posX== 0) return true;
+            return (m_staticObjects[posY][posX-1]->getType()=='W');
         case 'D':
-            if (m_pacman.getPosX() == 9) return true;
-            return (m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()+1]->getType()=='W');
+            if (posX == 9) return true;
+            return (m_staticObjects[posY][posX+1]->getType()=='W');
         case 'S':
-            if (m_pacman.getPosY() == 9) return true;
-            return (m_staticObjects[m_pacman.getPosY()+1][m_pacman.getPosX()]->getType()=='W');
+            if (posY == 9) return true;
+            return (m_staticObjects[posY+1][posX]->getType()=='W');
     }
     return false;
 }

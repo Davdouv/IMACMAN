@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
      *********************************/
 
     Map map;
-    map.setFileMap("/home/david/PROGRAMMATION/OpenGL3/IMACMAN/Code/data/mapTest.txt");
+    map.setFileMap("classicMap.txt");
     map.load();
     //m.display();
     //m.play();
@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
     glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
 
     //TrackballCamera tbCamera = TrackballCamera(gameSize.y,0,0.0f,1.57f);    // CAMERA VUE 2D
-    TrackballCamera tbCamera = TrackballCamera(gameSize.y,0,0.0f,1.0f);
+    TrackballCamera tbCamera = TrackballCamera(gameSize.x,0,0.0f,1.0f);
     FreeflyCamera ffCamera = FreeflyCamera();
     Camera* camera = &tbCamera;
 
@@ -133,6 +133,11 @@ int main(int argc, char** argv) {
         for (unsigned int i = 0; i < map.getPacGommes().size(); ++i)
         {
             renderManager.drawPacGomme(map.getPacGommes()[i]);
+        }
+
+        for (unsigned int i = 0; i < map.getSuperPacGommes().size(); ++i)
+        {
+            renderManager.drawSuperPacGomme(map.getSuperPacGommes()[i]);
         }
 
         // De-bind Sphere VAO
