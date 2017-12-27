@@ -344,27 +344,86 @@ bool Map::ghostCollision() {
 bool Map::pacmanWallCollision(char direction) {
     int posX = (int)m_pacman.getPosX();
     int posY = (int)m_pacman.getPosY();
-     std::cout << "X : " << posX << std::endl;
-     std::cout << "Y : " << posY << std::endl;
+    float seuil = 0.1;
     switch(direction) {
         case 'Z': 
+            // First check if we can move inside the cell
+            if ((float)posY+m_pacman.getSpeed() < m_pacman.getPosY())
+            {
+                // Then make sure we're not between 2 cells
+                if ((m_pacman.getPosX() - (float)posX) > seuil)
+                {
+                    // Check if we can go up on both cells
+                    if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY][posX+1]->getType()=='W'))
+                        return true;
+                }
+                return false;
+            }
+            // Finally check if we can move to the next cell
             if (posY-1 >= 0)
                 return (m_staticObjects[posY-1][posX]->getType()=='W');
             else
                 return true;
         case 'Q':
+            // First check if we can move inside the cell
+            if ((float)posX+m_pacman.getSpeed() < m_pacman.getPosX())
+            {
+                // Then make sure we're not between 2 cells
+                if ((m_pacman.getPosY() - (float)posY) > seuil)
+                {
+                    // Check if we can go left on both cells
+                    if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY+1][posX]->getType()=='W'))
+                        return true;
+                }
+                return false;
+            }
+                
             if (posX-1 >= 0)
                 return (m_staticObjects[posY][posX-1]->getType()=='W');
             else
                 return true;
         case 'D':
+            // First check if we can move inside the cell
+            if ((float)posX+m_pacman.getSpeed() < m_pacman.getPosX())
+            {
+                // Then make sure we're not between 2 cells
+                if ((m_pacman.getPosY() - (float)posY) > seuil)
+                {
+                    // Check if we can go left on both cells
+                    if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY+1][posX]->getType()=='W'))
+                        return true;
+                }
+                return false;
+            }
             if (posX+1 <= m_nbX-1)
-                return (m_staticObjects[posY][posX+1]->getType()=='W');
+            {
+                // Then make sure we're not between 2 cells
+                if ((m_pacman.getPosY() - (float)posY) > seuil)
+                {
+                    // Check if we can go right on both cells
+                    if ((m_staticObjects[posY][posX+1]->getType()=='W') || (m_staticObjects[posY+1][posX+1]->getType()=='W'))
+                        return true;
+                }
+                else
+                    return (m_staticObjects[posY][posX+1]->getType()=='W');
+            }
+                
             else
                 return true;
         case 'S':
+            
             if (posY+1 <= m_nbY-1)
-                return (m_staticObjects[posY+1][posX]->getType()=='W');
+            {
+                // Make sure we're not between 2 cells
+                if ((m_pacman.getPosX() - (float)posX) > seuil)
+                {
+                    // Check if we can go down on both cells
+                    if ((m_staticObjects[posY+1][posX]->getType()=='W') || (m_staticObjects[posY+1][posX+1]->getType()=='W'))
+                        return true;
+                }
+                else
+                    return (m_staticObjects[posY+1][posX]->getType()=='W');
+            }
             else
                 return true;
         default:
