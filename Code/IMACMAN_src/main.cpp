@@ -117,25 +117,28 @@ int main(int argc, char** argv) {
         // WALL TEST
         renderManager.bindCubeVAO();
         
-        // Wall 1
-        transformationMatrix = renderManager.transformMatrix(&wall1);
-        renderManager.applyTransformations(NORMAL, transformationMatrix);
-        renderManager.getCubePtr()->drawCube();
+        // // Wall 1
+        // transformationMatrix = renderManager.transformMatrix(&wall1);
+        // renderManager.applyTransformations(NORMAL, transformationMatrix);
+        // renderManager.getCubePtr()->drawCube();
 
-        // Wall 2
-        transformationMatrix = renderManager.transformMatrix(&wall2);
-        renderManager.applyTransformations(NORMAL, transformationMatrix);
-        renderManager.getCubePtr()->drawCube();
+        // // Wall 2
+        // transformationMatrix = renderManager.transformMatrix(&wall2);
+        // renderManager.applyTransformations(NORMAL, transformationMatrix);
+        // renderManager.getCubePtr()->drawCube();
 
-        // Wall 3
-        transformationMatrix = renderManager.transformMatrix(&wall3);
-        renderManager.applyTransformations(NORMAL, transformationMatrix);
-        renderManager.getCubePtr()->drawCube();
+        // // Wall 3
+        // transformationMatrix = renderManager.transformMatrix(&wall3);
+        // renderManager.applyTransformations(NORMAL, transformationMatrix);
+        // renderManager.getCubePtr()->drawCube();
 
-        // Wall 4
-        transformationMatrix = renderManager.transformMatrix(&wall4);
-        renderManager.applyTransformations(NORMAL, transformationMatrix);
-        renderManager.getCubePtr()->drawCube();
+        // // Wall 4
+        // transformationMatrix = renderManager.transformMatrix(&wall4);
+        // renderManager.applyTransformations(NORMAL, transformationMatrix);
+        // renderManager.getCubePtr()->drawCube();
+
+
+        //renderManager.drawWall(map.getStaticObjects());
 
         renderManager.debindVAO();
 

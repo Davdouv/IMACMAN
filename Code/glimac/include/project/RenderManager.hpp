@@ -7,6 +7,10 @@
 
 #include "project/Object.hpp"
 #include "project/Pacman.hpp"
+#include "project/Ghost.hpp"
+#include "project/Wall.hpp"
+#include "project/Edible.hpp"
+
 #include "project/GLSLProgram.hpp"
 
 using namespace glimac;
@@ -75,7 +79,11 @@ public:
     glm::mat4 transformMatrix(Object* object);
     void applyTransformations(FS shader, glm::mat4 matrix);
 
-    // Specific Transformations
-    void drawWall(Object* object);
+    // Specific Transformations & Programs
+    void drawWall(Wall* wall);
     void drawPacman(Pacman* pacman);
+    void drawGhost(Ghost* ghost);
+    void drawPacGomme(Edible* edible);
+    void drawSuperPacGomme(Edible* edible);
+    void drawFruit(Edible* edible);
 };
