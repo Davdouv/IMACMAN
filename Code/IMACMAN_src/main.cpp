@@ -55,7 +55,11 @@ int main(int argc, char** argv) {
 
     //TrackballCamera tbCamera = TrackballCamera(30,0,0.0f,1.57f);    // CAMERA VUE 2D
     TrackballCamera tbCamera = TrackballCamera(30,0,0.0f,1.0f);
-    RenderManager renderManager = RenderManager(&windowManager, &tbCamera, &programList, gameSize);
+    FreeflyCamera ffCamera = FreeflyCamera();
+    Camera* camera = &tbCamera;
+
+
+    RenderManager renderManager = RenderManager(&windowManager, camera, &programList, gameSize);
     Controller controller = Controller(&windowManager);
 
     Wall wall1(0,0,1,1);
@@ -83,7 +87,19 @@ int main(int argc, char** argv) {
 
         // Send the keys to the camera and the map
         tbCamera.cameraController(&controller);
+        ffCamera.setCameraOnCharacter(map.getPacman());     // NEED TO FIX HERE !!
         map.play(&controller);
+
+        // Switch Camera mini-function
+        if (controller.getInterfaceAction() == Controller::C)
+        {
+            if(camera == &ffCamera)
+                camera = &tbCamera;
+            else
+                camera = &ffCamera;
+
+            controller.setInterfaceAction(Controller::NONE);
+        }
 
         /*********************************
          * HERE SHOULD COME THE RENDERING CODE
@@ -92,7 +108,7 @@ int main(int argc, char** argv) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // On update la ViewMatrix à chaque tour de boucle
-        renderManager.updateMVMatrix(&tbCamera);
+        renderManager.updateMVMatrix(camera);
         glm::mat4 viewMatrix = renderManager.getMVMatrix();
 
         // Matrix to do the transformations
