@@ -85,9 +85,15 @@ public:
     void applyTransformations(FS shader, glm::mat4 matrix);
 
     // Specific Transformations & Programs
-    void drawWall(Wall* wall);
     void drawPacman(Pacman* pacman);
     void drawGhost(Ghost* ghost);
+    void drawWalls(std::vector<Wall*>);
+    void drawPacGommes(std::vector<Edible*>);
+    void drawSuperPacGommes(std::vector<Edible*>);
+    void drawFruits(std::vector<Edible*>);
+
+private:
+    void drawWall(Wall* wall);
     void drawPacGomme(Edible* edible);
     void drawSuperPacGomme(Edible* edible);
     void drawFruit(Edible* edible);
