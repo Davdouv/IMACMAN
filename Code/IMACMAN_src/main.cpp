@@ -97,11 +97,17 @@ int main(int argc, char** argv) {
         // Switch Camera mini-function
         if (controller.getInterfaceAction() == Controller::C)
         {
+            //std::cout << ffCamera.getViewMatrix() << std::endl;
             if(camera == &ffCamera)
+            {
                 camera = &tbCamera;
+                controller.setFPS(false);
+            }
             else
+            {
                 camera = &ffCamera;
-
+                controller.setFPS(true);
+            }
             controller.setInterfaceAction(Controller::NONE);
         }
 
@@ -117,8 +123,9 @@ int main(int argc, char** argv) {
         // --- SPHERE --- //
         // Bind Sphere VAO
         renderManager.bindSphereVAO();
-
-        renderManager.drawPacman(map.getPacman());
+        // Draw Pacman only in TPS
+        if(!controller.isFPSactive())
+            renderManager.drawPacman(map.getPacman());
         renderManager.drawPacGommes(map.getPacGommes());
         renderManager.drawSuperPacGommes(map.getSuperPacGommes());
 

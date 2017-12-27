@@ -6,6 +6,7 @@
 #include "glimac/Camera.hpp"
 
 #include "project/Object.hpp"
+#include "project/Character.hpp"
 #include "project/Pacman.hpp"
 #include "project/Ghost.hpp"
 #include "project/Wall.hpp"
@@ -76,6 +77,7 @@ public:
     glm::mat4 getNormalMatrix() const;
     // Update
     void updateMVMatrix(Camera* camera);
+    void updateMVMatrix(Camera* camera, Character* character);
 
     // GLSL Programs functions
     void useProgram(FS shader);

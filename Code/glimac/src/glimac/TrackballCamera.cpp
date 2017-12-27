@@ -33,6 +33,16 @@ glm::mat4 TrackballCamera::getViewMatrix() const
 	return MVMatrix;
 }
 
+glm::mat4 TrackballCamera::getViewMatrix(Character* character) const
+{
+	// MODIFIER CETTE LIGNE POUR FOCUS SUR PACMAN : 1er parametre du glm::vec3
+	glm::mat4 MVMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-character->getPosX(), -m_fHauteur, -m_fDistance));
+	MVMatrix = glm::rotate(MVMatrix, m_fAngleX, glm::vec3(0, 1, 0));
+	MVMatrix = glm::rotate(MVMatrix, m_fAngleY, glm::vec3(1, 0, 0));
+
+	return MVMatrix;
+}
+
 // Tells if we can zoom or not
 bool TrackballCamera::zoomMax()
 {

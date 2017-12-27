@@ -10,29 +10,12 @@ using namespace glimac;
 Map::Map() { }
 
 Map::~Map()
-{
-    /* // BUG -> "invalid pointer"
-    std::cout << "Debut" << std::endl;
-    delete(&m_staticObjects[3]);
-    std::cout << "Fin" << std::endl;
-    */
-
-    /*
-    for (unsigned int i = 0; i < m_staticObjects.size(); ++i)
-    {
-        std::cout << "Milieu" << std::endl;
-        delete(&m_staticObjects[i]);
-        std::cout << "Fin" << std::endl;
-    }
-    */
-
-    // BUG -> la boucle se répète et "invalid pointer"
-    /*
+{    
     for(int i = 0; i < m_staticObjects.size(); ++i) {
         for (int j = 0; j < m_staticObjects[i].size(); ++j) {
-            delete m_staticObjects[i][j];
+            delete (m_staticObjects[i][j]);
         }
-    }*/
+    }
 }
 
 int Map::getNbX() const { return m_nbX; }
@@ -144,9 +127,15 @@ int Map::load() {
             delete(g);
         }
         this->setGhosts(tabGhost);
+        //bool once = false;
         while (!file.eof()) {
             getline(file, tmp);
             std::vector<StaticObject*> row;
+            // if(once)
+            // {
+            //     m_nbY = tmp.size();
+            //     once = false;
+            // }
             for (int j = 0; j < tmp.size(); j++) {
                 StaticObject *o;
                 if (!isStaticElement(tmp[j])) tmp[j] = 'V';
@@ -171,6 +160,8 @@ int Map::load() {
         }
         this->setStaticObjects(vec);
         delete(p);
+
+        //m_nbX = i-1;
     }   
     file.close();
     return 1;
@@ -287,24 +278,78 @@ void Map::play(Controller* controller)
 // NOUVELLE VERSION
 void Map::play(Controller* controller) {
     Controller::Key action = controller->getPlayerAction();
+    bool newAction = false;
 
 	switch (action)
 	{
 		case Controller::Z :
-            if (!pacmanWallCollision('Z')) m_pacman.moveUp();
+            if (!pacmanWallCollision('Z'))
+            {
+                m_pacman.moveUp();
+                newAction = true;
+            }
 			break;
 		case Controller::Q :
-           if (!pacmanWallCollision('Q')) m_pacman.moveLeft();
+            if (!pacmanWallCollision('Q')) 
+            {
+                m_pacman.moveLeft();
+                newAction = true;
+            }
 			break;
 		case Controller::S :
-            if (!pacmanWallCollision('S')) m_pacman.moveDown();
+            if (!pacmanWallCollision('S'))
+            {
+                m_pacman.moveDown();
+                newAction = true;
+            }
 			break;
 		case Controller::D :
-            if (!pacmanWallCollision('D')) m_pacman.moveRight();
+            if (!pacmanWallCollision('D')) 
+            {
+                m_pacman.moveRight();
+                newAction = true;
+            }
 			break;
 		default :
 			break;
 	}
+
+    if(newAction)
+    {
+        controller->setPlayerPreviousAction(action);
+    }
+    else
+    {
+        switch (controller->getPlayerPreviousAction())
+	    {
+            case Controller::Z :
+                if (!pacmanWallCollision('Z'))
+                {
+                    m_pacman.moveUp();
+                }
+                break;
+            case Controller::Q :
+                if (!pacmanWallCollision('Q'))
+                {
+                    m_pacman.moveLeft();
+                }
+                break;
+            case Controller::S :
+                if (!pacmanWallCollision('S'))
+                {
+                    m_pacman.moveDown();
+                }
+                break;
+            case Controller::D :
+                if (!pacmanWallCollision('D')) 
+                {
+                    m_pacman.moveRight();
+                }                    
+                break;
+            default :
+                break;
+	    }
+    }
 }
 
 void Map::display() {
@@ -353,7 +398,7 @@ bool Map::ghostCollision() {
 bool Map::pacmanWallCollision(char direction) {
     int posX = (int)m_pacman.getPosX();
     int posY = (int)m_pacman.getPosY();
-    float seuil = 0.1;
+    float seuil = 0.01;
     switch(direction) {
         case 'Z': 
             // First check if we can move inside the cell
@@ -380,6 +425,7 @@ bool Map::pacmanWallCollision(char direction) {
                 // Then make sure we're not between 2 cells
                 if ((m_pacman.getPosY() - (float)posY) > seuil)
                 {
+                    std::cout <<(m_pacman.getPosY() - (float)posY)<<std::endl;
                     // Check if we can go left on both cells
                     if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY+1][posX]->getType()=='W'))
                         return true;
@@ -404,7 +450,7 @@ bool Map::pacmanWallCollision(char direction) {
                 }
                 return false;
             }
-            if (posX+1 <= m_nbX-1)
+            if (posX+1 <= m_nbY-1)
             {
                 // Then make sure we're not between 2 cells
                 if ((m_pacman.getPosY() - (float)posY) > seuil)
@@ -421,7 +467,7 @@ bool Map::pacmanWallCollision(char direction) {
                 return true;
         case 'S':
             
-            if (posY+1 <= m_nbY-1)
+            if (posY+1 <= m_nbX-1)
             {
                 // Make sure we're not between 2 cells
                 if ((m_pacman.getPosX() - (float)posX) > seuil)
@@ -434,7 +480,10 @@ bool Map::pacmanWallCollision(char direction) {
                     return (m_staticObjects[posY+1][posX]->getType()=='W');
             }
             else
+            {
                 return true;
+            }
+                
         default:
             break;
     }

@@ -121,6 +121,11 @@ void RenderManager::updateMVMatrix(Camera* camera)
 {
     m_MVMatrix = camera->getViewMatrix();
 }
+void RenderManager::updateMVMatrix(Camera* camera, Character* character)
+{
+    m_MVMatrix = camera->getViewMatrix(character);
+}
+
 
 // ---------------
 // GLSL PROGRAM FUNCTIONS
