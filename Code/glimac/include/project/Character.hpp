@@ -27,4 +27,5 @@ public:
 
 
     void display() override;
+    virtual void reset();
 };

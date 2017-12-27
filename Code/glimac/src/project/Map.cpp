@@ -19,6 +19,7 @@ Map::~Map()
     }
 }
 
+int Map::getState() const { return m_state;}
 int Map::getNbX() const { return m_nbX; }
 int Map::getNbY() const { return m_nbY; }
 std::string Map::getFileMap() const { return m_fileMap; }
@@ -26,6 +27,7 @@ Pacman* Map::getPacman() { return &m_pacman; }
 std::vector<Ghost> Map::getGhosts() const { return m_ghosts; }
 std::vector<std::vector<StaticObject*>> Map::getStaticObjects() const { return m_staticObjects; }
 
+void Map::setState(int state) { m_state = state;}
 void Map::setFileMap(std::string fileName) { m_fileMap = fileName; }
 void Map::setPacman(Pacman pacman) { m_pacman = pacman; }
 void Map::setGhosts(std::vector<Ghost> tabGhosts) { m_ghosts = tabGhosts; }
@@ -94,6 +96,7 @@ std::vector<Edible*> Map::getFruits() {
 
 void Map::initialization() {
 
+    this->setState(Map::State::NORMAL);
     this->m_player.initialization();
     this->load();
 }
@@ -380,8 +383,17 @@ void Map::pacmanGhostCollision() {
 
     for (int i = 0; i < m_ghosts.size(); i++) {
         if (m_pacman.collision(&m_ghosts[i])) {
-            m_player.loseLife();
-            m_ghosts[i].reset();
+            switch(this->getState()) {
+                
+                case Map::State::NORMAL : m_player.loseLife();
+                    m_pacman.reset();
+                    for (int i = 0; i < m_ghosts.size(); i++) {
+                        m_ghosts[i].reset();
+                    }
+                    return;
+                case Map::State::SUPER : m_ghosts[i].reset();
+                    m_player.gainPoints(1000);
+            }
         }
     }
 }
@@ -593,6 +605,7 @@ void Map::pacmanEdibleCollision() {
         Edible *e;
         e =  (Edible*) m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()];
         m_player.gainPoints(e->gain());
+        if (e->getTypeEdible() == Edible::Type::SUPER_PAC_GOMME) this->setState(Map::State::SUPER); 
         m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()]->setType('V');
     }   
 }

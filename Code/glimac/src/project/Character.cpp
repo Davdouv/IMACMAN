@@ -35,3 +35,7 @@ void Character::moveDown() {
 void Character::display() {
     std::cout << "Character" << std::endl;
 }
+
+void Character::reset() {
+    
+}

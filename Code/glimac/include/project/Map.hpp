@@ -18,7 +18,7 @@ private:
     int m_nbY;
     //static const int m_nbX = 10;
     //static const int m_nbY = 10;
-
+    int m_state;
     Player m_player;
     Pacman m_pacman;
     std::vector<Ghost> m_ghosts;
@@ -27,6 +27,7 @@ private:
 
 public:
 
+    enum State { NORMAL, SUPER };
     // constructor 
     Map(std::string);
     Map();
@@ -35,6 +36,7 @@ public:
     ~Map();
 
     // getters
+    int getState() const;
     int getNbX() const;
     int getNbY() const;
     std::string getFileMap() const;
@@ -49,6 +51,7 @@ public:
     std::vector<Wall*> getWalls();
 
     // setters
+    void setState(int);
     void setFileMap(std::string);
     void setPacman(Pacman);
     void setGhosts(std::vector<Ghost>);

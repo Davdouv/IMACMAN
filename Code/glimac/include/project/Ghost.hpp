@@ -25,7 +25,7 @@ public:
 
     // setter
     void setType(int);
-    void reset();
+    void reset() override;
 
     void display() override;
     void move() override;
