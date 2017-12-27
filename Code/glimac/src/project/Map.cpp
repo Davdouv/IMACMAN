@@ -327,6 +327,7 @@ void Map::pacmanGhostCollision() {
     for (int i = 0; i < m_ghosts.size(); i++) {
         if (m_pacman.collision(&m_ghosts[i])) {
             m_player.loseLife();
+            m_ghosts[i].reset();
         }
     }
 }
