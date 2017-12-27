@@ -455,3 +455,48 @@ void Map::pacmanEdibleCollision() {
         m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()]->setType('V');
     }   
 }
+
+void Map::shadowAI() {
+
+}
+
+void Map::speedyAI() {
+
+}
+
+// When Pacman gets really close to Bashful, he goes to Pacman's opposite direction
+// else it keeps moving the way it is
+
+int Map::bashfulAI() {
+
+    if ((abs(m_pacman.getPosX() - m_ghosts[Ghost::Type::BASHFUL].getPosX()) <= 2)  && (abs(m_pacman.getPosY() - m_ghosts[Ghost::Type::BASHFUL].getPosY()) <= 10)) {
+
+        switch (m_pacman.getOrientation()) {
+
+            case Object::Orientation::LEFT : return Object::Orientation::RIGHT;
+            case Object::Orientation::RIGHT : return Object::Orientation::LEFT;
+            case Object::Orientation::UP : return Object::Orientation::DOWN;
+            case Object::Orientation::DOWN : return Object::Orientation::UP;
+            default: break;
+        }
+    }
+
+    else return m_ghosts[Ghost::Type::BASHFUL].getOrientation();
+}
+
+void Map::pokeyAI() {
+
+}
+
+void Map::shortestWay(int x, int y) {
+
+
+}
+
+void Map::ghostMove() {
+
+    for (int i = 0; i < m_ghosts.size(); i++) {
+
+
+    }
+}

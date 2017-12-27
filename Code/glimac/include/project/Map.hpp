@@ -77,4 +77,13 @@ public:
     bool ghostWallCollision();
     void pacmanEdibleCollision();
 
+    // Ghost moves AI
+    void shadowAI();
+    void speedyAI();
+    int bashfulAI();
+    void pokeyAI();
+    void ghostMove();
+    
+    // Shortest way
+    void shortestWay(int x, int y);
 };
