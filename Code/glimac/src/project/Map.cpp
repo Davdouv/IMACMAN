@@ -491,8 +491,99 @@ bool Map::pacmanWallCollision(char direction) {
 }
 
 
-bool Map::ghostWallCollision() {
-    return true;
+bool Map::ghostWallCollision(int ghostType, char direction) {
+    int posX = (int)m_ghosts[ghostType].getPosX();
+    int posY = (int)m_ghosts[ghostType].getPosY();
+    float seuil = 0.01;
+    switch(direction) {
+        case 'Z': 
+            // First check if we can move inside the cell
+            if ((float)posY+m_ghosts[ghostType].getSpeed() < m_ghosts[ghostType].getPosY())
+            {
+                // Then make sure we're not between 2 cells
+                if ((m_ghosts[ghostType].getPosX() - (float)posX) > seuil)
+                {
+                    // Check if we can go up on both cells
+                    if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY][posX+1]->getType()=='W'))
+                        return true;
+                }
+                return false;
+            }
+            // Finally check if we can move to the next cell
+            if (posY-1 >= 0)
+                return (m_staticObjects[posY-1][posX]->getType()=='W');
+            else
+                return true;
+        case 'Q':
+            // First check if we can move inside the cell
+            if ((float)posX+m_ghosts[ghostType].getSpeed() < m_ghosts[ghostType].getPosX())
+            {
+                // Then make sure we're not between 2 cells
+                if ((m_ghosts[ghostType].getPosY() - (float)posY) > seuil)
+                {
+                    std::cout <<(m_ghosts[ghostType].getPosY() - (float)posY)<<std::endl;
+                    // Check if we can go left on both cells
+                    if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY+1][posX]->getType()=='W'))
+                        return true;
+                }
+                return false;
+            }
+                
+            if (posX-1 >= 0)
+                return (m_staticObjects[posY][posX-1]->getType()=='W');
+            else
+                return true;
+        case 'D':
+            // First check if we can move inside the cell
+            if ((float)posX+m_ghosts[ghostType].getSpeed() < m_ghosts[ghostType].getPosX())
+            {
+                // Then make sure we're not between 2 cells
+                if ((m_ghosts[ghostType].getPosY() - (float)posY) > seuil)
+                {
+                    // Check if we can go left on both cells
+                    if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY+1][posX]->getType()=='W'))
+                        return true;
+                }
+                return false;
+            }
+            if (posX+1 <= m_nbY-1)
+            {
+                // Then make sure we're not between 2 cells
+                if ((m_ghosts[ghostType].getPosY() - (float)posY) > seuil)
+                {
+                    // Check if we can go right on both cells
+                    if ((m_staticObjects[posY][posX+1]->getType()=='W') || (m_staticObjects[posY+1][posX+1]->getType()=='W'))
+                        return true;
+                }
+                else
+                    return (m_staticObjects[posY][posX+1]->getType()=='W');
+            }
+                
+            else
+                return true;
+        case 'S':
+            
+            if (posY+1 <= m_nbX-1)
+            {
+                // Make sure we're not between 2 cells
+                if ((m_ghosts[ghostType].getPosX() - (float)posX) > seuil)
+                {
+                    // Check if we can go down on both cells
+                    if ((m_staticObjects[posY+1][posX]->getType()=='W') || (m_staticObjects[posY+1][posX+1]->getType()=='W'))
+                        return true;
+                }
+                else
+                    return (m_staticObjects[posY+1][posX]->getType()=='W');
+            }
+            else
+            {
+                return true;
+            }
+                
+        default:
+            break;
+    }
+    return false;
 }
 
 void Map::pacmanEdibleCollision() {
@@ -537,10 +628,10 @@ void Map::pokeyAI() {
 
 }
 
-void Map::shortestWay(int ghostType, int x, int y) {
+// Shortest way for a ghost to get to the position (x, y)
+void Map::shortestWay(int ghostType, float x, float y) {
 
-    float gx = m_ghosts[ghostType].getPosX();
-    float gy = m_ghosts[ghostType].getPosY();
+
 }
 
 void Map::ghostMove() {

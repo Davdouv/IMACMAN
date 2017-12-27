@@ -73,7 +73,7 @@ public:
     void pacmanGhostCollision();
     bool ghostCollision();
     bool pacmanWallCollision(char);
-    bool ghostWallCollision();
+    bool ghostWallCollision(int, char);
     void pacmanEdibleCollision();
 
     // Ghost moves AI
@@ -84,5 +84,5 @@ public:
     void ghostMove();
     
     // Shortest way
-    void shortestWay(int, int, int);
+    void shortestWay(int, float, float);
 };
