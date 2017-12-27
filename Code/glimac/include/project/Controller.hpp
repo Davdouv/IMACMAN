@@ -21,6 +21,9 @@ public:
     Key getCameraAction() const;
     Key getInterfaceAction() const;
 
+    // Setters
+    void setInterfaceAction(Key);
+
 private:
     // 3 kind of interaction : Player (PacMan movements), Camera (Camera movements), Interface (Pause button)
     Key playerAction;

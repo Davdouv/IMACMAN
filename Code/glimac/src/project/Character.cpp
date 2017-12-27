@@ -1,12 +1,12 @@
 #include "../include/project/Character.hpp"
 
 
-Character::Character(char type, int posX, int posY, float width, float height, int speed, Orientation orientation) : Object(type, posX, posY, width, height, orientation), m_speed(speed) { }
+Character::Character(char type, float posX, float posY, float width, float height, float speed, Orientation orientation) : Object(type, posX, posY, width, height, orientation), m_speed(speed) { }
 Character::Character() { }
 
-int Character::getSpeed() const { return m_speed; }
+float Character::getSpeed() const { return m_speed; }
 
-void Character::setSpeed(int speed) { m_speed = speed;}
+void Character::setSpeed(float speed) { m_speed = speed;}
 
 void Character::move() {
 

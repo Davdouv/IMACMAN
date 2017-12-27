@@ -10,6 +10,9 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // Window Manager
     m_windowManager = windowManager;
 
+    // Camera
+    // m_ffCamera = camera;
+
     // Cube
     m_cube = Cube();
     m_cubeVBO = m_cube.getVBO();
@@ -163,6 +166,17 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
     switch (shader)
     {
         case NORMAL :
+            glUniformMatrix4fv(m_programList->normalProgram->uMVPMatrix, 1, GL_FALSE, 
+            glm::value_ptr(m_ProjMatrix * matrix));
+
+            glUniformMatrix4fv(m_programList->normalProgram->uMVMatrix, 1, GL_FALSE, 
+            glm::value_ptr(matrix));
+
+            glUniformMatrix4fv(m_programList->normalProgram->uNormalMatrix, 1, GL_FALSE, 
+            glm::value_ptr(glm::transpose(glm::inverse(matrix))));
+            break;
+
+        case TEXTURE :
             glUniformMatrix4fv(m_programList->normalProgram->uMVPMatrix, 1, GL_FALSE, 
             glm::value_ptr(m_ProjMatrix * matrix));
 

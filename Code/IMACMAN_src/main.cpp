@@ -51,11 +51,15 @@ int main(int argc, char** argv) {
     //m.play();
 
     // Game Infos
-    glm::vec2 gameSize = glm::vec2(30,30);
+    glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
 
-    //TrackballCamera tbCamera = TrackballCamera(30,0,0.0f,1.57f);    // CAMERA VUE 2D
-    TrackballCamera tbCamera = TrackballCamera(30,0,0.0f,1.0f);
-    RenderManager renderManager = RenderManager(&windowManager, &tbCamera, &programList, gameSize);
+    //TrackballCamera tbCamera = TrackballCamera(gameSize.y,0,0.0f,1.57f);    // CAMERA VUE 2D
+    TrackballCamera tbCamera = TrackballCamera(gameSize.y,0,0.0f,1.0f);
+    FreeflyCamera ffCamera = FreeflyCamera();
+    Camera* camera = &tbCamera;
+
+
+    RenderManager renderManager = RenderManager(&windowManager, camera, &programList, gameSize);
     Controller controller = Controller(&windowManager);
 
     Wall wall1(0,0,1,1);
@@ -65,6 +69,9 @@ int main(int argc, char** argv) {
 
     // Enable program
     renderManager.useProgram(NORMAL);
+
+    //std::vector<Wall*> walls = map.getWalls();
+    //std::cout << map.getWalls() << std::endl;
 
     // Application loop:
     bool done = false;
@@ -83,7 +90,19 @@ int main(int argc, char** argv) {
 
         // Send the keys to the camera and the map
         tbCamera.cameraController(&controller);
+        ffCamera.setCameraOnCharacter(map.getPacman());     // NEED TO FIX HERE !!
         map.play(&controller);
+
+        // Switch Camera mini-function
+        if (controller.getInterfaceAction() == Controller::C)
+        {
+            if(camera == &ffCamera)
+                camera = &tbCamera;
+            else
+                camera = &ffCamera;
+
+            controller.setInterfaceAction(Controller::NONE);
+        }
 
         /*********************************
          * HERE SHOULD COME THE RENDERING CODE
@@ -92,7 +111,7 @@ int main(int argc, char** argv) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // On update la ViewMatrix à chaque tour de boucle
-        renderManager.updateMVMatrix(&tbCamera);
+        renderManager.updateMVMatrix(camera);
         glm::mat4 viewMatrix = renderManager.getMVMatrix();
 
         // Matrix to do the transformations
@@ -111,34 +130,21 @@ int main(int argc, char** argv) {
 
         renderManager.drawPacman(map.getPacman());
 
+        for (unsigned int i = 0; i < map.getPacGommes().size(); ++i)
+        {
+            renderManager.drawPacGomme(map.getPacGommes()[i]);
+        }
+
         // De-bind Sphere VAO
         renderManager.debindVAO();
 
         // WALL TEST
         renderManager.bindCubeVAO();
-        
-        // // Wall 1
-        // transformationMatrix = renderManager.transformMatrix(&wall1);
-        // renderManager.applyTransformations(NORMAL, transformationMatrix);
-        // renderManager.getCubePtr()->drawCube();
 
-        // // Wall 2
-        // transformationMatrix = renderManager.transformMatrix(&wall2);
-        // renderManager.applyTransformations(NORMAL, transformationMatrix);
-        // renderManager.getCubePtr()->drawCube();
-
-        // // Wall 3
-        // transformationMatrix = renderManager.transformMatrix(&wall3);
-        // renderManager.applyTransformations(NORMAL, transformationMatrix);
-        // renderManager.getCubePtr()->drawCube();
-
-        // // Wall 4
-        // transformationMatrix = renderManager.transformMatrix(&wall4);
-        // renderManager.applyTransformations(NORMAL, transformationMatrix);
-        // renderManager.getCubePtr()->drawCube();
-
-
-        //renderManager.drawWall(map.getStaticObjects());
+        for (unsigned int i = 0; i < map.getWalls().size(); ++i)
+        {
+            renderManager.drawWall(map.getWalls()[i]);
+        }
 
         renderManager.debindVAO();
 

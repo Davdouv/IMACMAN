@@ -137,4 +137,10 @@ Controller::Key Controller::getInterfaceAction() const
     return interfaceAction;
 }
 
+// Setters
+void Controller::setInterfaceAction(Key key)
+{
+	interfaceAction = key;
+}
+
 }

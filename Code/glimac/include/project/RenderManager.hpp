@@ -21,6 +21,11 @@ private:
     // Window Manager
     SDLWindowManager* m_windowManager;
 
+    // Cameras
+    // TrackballCamera* m_tbCamera;    // TPS Cam
+    // FreeflyCamera* m_ffCamera;      // FPS Cam
+    // bool m_fps;                     // false = TPS | true = FPS
+
     // Cube
     Cube m_cube;
     GLuint m_cubeVBO;
@@ -86,4 +91,7 @@ public:
     void drawPacGomme(Edible* edible);
     void drawSuperPacGomme(Edible* edible);
     void drawFruit(Edible* edible);
+
+    // Switch camera
+    // void switchCamera();
 };
