@@ -73,29 +73,24 @@ int Map::load() {
     return 1;
 }
 
-
+/*
 void Map::movePacman(Controller* controller)
 {
 	Controller::Key action = controller->updatePlayerAction();
 
 	switch (action)
 	{
-		case Controller::UP : 
-            if (!pacmanWallCollision('Z')) m_pacman.moveUp();
-    		break;
-		case Controller::DOWN : 
-            if (!pacmanWallCollision('S')) m_pacman.moveDown();
+		case Controller::UP : m_pacman.moveUp();
 			break;
-		case Controller::LEFT : 
-            if (!pacmanWallCollision('Q')) m_pacman.moveLeft();
+		case Controller::DOWN : m_pacman.moveDown();
 			break;
-		case Controller::RIGHT : 
-            if (!pacmanWallCollision('D')) m_pacman.moveRight();
-            break;
+		case Controller::LEFT : m_pacman.moveLeft();
+			break;
+		case Controller::RIGHT : m_pacman.moveRight();
+			break;
 		default :
 			break;
 	}
-    pacmanGhostCollision();
 }
 /*
 int Map::save() {
