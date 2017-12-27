@@ -14,10 +14,10 @@ using namespace glimac;
 class Map {
 
 private:
-    //  static const int m_nbX = 36;
-    //  static const int m_nbY = 30;
-    static const int m_nbX = 10;
-    static const int m_nbY = 10;
+    int m_nbX;
+    int m_nbY;
+    //static const int m_nbX = 10;
+    //static const int m_nbY = 10;
 
     Player m_player;
     Pacman m_pacman;

@@ -128,15 +128,15 @@ int Map::load() {
             delete(g);
         }
         this->setGhosts(tabGhost);
-        //bool once = false;
+        bool once = true;
         while (!file.eof()) {
             getline(file, tmp);
             std::vector<StaticObject*> row;
-            // if(once)
-            // {
-            //     m_nbY = tmp.size();
-            //     once = false;
-            // }
+            if(once)
+            {
+                 m_nbY = tmp.size();
+                 once = false;
+            }
             for (int j = 0; j < tmp.size(); j++) {
                 StaticObject *o;
                 if (!isStaticElement(tmp[j])) tmp[j] = 'V';
@@ -162,7 +162,7 @@ int Map::load() {
         this->setStaticObjects(vec);
         delete(p);
 
-        //m_nbX = i-1;
+        m_nbX = i-1;
     }   
     file.close();
     return 1;
