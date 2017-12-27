@@ -23,4 +23,7 @@ public:
     void setTypeEdible(int);
 
     void display() override;
+
+    // the bonus given by the edible depending on its type
+    int gain();
 };

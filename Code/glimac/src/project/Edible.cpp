@@ -12,3 +12,17 @@ void Edible::setTypeEdible(int type) { m_type = type;}
 void Edible::display() {
     std::cout << "Edible " << m_type << std::endl;
 }
+
+int Edible::gain() {
+
+    switch(m_type) {
+
+        case PAC_GOMME : return 100;
+            break;
+        case SUPER_PAC_GOMME : return 1000;
+            break;
+        case FRUIT : return 500;
+            break;
+        default:return 0;
+    }
+}

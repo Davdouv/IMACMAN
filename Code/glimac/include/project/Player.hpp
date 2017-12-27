@@ -1,33 +1,32 @@
 #pragma once
-#include "Map.hpp"
-
-class Level {
+class Player {
 
 private:
-    int m_id;
-    Map m_map;
     int m_life;
     int m_points;
+    static const int m_maxLives = 9;
 
 public:
 
+    Player();
     // getters 
-    int getId() const;
-    Map* getMap() const;
     int getLife() const;
     int getPoints() const;
+    int getMaxLives() const;
 
     // setters 
-    void setId(int);
-    void setMap(Map);
     void setLife(int);
     void setPoints(int);
 
     /* Level initialization
      * 0 points
      * 3 lives
-     * Map("level_"+id+".txt")
     */
     void initialization();
+
+    void gainLife();
+    void loseLife();
+    void gainPoints(unsigned int);
+    void losePoints(int);
 
 };

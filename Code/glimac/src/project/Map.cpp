@@ -100,6 +100,12 @@ std::vector<Edible*> Map::getFruits() {
     return fruits;
 }
 
+void Map::initialization() {
+
+    this->m_player.initialization();
+    this->load();
+}
+
 int Map::load() {
 
     std::fstream file;
@@ -225,6 +231,7 @@ void Map::play() {
         }
         if (line == "C") play = false;
         pacmanGhostCollision();
+        pacmanEdibleCollision();
     }
 }
 
@@ -319,8 +326,7 @@ void Map::pacmanGhostCollision() {
 
     for (int i = 0; i < m_ghosts.size(); i++) {
         if (m_pacman.collision(&m_ghosts[i])) {
-            std::cout << "WOow that ghost took 1 life from ya " << std::endl;
-            m_ghosts[i].reset();
+            m_player.loseLife();
         }
     }
 }
@@ -372,3 +378,12 @@ bool Map::ghostWallCollision() {
     return true;
 }
 
+void Map::pacmanEdibleCollision() {
+
+    if (m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()]->getType()=='E') {
+        Edible *e;
+        e =  (Edible*) m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()];
+        m_player.gainPoints(e->gain());
+        m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()]->setType('V');
+    }   
+}

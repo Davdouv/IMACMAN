@@ -5,7 +5,7 @@ int main() {
 
     Map m;
     m.setFileMap("mapTest.txt");
-    m.load();std::cout << "done" << std::endl;
+    m.initialization();
     m.display();
     m.play();
     m.getPacGommes()[1]->display();

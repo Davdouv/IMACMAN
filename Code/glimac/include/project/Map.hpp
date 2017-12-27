@@ -8,6 +8,7 @@
 #include "Controller.hpp"
 #include "Edible.hpp"
 #include "Wall.hpp"
+#include "Player.hpp"
 using namespace glimac;
 
 class Map {
@@ -18,6 +19,7 @@ private:
     static const int m_nbX = 10;
     static const int m_nbY = 10;
 
+    Player m_player;
     Pacman m_pacman;
     std::vector<Ghost> m_ghosts;
     std::vector<std::vector<StaticObject*>> m_staticObjects;
@@ -53,6 +55,9 @@ public:
     void setGhosts(std::vector<Ghost>);
     void setStaticObjects(std::vector<std::vector<StaticObject*>>);
 
+    // map initialization
+    void initialization();
+
     // loads a file and converts it to a Cell matrix
     int load();
     int save();
@@ -70,5 +75,6 @@ public:
     bool ghostCollision();
     bool pacmanWallCollision(char);
     bool ghostWallCollision();
+    void pacmanEdibleCollision();
 
 };
