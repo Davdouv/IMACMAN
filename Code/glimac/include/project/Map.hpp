@@ -79,10 +79,10 @@ public:
     // Ghost moves AI
     void shadowAI();
     void speedyAI();
-    int bashfulAI();
+    void bashfulAI();
     void pokeyAI();
     void ghostMove();
     
     // Shortest way
-    void shortestWay(int, float, float);
+    int shortestWay(int, float, float);
 };

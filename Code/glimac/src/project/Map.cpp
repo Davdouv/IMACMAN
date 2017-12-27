@@ -4,6 +4,7 @@
 #include "../include/project/Edible.hpp"
 #include <string>
 #include <iostream>
+#include <random>
 
 using namespace glimac;
 
@@ -596,71 +597,172 @@ void Map::pacmanEdibleCollision() {
     }   
 }
 
+// Shadow will follow Pacman all along, so he will find the shortest way to go to Pacman
 void Map::shadowAI() {
 
+    shortestWay(Ghost::Type::SHADOW, m_pacman.getPosX(), m_pacman.getPosY());
 }
 
+// Speedy aims the direction Pacman is going so he find the shortest way to this direction
 void Map::speedyAI() {
 
+    switch(m_pacman.getOrientation()) {
+
+        case Object::Orientation::LEFT:
+            shortestWay(Ghost::Type::SPEEDY, 0, m_pacman.getPosY());
+            break;
+
+        case Object::Orientation::RIGHT:
+            shortestWay(Ghost::Type::SPEEDY, m_nbX, m_pacman.getPosY());
+            break;
+
+        case Object::Orientation::UP:
+            shortestWay(Ghost::Type::SPEEDY, m_pacman.getPosX(), 0);
+            break;
+
+        case Object::Orientation::DOWN:
+            shortestWay(Ghost::Type::SPEEDY, m_pacman.getPosX(), m_nbY);
+            break;
+        default:break;
+    }
+    
 }
 
 // When Pacman gets really close to Bashful, he goes to Pacman's opposite direction
 // else it keeps moving the way it is
+// moves like Speedy until he gets close to pacman
 
-int Map::bashfulAI() {
+void Map::bashfulAI() {
 
     if ((abs(m_pacman.getPosX() - m_ghosts[Ghost::Type::BASHFUL].getPosX()) <= 2)  && (abs(m_pacman.getPosY() - m_ghosts[Ghost::Type::BASHFUL].getPosY()) <= 10)) {
 
-        switch (m_pacman.getOrientation()) {
+        switch(m_pacman.getOrientation()) {
 
-            case Object::Orientation::LEFT : return Object::Orientation::RIGHT;
-            case Object::Orientation::RIGHT : return Object::Orientation::LEFT;
-            case Object::Orientation::UP : return Object::Orientation::DOWN;
-            case Object::Orientation::DOWN : return Object::Orientation::UP;
-            default: break;
+            case Object::Orientation::LEFT:
+                shortestWay(Ghost::Type::BASHFUL, m_nbX, m_pacman.getPosY());
+                break;
+
+            case Object::Orientation::RIGHT:
+                shortestWay(Ghost::Type::BASHFUL, 0, m_pacman.getPosY());
+                break;
+
+            case Object::Orientation::UP:
+                shortestWay(Ghost::Type::BASHFUL, m_pacman.getPosX(), m_nbY);
+                break;
+
+            case Object::Orientation::DOWN:
+                shortestWay(Ghost::Type::BASHFUL, m_pacman.getPosX(), 0);
+                break;
+            default:break;
         }
     }
 
-    else return m_ghosts[Ghost::Type::BASHFUL].getOrientation();
+    else {
+    
+        switch(m_pacman.getOrientation()) {
+
+            case Object::Orientation::LEFT:
+                shortestWay(Ghost::Type::BASHFUL, 0, m_pacman.getPosY());
+                break;
+
+            case Object::Orientation::RIGHT:
+                shortestWay(Ghost::Type::BASHFUL, m_nbX, m_pacman.getPosY());
+                break;
+
+            case Object::Orientation::UP:
+                shortestWay(Ghost::Type::BASHFUL, m_pacman.getPosX(), 0);
+                break;
+
+            case Object::Orientation::DOWN:
+                shortestWay(Ghost::Type::BASHFUL, m_pacman.getPosX(), m_nbY);
+                break;
+            default:break;
+        }
+    }
 }
 
+// goes around randomly
 void Map::pokeyAI() {
-
+    
+    int rx = (rand()/RAND_MAX) * m_nbX;
+    int ry = (rand()/RAND_MAX) * m_nbY;
+    shortestWay(Ghost::Type::POKEY, rx, rx);
 }
 
 // Shortest way for a ghost to get to the position (x, y)
-void Map::shortestWay(int ghostType, float x, float y) {
-/*
+// returns 1 if the goal is achieved so we set another one
+// returns 0 if the goal isn't achieved yet
+int Map::shortestWay(int ghostType, float x, float y) {
+
     float gx = m_ghosts[ghostType].getPosX();
     float gy = m_ghosts[ghostType].getPosY();
     if ((gx != x) && (gy != y)) {
 
-        if (gx - x < 0) {
-            if (m_ghosts[ghostType].getOrientation() == Object::Orientation::LEFT) {
-                if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
-                else {
-                    
-                }
-            }
+        // if goal is at the right top
+        if ((gx - x < 0) && (gy - y < 0)) {
+            if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
+            else if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
         }
-        else if (gx - x > 0) {
-
+        // if goal is at the right bottom
+        else if ((gx - x < 0) && (gy - y > 0)) {
+            if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
+            else if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
+            else if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
         }
-        
-        if (gy - y < 0) {
-
+        // if goal is at the left top
+        else if ((gx - x > 0) && (gy - y < 0)) {
+            if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
+            else if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
         }
-        else {
-
+        // if goal is at the left bottom
+        else if ((gx - x > 0) && (gy - y > 0)) {
+            if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
+            else if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
+            else if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
         }
+        // if goal is at the right
+        else if ((gx - x < 0) && (gy - y == 0)) {
+            if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
+            else if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
+        }
+        // if goal is at the left
+        else if ((gx - x > 0) && (gy - y == 0)) {
+            if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
+            else if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
+        }
+        // if goal is at the top
+        else if ((gx - x == 0) && (gy - y < 0)) {
+            if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
+            else if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
+        }
+        // if goal is at the bottom
+        else if ((gx - x == 0) && (gy - y > 0)) {
+            if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
+            else if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
+        }
+        return 0;
     }
-*/
+    return 1;
 }
 
 void Map::ghostMove() {
 
-    for (int i = 0; i < m_ghosts.size(); i++) {
-
-
-    }
+    shadowAI();
+    speedyAI();
+    bashfulAI();
+    pokeyAI();
 }
