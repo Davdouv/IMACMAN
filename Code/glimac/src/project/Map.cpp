@@ -94,12 +94,18 @@ int Map::load() {
         std::string tmp;
         file.seekg(0);
         getline(file,tmp);
-        Pacman *p = new Pacman(charToInt(tmp[1]), charToInt(tmp[2]), 1, 1, 1, Object::Orientation::LEFT);
+        std::string delimiter = ",";
+        std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
+        std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
+        Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 1, 1, 1, Object::Orientation::LEFT);
         this->setPacman(*p);
         std::vector<Ghost> tabGhost;
         for (int i = 0; i < 4; i++) {   
             getline(file,tmp);
-            Ghost *g = new Ghost(charToInt(tmp[1]), charToInt(tmp[2]), 1, 1, 1, i+1, Object::Orientation::LEFT);
+            std::string delimiter = ",";
+            std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
+            std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
+            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 1, 1, 1, i+1, Object::Orientation::LEFT);
             tabGhost.push_back(*g);
         }
         this->setGhosts(tabGhost);
