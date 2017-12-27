@@ -8,7 +8,7 @@ private:
     int m_type;
 
 public: 
-    enum Type {SHADOW, SPEEDY, BASHFUL, POKEY;
+    enum Type {SHADOW, SPEEDY, BASHFUL, POKEY};
     // constructor
     Ghost(int, int, float, float, int, int, Orientation);
     Ghost();
