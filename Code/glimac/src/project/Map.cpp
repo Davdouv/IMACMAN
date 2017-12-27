@@ -338,19 +338,31 @@ bool Map::ghostCollision() {
 bool Map::pacmanWallCollision(char direction) {
     int posX = (int)m_pacman.getPosX();
     int posY = (int)m_pacman.getPosY();
+     std::cout << "X : " << posX << std::endl;
+     std::cout << "Y : " << posY << std::endl;
     switch(direction) {
         case 'Z': 
-            if (posY == 0) return true;
-            return (m_staticObjects[posY-1][posX]->getType()=='W');
+            if (posY-1 >= 0)
+                return (m_staticObjects[posY-1][posX]->getType()=='W');
+            else
+                return true;
         case 'Q':
-            if (posX== 0) return true;
-            return (m_staticObjects[posY][posX-1]->getType()=='W');
+            if (posX-1 >= 0)
+                return (m_staticObjects[posY][posX-1]->getType()=='W');
+            else
+                return true;
         case 'D':
-            if (posX == 9) return true;
-            return (m_staticObjects[posY][posX+1]->getType()=='W');
+            if (posX+1 <= m_nbX-1)
+                return (m_staticObjects[posY][posX+1]->getType()=='W');
+            else
+                return true;
         case 'S':
-            if (posY == 9) return true;
-            return (m_staticObjects[posY+1][posX]->getType()=='W');
+            if (posY+1 <= m_nbY-1)
+                return (m_staticObjects[posY+1][posX]->getType()=='W');
+            else
+                return true;
+        default:
+            break;
     }
     return false;
 }

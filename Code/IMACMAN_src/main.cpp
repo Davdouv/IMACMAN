@@ -45,7 +45,8 @@ int main(int argc, char** argv) {
      *********************************/
 
     Map map;
-    map.setFileMap("classicMap.txt");
+    //map.setFileMap("classicMap.txt");
+    map.setFileMap("mapTest.txt");
     map.load();
     //m.display();
     //m.play();
