@@ -130,31 +130,16 @@ int main(int argc, char** argv) {
 
         renderManager.drawPacman(map.getPacman());
 
+        for (unsigned int i = 0; i < map.getPacGommes().size(); ++i)
+        {
+            renderManager.drawPacGomme(map.getPacGommes()[i]);
+        }
+
         // De-bind Sphere VAO
         renderManager.debindVAO();
 
         // WALL TEST
         renderManager.bindCubeVAO();
-        
-        // // Wall 1
-        // transformationMatrix = renderManager.transformMatrix(&wall1);
-        // renderManager.applyTransformations(NORMAL, transformationMatrix);
-        // renderManager.getCubePtr()->drawCube();
-
-        // // Wall 2
-        // transformationMatrix = renderManager.transformMatrix(&wall2);
-        // renderManager.applyTransformations(NORMAL, transformationMatrix);
-        // renderManager.getCubePtr()->drawCube();
-
-        // // Wall 3
-        // transformationMatrix = renderManager.transformMatrix(&wall3);
-        // renderManager.applyTransformations(NORMAL, transformationMatrix);
-        // renderManager.getCubePtr()->drawCube();
-
-        // // Wall 4
-        // transformationMatrix = renderManager.transformMatrix(&wall4);
-        // renderManager.applyTransformations(NORMAL, transformationMatrix);
-        // renderManager.getCubePtr()->drawCube();
 
         for (unsigned int i = 0; i < map.getWalls().size(); ++i)
         {

@@ -96,12 +96,12 @@ int Map::load() {
         std::string tmp;
         file.seekg(0);
         getline(file,tmp);
-        Pacman *p = new Pacman(charToInt(tmp[1]), charToInt(tmp[2]), 1, 1, 1, Object::Orientation::LEFT);
+        Pacman *p = new Pacman(charToInt(tmp[1]), charToInt(tmp[2]), 0.5, 0.5, 0.005, Object::Orientation::LEFT);
         this->setPacman(*p);
         std::vector<Ghost> tabGhost;
         for (int i = 0; i < 4; i++) {   
             getline(file,tmp);
-            Ghost *g = new Ghost(charToInt(tmp[1]), charToInt(tmp[2]), 1, 1, 1, i+1, Object::Orientation::LEFT);
+            Ghost *g = new Ghost(charToInt(tmp[1]), charToInt(tmp[2]), 0.5, 0.5, 1, i+1, Object::Orientation::LEFT);
             tabGhost.push_back(*g);
         }
         this->setGhosts(tabGhost);
@@ -115,9 +115,9 @@ int Map::load() {
 
                     case 'W' : o = new Wall(j, i, 1, 1,  Object::Orientation::LEFT);
                         break;
-                    case 'G' : o = new Edible(j, i, 0.5, 0.5, Edible::Type::PAC_GOMME, Object::Orientation::LEFT);
+                    case 'G' : o = new Edible(j, i, 0.25, 0.25, Edible::Type::PAC_GOMME, Object::Orientation::LEFT);
                         break;
-                    case 'S' : o = new Edible(j, i, 1, 1, Edible::Type::SUPER_PAC_GOMME, Object::Orientation::LEFT);
+                    case 'S' : o = new Edible(j, i, 0.4, 0.4, Edible::Type::SUPER_PAC_GOMME, Object::Orientation::LEFT);
                         break;
                     case 'B' : o = new Edible(j, i, 1, 1, Edible::Type::FRUIT, Object::Orientation::LEFT);
                         break;
