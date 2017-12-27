@@ -13,8 +13,8 @@ using namespace glimac;
 class Map {
 
 private:
-    static const int m_nbX = 10;
-    static const int m_nbY = 10;
+    static const int m_nbX = 30;
+    static const int m_nbY = 30;
 
     Pacman m_pacman;
     std::vector<Ghost> m_ghosts;
