@@ -15,7 +15,7 @@ Map::~Map()
     std::cout << "Debut" << std::endl;
     delete(&m_staticObjects[3]);
     std::cout << "Fin" << std::endl;
-    /*
+    */
 
     /*
     for (unsigned int i = 0; i < m_staticObjects.size(); ++i)
@@ -25,6 +25,14 @@ Map::~Map()
         std::cout << "Fin" << std::endl;
     }
     */
+
+    // BUG -> la boucle se répète et "invalid pointer"
+    /*
+    for(int i = 0; i < m_staticObjects.size(); ++i) {
+        for (int j = 0; j < m_staticObjects[i].size(); ++j) {
+            delete m_staticObjects[i][j];
+        }
+    }*/
 }
 
 int Map::getNbX() const { return m_nbX; }

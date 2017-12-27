@@ -11,5 +11,6 @@ int main() {
     m.getPacGommes()[1]->display();
     std::cout << m.getSuperPacGommes().size() << std::endl;
     m.getSuperPacGommes()[1]->display();
+    m.~Map();
     return 0;
 }
