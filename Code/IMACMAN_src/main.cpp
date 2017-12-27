@@ -51,10 +51,10 @@ int main(int argc, char** argv) {
     //m.play();
 
     // Game Infos
-    glm::vec2 gameSize = glm::vec2(30,30);
+    glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
 
-    //TrackballCamera tbCamera = TrackballCamera(30,0,0.0f,1.57f);    // CAMERA VUE 2D
-    TrackballCamera tbCamera = TrackballCamera(30,0,0.0f,1.0f);
+    //TrackballCamera tbCamera = TrackballCamera(gameSize.y,0,0.0f,1.57f);    // CAMERA VUE 2D
+    TrackballCamera tbCamera = TrackballCamera(gameSize.y,0,0.0f,1.0f);
     FreeflyCamera ffCamera = FreeflyCamera();
     Camera* camera = &tbCamera;
 
@@ -69,6 +69,9 @@ int main(int argc, char** argv) {
 
     // Enable program
     renderManager.useProgram(NORMAL);
+
+    //std::vector<Wall*> walls = map.getWalls();
+    //std::cout << map.getWalls() << std::endl;
 
     // Application loop:
     bool done = false;
@@ -153,8 +156,10 @@ int main(int argc, char** argv) {
         // renderManager.applyTransformations(NORMAL, transformationMatrix);
         // renderManager.getCubePtr()->drawCube();
 
-
-        //renderManager.drawWall(map.getStaticObjects());
+        for (unsigned int i = 0; i < map.getWalls().size(); ++i)
+        {
+            renderManager.drawWall(map.getWalls()[i]);
+        }
 
         renderManager.debindVAO();
 

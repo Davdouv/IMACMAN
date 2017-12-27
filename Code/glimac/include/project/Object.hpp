@@ -10,30 +10,30 @@ private:
     char m_type;
     float m_width;
     float m_height;
-    int m_posX;
-    int m_posY;
+    float m_posX;
+    float m_posY;
     Orientation m_orientation;
 
 public:
 
     // constructor 
-    Object(char, int, int, float = 1.0, float = 1.0, Orientation = LEFT);
+    Object(char, float, float, float = 1.0, float = 1.0, Orientation = LEFT);
     Object();
 
     // getter
     char getType() const;
     float getWidth() const;
     float getHeight() const;
-    int getPosX() const;
-    int getPosY() const;
+    float getPosX() const;
+    float getPosY() const;
     Orientation getOrientation() const;
 
     // setter
     void setType(char);
     void setWidth(float);
     void setHeight(float);
-    void setPosX(int);
-    void setPosY(int);
+    void setPosX(float);
+    void setPosY(float);
     void setOrientation(Orientation);
 
     // collision

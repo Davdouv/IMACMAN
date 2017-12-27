@@ -9,6 +9,8 @@ using namespace glimac;
 
 Map::Map() { }
 
+int Map::getNbX() const { return m_nbX; }
+int Map::getNbY() const { return m_nbY; }
 std::string Map::getFileMap() const { return m_fileMap; }
 Pacman* Map::getPacman() { return &m_pacman; }
 std::vector<Ghost> Map::getGhosts() const { return m_ghosts; }
@@ -308,19 +310,21 @@ bool Map::ghostCollision() {
 }
 
 bool Map::pacmanWallCollision(char direction) {
+    int posX = (int)m_pacman.getPosX();
+    int posY = (int)m_pacman.getPosY();
     switch(direction) {
         case 'Z': 
-            if (m_pacman.getPosY() == 0) return true;
-            return (m_staticObjects[m_pacman.getPosY()-1][m_pacman.getPosX()]->getType()=='W');
+            if (posY == 0) return true;
+            return (m_staticObjects[posY-1][posX]->getType()=='W');
         case 'Q':
-            if (m_pacman.getPosX() == 0) return true;
-            return (m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()-1]->getType()=='W');
+            if (posX == 0) return true;
+            return (m_staticObjects[posY][posX-1]->getType()=='W');
         case 'D':
-            if (m_pacman.getPosX() == 9) return true;
-            return (m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()+1]->getType()=='W');
+            if (posX == 9) return true;
+            return (m_staticObjects[posY][posX+1]->getType()=='W');
         case 'S':
-            if (m_pacman.getPosY() == 9) return true;
-            return (m_staticObjects[m_pacman.getPosY()+1][m_pacman.getPosX()]->getType()=='W');
+            if (posY == 9) return true;
+            return (m_staticObjects[posY+1][posX]->getType()=='W');
     }
     return false;
 }

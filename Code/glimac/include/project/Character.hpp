@@ -4,19 +4,19 @@
 class Character : public Object {
 
 private:
-    int m_speed;
+    float m_speed;
 
 public:
 
     // constructor 
-    Character(char, int, int, float, float, int, Orientation);
+    Character(char, float, float, float, float, float, Orientation);
     Character();
 
     // getter
-    int getSpeed() const;
+    float getSpeed() const;
 
     // setter
-    void setSpeed(int);
+    void setSpeed(float);
 
     // move methods
     virtual void move();

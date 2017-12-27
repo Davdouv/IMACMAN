@@ -9,7 +9,7 @@ private:
 public:
 
     // constructor
-    Door(int, int, float, float, int, Orientation);
+    Door(float, float, float, float, int, Orientation);
     Door();
 
     // getter
