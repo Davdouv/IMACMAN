@@ -14,8 +14,8 @@ using namespace glimac;
 class Map {
 
 private:
-    // static const int m_nbX = 36;
-    // static const int m_nbY = 30;
+    //  static const int m_nbX = 36;
+    //  static const int m_nbY = 30;
     static const int m_nbX = 10;
     static const int m_nbY = 10;
 
@@ -41,7 +41,6 @@ public:
     Pacman* getPacman();
     std::vector<Ghost> getGhosts() const;
     std::vector<std::vector<StaticObject*>> getStaticObjects() const;
-
 
     // get map elements
     std::vector<Edible*> getPacGommes();

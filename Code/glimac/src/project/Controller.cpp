@@ -8,10 +8,12 @@ namespace glimac {
 Controller::Controller(SDLWindowManager* windowManager)
 {
     m_windowManager = windowManager;
-    playerAction = NONE;
+    playerAction = Q;
+	previousPlayerAction = Q;
     cameraAction = NONE;
     interfaceAction = NONE;
 	m_mousePosition = windowManager->getMousePosition();
+	FPS = false;
 }
 
 // Tells if the mouse goes Up (true) or Not (false)
@@ -108,6 +110,10 @@ void Controller::updateInterfaceAction()
 	else if (m_windowManager->isKeyPressed(SDLK_c))
 	{
 		interfaceAction = C;
+		if(FPS)
+			FPS = false;
+		else
+			FPS = true;
 	}
     else
     {
@@ -136,11 +142,35 @@ Controller::Key Controller::getInterfaceAction() const
 {
     return interfaceAction;
 }
+bool Controller::isFPSactive()
+{
+	return FPS;
+}
+Controller::Key Controller::getPlayerPreviousAction() const
+{
+    return previousPlayerAction;
+}
 
 // Setters
 void Controller::setInterfaceAction(Key key)
 {
 	interfaceAction = key;
+}
+void Controller::setFPS(bool fps)
+{
+	FPS = fps;
+}
+void Controller::switchFPS()
+{
+	std::cout << FPS << std::endl;
+	if(FPS)
+		FPS = false;
+	else
+		FPS = true;
+}
+void Controller::setPlayerPreviousAction(Key key)
+{
+	previousPlayerAction = key;
 }
 
 }
