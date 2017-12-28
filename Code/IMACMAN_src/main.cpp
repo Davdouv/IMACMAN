@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
     Map map;
     map.setFileMap("classicMap.txt");
     //map.setFileMap("mapTest.txt");
-    map.load();
+    map.initialization();
 
     // Game Infos
     glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());

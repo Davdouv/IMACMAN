@@ -17,11 +17,11 @@ int Edible::gain() {
 
     switch(m_type) {
 
-        case PAC_GOMME : return 100;
+        case PAC_GOMME : return 10;
             break;
-        case SUPER_PAC_GOMME : return 1000;
+        case SUPER_PAC_GOMME : return 50;
             break;
-        case FRUIT : return 500;
+        case FRUIT : return 400;
             break;
         default:return 0;
     }
