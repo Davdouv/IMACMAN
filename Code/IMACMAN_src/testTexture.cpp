@@ -33,9 +33,11 @@ int main(int argc, char** argv) {
 
     // Create Programs (1 fragment shader = 1 program)
     FilePath applicationPath(argv[0]);
-    TextureProgram textureProgram(applicationPath);
     ProgramList programList;
+    TextureProgram textureProgram(applicationPath);
     programList.textureProgram = &textureProgram;
+    // NormalProgram normalProgram(applicationPath);
+    // programList.normalProgram = &normalProgram;
 
 
     // Enable GPU depth test for 3D rendering
@@ -124,34 +126,34 @@ int main(int argc, char** argv) {
         // --- SPHERE --- //
         // Bind Sphere VAO
         renderManager.bindSphereVAO();
-        renderManager.useProgram(TEXTURE);
+        //renderManager.useProgram(TEXTURE);
         // Draw Pacman only in TPS
         if(!controller.isFPSactive()) {
           renderManager.drawPacmanTex(map.getPacman());
         }
 
-        //renderManager.useProgram(NORMAL);
+        renderManager.useProgram(NORMAL);
         /* Normalement je suis censée utiliser le programme ci dessus pour pouvoir dessiner les autres objets avec le bon programme
          * Mais ça me fait une erreur de segmentation
          * Tu peux décommenter la ligne useProgram ainsi que tous les renders en dessous pour voir ce que ça donne
          */
 
-        //renderManager.drawPacGommes(map.getPacGommes());
-        //renderManager.drawSuperPacGommes(map.getSuperPacGommes());
+        renderManager.drawPacGommes(map.getPacGommes());
+        renderManager.drawSuperPacGommes(map.getSuperPacGommes());
 
         // De-bind Sphere VAO
         renderManager.debindVAO();
 
         // --- CUBE --- //
-        //renderManager.bindCubeVAO();
-        //renderManager.drawWalls(map.getWalls());
-        //renderManager.debindVAO();
+        renderManager.bindCubeVAO();
+        renderManager.drawWalls(map.getWalls());
+        renderManager.debindVAO();
         // Update the display
         windowManager.swapBuffers();
     }
 
     // FREE RESSOURCES
-    See ~renderManager destructor
+    //See ~renderManager destructor
 
     return EXIT_SUCCESS;
 }
