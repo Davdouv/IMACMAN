@@ -4,7 +4,7 @@
 int main() {
 
     Map m;
-    m.setFileMap("mapTest.txt");
+    m.setFileMap("classicMap.txt");
     m.initialization();
     m.display();
     m.play();
