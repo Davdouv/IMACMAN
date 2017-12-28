@@ -243,7 +243,7 @@ void RenderManager::drawPacman(Pacman* pacman)
 }
 
 // Draw Pacman - Sphere - Shader : TEXTURE
-void RenderManager::drawPacman(Pacman* pacman)
+void RenderManager::drawPacmanTex(Pacman* pacman)
 {
     glUniform1i(m_programList->textureProgram->uTexture, 0);
     glm::mat4 transformationMatrix = transformMatrix(pacman);
