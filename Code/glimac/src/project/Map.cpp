@@ -56,7 +56,10 @@ std::vector<Door*> Map::getDoors() {
     std::vector<Door*> doors;
     for (int i = 0; i < m_nbX; i++) {
         for (int j = 0; j < m_nbY; j++) {
-            if (m_staticObjects[i][j]->getType() == 'D') doors.push_back((Door*)m_staticObjects[i][j]);
+            if (m_staticObjects[i][j]->getType() == 'D')
+            {
+                doors.push_back((Door*)m_staticObjects[i][j]);
+            } 
         }
     }
     return doors;
@@ -116,6 +119,7 @@ void Map::initialization() {
     this->setState(Map::State::NORMAL);
     this->m_player.initialization();
     this->load();
+    initDoors();
 }
 
 int Map::load() {
@@ -223,7 +227,8 @@ void Map::initDoors() {
         doors[0]->setDestY(doors[1]->getPosY());
         doors[1]->setDestX(doors[0]->getPosX());
         doors[1]->setDestY(doors[0]->getPosY());
-
+        std::cout << doors[0]->getPosX() << std::endl;
+        std::cout << doors[0]->getPosY() << std::endl;
         m_staticObjects[doors[0]->getPosX()][doors[0]->getPosY()] = doors[0];
         m_staticObjects[doors[1]->getPosX()][doors[1]->getPosY()] = doors[1];
     }
@@ -312,6 +317,13 @@ bool Map::moveCharacter(Character* character, Controller::Key action)
             }
 			break;
 		case Controller::Q :
+            if (characterLeftDoorCollision(character))
+            {
+                Door* d = (Door*) m_staticObjects[character->getPosY()][character->getPosX()];
+                character->setPosX(d->getDestX());
+                character->setPosY(d->getDestY());
+                return false;
+            }
             if (!characterWallCollision(character, 'Q'))
             {
                 character->moveLeft();
@@ -614,6 +626,39 @@ bool Map::characterWallCollision(Character* character, char direction) {
 
 }
 
+bool Map::characterLeftDoorCollision(Character* character)
+{
+    float fposX = character->getPosX();
+    int iposX = (int)fposX;
+    int iposY = character->getPosY();
+
+    if (m_staticObjects[iposY][iposX]->getType()=='D')
+    {
+        std::cout << iposX << std::endl;
+        if (fposX - iposX < 0.1)
+        {
+            return true;
+        }
+    }
+    // std::cout << iposX << std::endl;
+    // std::cout << iposY << std::endl;
+    return false;
+}
+
+bool Map::characterRightDoorCollision(Character* character)
+{
+    float fposX = character->getPosX();
+    int iposX = (int)fposX;
+    int iposY = character->getPosY();
+
+    if (m_staticObjects[iposY][iposX+1]->getType()=='D')
+    {
+        if (iposX+1 - fposX < 0.1)
+            return true;
+    }
+    return false;
+}
+
 void Map::pacmanEdibleCollision() {
     // If we're going left, we want Pacman to be half inside the cell
     if ((m_pacman.getPosX() - (int)m_pacman.getPosX()) > m_pacman.getWidth())
@@ -629,7 +674,7 @@ void Map::pacmanEdibleCollision() {
         
         m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()]->setType('V');
 
-        std::cout << "Points : " << m_player.getPoints() << std::endl;
+        //std::cout << "Points : " << m_player.getPoints() << std::endl;
     }
 }
 
