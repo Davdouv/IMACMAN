@@ -144,7 +144,7 @@ int Map::load() {
             std::string delimiter = ",";
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.25, 0.5, 0.005, i+1, Object::Orientation::LEFT);
+            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 0.005, i+1, Object::Orientation::LEFT);
             tabGhost.push_back(*g);
             delete(g);
         }
