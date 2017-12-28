@@ -11,6 +11,7 @@
 #include "project/Ghost.hpp"
 #include "project/Wall.hpp"
 #include "project/Edible.hpp"
+#include "project/Texture.hpp"
 
 #include "project/GLSLProgram.hpp"
 
@@ -44,6 +45,11 @@ private:
     glm::mat4 m_MVMatrix;
     glm::mat4 m_NormalMatrix;
 
+    // Textures
+    Texture* m_PacmanTex;
+    Texture* m_GhostTex;
+    Texture* m_WallTex;
+
     // GLSL Programs
     ProgramList* m_programList;
 
@@ -60,11 +66,11 @@ public:
     // Cube getters
     Cube* getCubePtr();
     GLuint* getCubeVAOPtr();
-    
+
     // Sphere getters
     Sphere* getSpherePtr();
     GLuint* getSphereVAOPtr();
-    
+
     // Rendering functions
     void bindCubeVAO();
     void bindSphereVAO();
@@ -79,6 +85,9 @@ public:
     void updateMVMatrix(Camera* camera);
     void updateMVMatrix(Camera* camera, Character* character);
 
+    // Texture functions
+    void loadTextures() const;
+
     // GLSL Programs functions
     void useProgram(FS shader);
 
@@ -88,6 +97,8 @@ public:
 
     // Specific Transformations & Programs
     void drawPacman(Pacman* pacman);
+    void drawPacmanTex(Pacman* pacman);
+    void drawGhosts(Ghost* ghost);
     void drawWalls(std::vector<Wall*>);
     void drawGhosts(std::vector<Ghost*>);
     void drawPacGommes(std::vector<Edible*>);

@@ -33,6 +33,11 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // Normal Matrix in the camera landmark
     m_NormalMatrix = glm::transpose(glm::inverse(m_MVMatrix));
 
+    // Textures
+    m_PacmanTex = new Texture("../Code/assets/textures/EarthMap.jpg");
+    m_GhostTex = new Texture("../Code/assets/textures/EarthMap.jpg");
+    m_WallTex = new Texture("../Code/assets/textures/EarthMap.jpg");
+
     // GLSL Program
     m_programList = programList;
 
@@ -49,6 +54,10 @@ RenderManager::~RenderManager()
 
     glDeleteBuffers(1, &m_sphereVBO);
     glDeleteVertexArrays(1, &m_sphereVAO);
+
+    delete(m_PacmanTex);
+    delete(m_GhostTex);
+    delete(m_WallTex);
 }
 
 // ---------------
@@ -126,6 +135,17 @@ void RenderManager::updateMVMatrix(Camera* camera, Character* character)
     m_MVMatrix = camera->getViewMatrix(character);
 }
 
+// ---------------
+// TEXTURES FUNCTIONS
+// ---------------
+
+void RenderManager::loadTextures() const
+{
+  m_PacmanTex->loadTexture();
+  m_GhostTex->loadTexture();
+  m_WallTex->loadTexture();
+}
+
 
 // ---------------
 // GLSL PROGRAM FUNCTIONS
@@ -171,24 +191,24 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
     switch (shader)
     {
         case NORMAL :
-            glUniformMatrix4fv(m_programList->normalProgram->uMVPMatrix, 1, GL_FALSE, 
+            glUniformMatrix4fv(m_programList->normalProgram->uMVPMatrix, 1, GL_FALSE,
             glm::value_ptr(m_ProjMatrix * matrix));
 
-            glUniformMatrix4fv(m_programList->normalProgram->uMVMatrix, 1, GL_FALSE, 
+            glUniformMatrix4fv(m_programList->normalProgram->uMVMatrix, 1, GL_FALSE,
             glm::value_ptr(matrix));
 
-            glUniformMatrix4fv(m_programList->normalProgram->uNormalMatrix, 1, GL_FALSE, 
+            glUniformMatrix4fv(m_programList->normalProgram->uNormalMatrix, 1, GL_FALSE,
             glm::value_ptr(glm::transpose(glm::inverse(matrix))));
             break;
 
         case TEXTURE :
-            glUniformMatrix4fv(m_programList->normalProgram->uMVPMatrix, 1, GL_FALSE, 
+            glUniformMatrix4fv(m_programList->normalProgram->uMVPMatrix, 1, GL_FALSE,
             glm::value_ptr(m_ProjMatrix * matrix));
 
-            glUniformMatrix4fv(m_programList->normalProgram->uMVMatrix, 1, GL_FALSE, 
+            glUniformMatrix4fv(m_programList->normalProgram->uMVMatrix, 1, GL_FALSE,
             glm::value_ptr(matrix));
 
-            glUniformMatrix4fv(m_programList->normalProgram->uNormalMatrix, 1, GL_FALSE, 
+            glUniformMatrix4fv(m_programList->normalProgram->uNormalMatrix, 1, GL_FALSE,
             glm::value_ptr(glm::transpose(glm::inverse(matrix))));
             break;
 
@@ -209,6 +229,17 @@ void RenderManager::drawPacman(Pacman* pacman)
     glm::mat4 transformationMatrix = transformMatrix(pacman);
     applyTransformations(NORMAL, transformationMatrix);
     m_sphere.drawSphere();
+}
+
+// Draw Pacman - Sphere - Shader : TEXTURE
+void RenderManager::drawPacmanTex(Pacman* pacman)
+{
+    glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glm::mat4 transformationMatrix = transformMatrix(pacman);
+    applyTransformations(NORMAL, transformationMatrix);
+    glBindTexture(GL_TEXTURE_2D, m_PacmanTex->getID());
+    m_sphere.drawSphere();
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 // Draw Ghost - Sphere - Shader : NORMAL

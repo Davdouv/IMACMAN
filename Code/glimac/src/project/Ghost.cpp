@@ -26,4 +26,3 @@ void Ghost::slowDown() {
 void Ghost::randomAI() {
 
 }
-

@@ -11,7 +11,7 @@ using namespace glimac;
 Map::Map() { }
 
 Map::~Map()
-{    
+{
     for(int i = 0; i < m_staticObjects.size(); ++i) {
         for (int j = 0; j < m_staticObjects[i].size(); ++j) {
             delete (m_staticObjects[i][j]);
@@ -126,7 +126,7 @@ int Map::load() {
         Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.005, Object::Orientation::LEFT);
         this->setPacman(*p);
         std::vector<Ghost> tabGhost;
-        for (int i = 0; i < 4; i++) {   
+        for (int i = 0; i < 4; i++) {
             getline(file,tmp);
             std::string delimiter = ",";
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
@@ -171,7 +171,7 @@ int Map::load() {
         delete(p);
 
         m_nbX = i-1;
-    }   
+    }
     file.close();
     return 1;
 }
@@ -192,7 +192,7 @@ int Map::save() {
             }
             file << std::endl;
         }
-    }   
+    }
     file.close();
     return 1;
 }
@@ -207,16 +207,16 @@ void Map::play() {
         display();
         std::cout << "Your move : " << std::endl;
         getline(std::cin, line);
-        if (line == "Z") {            
+        if (line == "Z") {
             if (!characterWallCollision(&m_pacman, 'Z')) m_pacman.moveUp();
         }
-        if (line == "Q") {    
+        if (line == "Q") {
             if (!characterWallCollision(&m_pacman, 'Q')) m_pacman.moveLeft();
         }
-        if (line == "S") {   
+        if (line == "S") {
             if (!characterWallCollision(&m_pacman, 'S')) m_pacman.moveDown();
         }
-        if (line == "D") {    
+        if (line == "D") {
             if (!characterWallCollision(&m_pacman, 'D')) m_pacman.moveRight();
         }
         if (line == "C") play = false;
@@ -237,7 +237,7 @@ void Map::play(Controller* controller)
             if (m_cells[m_pacman.getPosX()][m_pacman.getPosY()+1].getAccess()) {
                 m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('V');
                 m_pacman.moveUp();
-            } 
+            }
             m_cells[m_pacman.getPosX()][m_pacman.getPosY()].setStaticElement('P');
 			break;
 		case Controller::S :
@@ -280,7 +280,7 @@ bool Map::moveCharacter(Character* character, Controller::Key action)
             }
 			break;
 		case Controller::Q :
-            if (!characterWallCollision(character, 'Q')) 
+            if (!characterWallCollision(character, 'Q'))
             {
                 character->moveLeft();
                 return true;
@@ -294,7 +294,7 @@ bool Map::moveCharacter(Character* character, Controller::Key action)
             }
 			break;
 		case Controller::D :
-            if (!characterWallCollision(character, 'D')) 
+            if (!characterWallCollision(character, 'D'))
             {
                 character->moveRight();
                 return true;
@@ -308,7 +308,7 @@ bool Map::moveCharacter(Character* character, Controller::Key action)
 
 void Map::play(Controller* controller) {
     Controller::Key action = controller->getPlayerAction();
-    
+
     if (moveCharacter(&m_pacman, action))
     {
         controller->setPlayerPreviousAction(action);
@@ -331,11 +331,11 @@ void Map::display() {
             for (int  j = 0; j < m_nbY; j++) {
                 ghost = false;
                 for (int k = 0; k < m_ghosts.size(); k++) {
-                    if ( (( m_ghosts[k].getPosX() >= tmp.at(j)->getPosX()) && (m_ghosts[k].getPosX() < tmp.at(j)->getPosX()+1)) && ((m_ghosts[k].getPosY() >= tmp.at(j)->getPosY()) && (m_ghosts[k].getPosY() < tmp.at(j)->getPosY()+1)) ) 
+                    if ( (( m_ghosts[k].getPosX() >= tmp.at(j)->getPosX()) && (m_ghosts[k].getPosX() < tmp.at(j)->getPosX()+1)) && ((m_ghosts[k].getPosY() >= tmp.at(j)->getPosY()) && (m_ghosts[k].getPosY() < tmp.at(j)->getPosY()+1)) )
                  {std::cout << k+1 << " ";
                     ghost = true;}
                 }
-                if ( ((m_pacman.getPosX() >= tmp.at(j)->getPosX()) && (m_pacman.getPosX() < tmp.at(j)->getPosX()+1)) && ((m_pacman.getPosY() >= tmp.at(j)->getPosY()) && (m_pacman.getPosY() < tmp.at(j)->getPosY()+1)) ) 
+                if ( ((m_pacman.getPosX() >= tmp.at(j)->getPosX()) && (m_pacman.getPosX() < tmp.at(j)->getPosX()+1)) && ((m_pacman.getPosY() >= tmp.at(j)->getPosY()) && (m_pacman.getPosY() < tmp.at(j)->getPosY()+1)) )
                 std::cout << m_pacman.getType() << " ";
                 else if ((tmp.at(j) != NULL) && (!ghost)) std::cout << tmp.at(j)->getType() << " ";
                 else if (!ghost) std::cout << "V ";
@@ -350,7 +350,7 @@ void Map::pacmanGhostCollision() {
     for (int i = 0; i < m_ghosts.size(); i++) {
         if (m_pacman.collision(&m_ghosts[i])) {
             switch(this->getState()) {
-                
+
                 case Map::State::NORMAL : m_player.loseLife();
                     m_pacman.reset();
                     for (int i = 0; i < m_ghosts.size(); i++) {
@@ -387,7 +387,7 @@ bool Map::characterWallCollision(Character* character, char direction) {
     int posY = (int)character->getPosY();
 
     switch(direction) {
-        case 'Z': 
+        case 'Z':
             // First check if we can move inside the cell
             if ((float)posY+character->getSpeed() < character->getPosY())
             {
@@ -407,7 +407,7 @@ bool Map::characterWallCollision(Character* character, char direction) {
                     return true;
                 return (m_staticObjects[posY-1][posX]->getType()=='W');
             }
-                
+
             else
                 return true;
         case 'Q':
@@ -425,7 +425,7 @@ bool Map::characterWallCollision(Character* character, char direction) {
                 }
                 return false;
             }
-                
+
             if (posX-1 >= 0)
             {
                 if (betweenTwoCells(character->getPosY(), posY))
@@ -459,11 +459,11 @@ bool Map::characterWallCollision(Character* character, char direction) {
                 else
                     return (m_staticObjects[posY][posX+1]->getType()=='W');
             }
-                
+
             else
                 return true;
         case 'S':
-            
+
             if (posY+1 <= m_nbX-1)
             {
                 // Make sure we're not between 2 cells
@@ -480,7 +480,7 @@ bool Map::characterWallCollision(Character* character, char direction) {
             {
                 return true;
             }
-                
+
         default:
             break;
     }
@@ -493,9 +493,9 @@ void Map::pacmanEdibleCollision() {
         Edible *e;
         e =  (Edible*) m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()];
         m_player.gainPoints(e->gain());
-        if (e->getTypeEdible() == Edible::Type::SUPER_PAC_GOMME) this->setState(Map::State::SUPER); 
+        if (e->getTypeEdible() == Edible::Type::SUPER_PAC_GOMME) this->setState(Map::State::SUPER);
         m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()]->setType('V');
-    }   
+    }
 }
 
 // Shadow will follow Pacman all along, so he will find the shortest way to go to Pacman
@@ -526,7 +526,7 @@ void Map::speedyAI() {
             break;
         default:break;
     }
-    
+
 }
 
 // When Pacman gets really close to Bashful, he goes to Pacman's opposite direction
@@ -535,7 +535,7 @@ void Map::speedyAI() {
 
 void Map::bashfulAI() {
 
-    if ((abs(m_pacman.getPosX() - m_ghosts[Ghost::Type::BASHFUL].getPosX()) <= 2)  && (abs(m_pacman.getPosY() - m_ghosts[Ghost::Type::BASHFUL].getPosY()) <= 10)) {
+    if ((std::abs(m_pacman.getPosX() - m_ghosts[Ghost::Type::BASHFUL].getPosX()) <= 2)  && (std::abs(m_pacman.getPosY() - m_ghosts[Ghost::Type::BASHFUL].getPosY()) <= 10)) {
 
         switch(m_pacman.getOrientation()) {
 
@@ -559,7 +559,7 @@ void Map::bashfulAI() {
     }
 
     else {
-    
+
         switch(m_pacman.getOrientation()) {
 
             case Object::Orientation::LEFT:
@@ -584,7 +584,7 @@ void Map::bashfulAI() {
 
 // goes around randomly
 void Map::pokeyAI() {
-    
+
     int rx = (rand()/RAND_MAX) * m_nbX;
     int ry = (rand()/RAND_MAX) * m_nbY;
     shortestWay(Ghost::Type::POKEY, rx, rx);
