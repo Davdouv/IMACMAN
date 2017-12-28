@@ -254,7 +254,7 @@ void RenderManager::drawGhost(Ghost* ghost)
 {
     glm::mat4 transformationMatrix = transformMatrix(ghost);
     applyTransformations(NORMAL, transformationMatrix);
-    m_sphere.drawSphere();
+    m_cube.drawCube();
 }
 
 // STATIC OBJECTS
@@ -300,6 +300,14 @@ void RenderManager::drawWalls(std::vector<Wall*> wall)
     for (unsigned int i = 0; i < wall.size(); ++i)
     {
         drawWall(wall[i]);
+    }
+}
+
+void RenderManager::drawGhosts(std::vector<Ghost*> ghost)
+{
+    for (unsigned int i = 0; i < ghost.size(); ++i)
+    {
+        drawGhost(ghost[i]);
     }
 }
 

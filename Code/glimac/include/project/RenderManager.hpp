@@ -98,14 +98,16 @@ public:
     // Specific Transformations & Programs
     void drawPacman(Pacman* pacman);
     void drawPacmanTex(Pacman* pacman);
-    void drawGhost(Ghost* ghost);
+    void drawGhosts(Ghost* ghost);
     void drawWalls(std::vector<Wall*>);
+    void drawGhosts(std::vector<Ghost*>);
     void drawPacGommes(std::vector<Edible*>);
     void drawSuperPacGommes(std::vector<Edible*>);
     void drawFruits(std::vector<Edible*>);
 
 private:
     void drawWall(Wall* wall);
+    void drawGhost(Ghost* ghost);
     void drawPacGomme(Edible* edible);
     void drawSuperPacGomme(Edible* edible);
     void drawFruit(Edible* edible);
