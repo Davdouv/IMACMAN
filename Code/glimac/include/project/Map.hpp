@@ -73,10 +73,9 @@ public:
     bool moveCharacter(Character*, Controller::Key);
 
     // collisions
+    bool characterWallCollision(Character*, char);
     void pacmanGhostCollision();
     bool ghostCollision();
-    bool characterWallCollision(Character*, char);
-    bool ghostWallCollision(int, char);
     void pacmanEdibleCollision();
 
     // Ghost moves AI
