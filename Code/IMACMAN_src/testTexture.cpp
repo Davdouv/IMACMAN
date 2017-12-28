@@ -14,6 +14,7 @@
 #include "project/GLSLProgram.hpp"
 
 #include "project/Map.hpp"
+#include "project/GameManager.hpp"
 
 using namespace glimac;
 
@@ -56,7 +57,7 @@ int main(int argc, char** argv) {
     map.load();
     //m.display();
     //m.play();
-
+    GameManager gameManager = GameManager(&map);
     // Game Infos
     glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
 
@@ -92,13 +93,13 @@ int main(int argc, char** argv) {
             }
 
             // Update controller with key & mouse events each frame
-            controller.updateController();
+            controller.updateController(map.getPacman());
         }
 
         // Send the keys to the camera and the map
         tbCamera.cameraController(&controller);
-        ffCamera.setCameraOnCharacter(map.getPacman());     // NEED TO FIX HERE !!
-        map.play(&controller);
+        ffCamera.setCameraOnCharacter(map.getPacman(), gameSize);     // NEED TO FIX HERE !!
+        gameManager.play(&controller);
 
         // Switch Camera mini-function
         if (controller.getInterfaceAction() == Controller::C)

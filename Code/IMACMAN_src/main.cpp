@@ -5,6 +5,7 @@
 #include <glimac/FilePath.hpp>
 
 #include "project/RenderManager.hpp"
+#include "project/GameManager.hpp"
 
 #include "glimac/TrackballCamera.hpp"
 #include "glimac/FreeflyCamera.hpp"
@@ -51,6 +52,8 @@ int main(int argc, char** argv) {
     //map.setFileMap("mapTest.txt");
     map.initialization();
 
+    GameManager gameManager = GameManager(&map);
+
     // Game Infos
     glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
 
@@ -77,18 +80,17 @@ int main(int argc, char** argv) {
             }
 
             // Update controller with key & mouse events each frame
-            controller.updateController();
+            controller.updateController(map.getPacman());
         }
 
         // Send the keys to the camera and the map
         tbCamera.cameraController(&controller);
-        ffCamera.setCameraOnCharacter(map.getPacman());     // NEED TO FIX HERE !!
-        map.play(&controller);
+        ffCamera.setCameraOnCharacter(map.getPacman(), gameSize);     // NEED TO FIX HERE !!
+        gameManager.play(&controller);
 
         // Switch Camera mini-function
         if (controller.getInterfaceAction() == Controller::C)
         {
-            //std::cout << ffCamera.getViewMatrix() << std::endl;
             if(camera == &ffCamera)
             {
                 camera = &tbCamera;
@@ -109,7 +111,7 @@ int main(int argc, char** argv) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // On update la ViewMatrix à chaque tour de boucle
-        renderManager.updateMVMatrix(camera, map.getPacman());
+        renderManager.updateMVMatrix(camera);
 
         // --- SPHERE --- //
         // Bind Sphere VAO

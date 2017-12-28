@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glimac/SDLWindowManager.hpp"
+#include "project/Pacman.hpp"
 
 namespace glimac {
 
@@ -14,7 +15,7 @@ public:
     Controller(SDLWindowManager* windowManager);
 
     // Update function, called each frame
-    void updateController();
+    void updateController(Pacman* pacman);
     void switchFPS();
 
     // Getters
@@ -45,9 +46,12 @@ private:
     bool isMouseUp();
     bool isMouseDown();
     // Update Actions, called each frame
-    void updatePlayerAction();
+    void updatePlayerAction(Pacman* pacman);
     void updateCameraAction();
     void updateInterfaceAction();
+
+    // Convert FPS key in TPS key
+    Controller::Key getFPSkey(Pacman* pacman);
 };
 
 }

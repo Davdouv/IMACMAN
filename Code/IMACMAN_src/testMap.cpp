@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../glimac/include/project/Map.hpp"
+#include "project/GameManager.hpp"
 
 int main() {
 
@@ -7,7 +8,8 @@ int main() {
     m.setFileMap("mapTest.txt");
     m.initialization();
     m.display();
-    m.play();
+    GameManager gameManager = GameManager(&m);
+    gameManager.play();
     m.getPacGommes()[1]->display();
     std::cout << m.getSuperPacGommes().size() << std::endl;
     m.getSuperPacGommes()[1]->display();

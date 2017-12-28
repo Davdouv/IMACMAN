@@ -19,9 +19,10 @@ public:
     void rotateUp(float degrees);
 
 	glm::mat4 getViewMatrix() const; // calcule la ViewMatrix de la caméra
+	glm::mat4 getViewMatrix(Character*) const; // calcule la ViewMatrix de la caméra
 
 	// Set the camera on the camera to have a FPS view
-	void setCameraOnCharacter(Character* character/*, glm::vec2 gameSize*/);
+	void setCameraOnCharacter(Character* character, glm::vec2 gameSize);
 
 private:
 	glm::vec3 m_Position;		// la position de la caméra
