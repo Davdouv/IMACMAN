@@ -7,11 +7,11 @@ using namespace glimac;
 class GameManager {
 
 public:
-    enum State { NORMAL, SUPER };
+    enum PacmanState { NORMAL, SUPER };
 
 private:
     Map* m_map;
-    State m_state;
+    PacmanState m_state;
     Player m_player;
 
 public:
@@ -19,10 +19,10 @@ public:
     GameManager(Map* map);
 
     // getters
-    State getState() const;
+    PacmanState getState() const;
 
     // setters
-    void setState(State);
+    void setState(PacmanState);
     
     void play();
     void play(Controller* controller);

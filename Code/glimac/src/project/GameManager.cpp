@@ -12,8 +12,8 @@ GameManager::GameManager(Map* map)
     m_player.initialization();
 }
 
-GameManager::State GameManager::getState() const { return m_state;}
-void GameManager::setState(State state) { m_state = state;}
+GameManager::PacmanState GameManager::getState() const { return m_state;}
+void GameManager::setState(PacmanState state) { m_state = state;}
 
 // For console only
 void GameManager::play() {
@@ -152,7 +152,7 @@ void GameManager::pacmanGhostCollision() {
         if (m_map->getPacman()->collision(m_map->getGhosts()[i])) {
             switch(this->getState()) {
 
-                case GameManager::State::NORMAL :
+                case GameManager::PacmanState::NORMAL :
                     m_player.loseLife();
                     m_map->getPacman()->reset();
                     for (int i = 0; i < m_map->getGhosts().size(); i++) {
@@ -160,7 +160,7 @@ void GameManager::pacmanGhostCollision() {
                     }
                     std::cout << "Life lost. Life : " << m_player.getLife() << std::endl;
                     break;
-                case GameManager::State::SUPER :
+                case GameManager::PacmanState::SUPER :
                     m_map->getGhosts()[i]->reset();
                     m_player.gainPoints(1000);  // (200, 400, 800, 1600)
                     std::cout << "Ghost Eaten" << std::endl;
@@ -416,7 +416,7 @@ void GameManager::pacmanEdibleCollision() {
         Edible *e;
         e =  (Edible*) m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()];
         m_player.gainPoints(e->gain());
-        if (e->getTypeEdible() == Edible::Type::SUPER_PAC_GOMME) this->setState(GameManager::State::SUPER);
+        if (e->getTypeEdible() == Edible::Type::SUPER_PAC_GOMME) this->setState(GameManager::PacmanState::SUPER);
 
         m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()]->setType('V');
 
