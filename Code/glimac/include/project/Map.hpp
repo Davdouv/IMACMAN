@@ -86,6 +86,10 @@ private:
     bool wallCollisionDOWN(float fposY, int iposY, int iposX, float speed, Character* character);
     bool wallCollisionRIGHT(float fposX, int iposY, int iposX, float speed, Character* character);
     bool characterWallCollision(Character*, char);
+
+    bool characterLeftDoorCollision(Character*);
+    bool characterRightDoorCollision(Character*);
+
     void pacmanGhostCollision();
     bool ghostCollision();
     void pacmanEdibleCollision();

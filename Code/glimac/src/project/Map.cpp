@@ -56,7 +56,10 @@ std::vector<Door*> Map::getDoors() {
     std::vector<Door*> doors;
     for (int i = 0; i < m_nbX; i++) {
         for (int j = 0; j < m_nbY; j++) {
-            if (m_staticObjects[i][j]->getType() == 'D') doors.push_back((Door*)m_staticObjects[i][j]);
+            if (m_staticObjects[i][j]->getType() == 'D')
+            {
+                doors.push_back((Door*)m_staticObjects[i][j]);
+            } 
         }
     }
     return doors;
@@ -116,6 +119,7 @@ void Map::initialization() {
     this->setState(Map::State::NORMAL);
     this->m_player.initialization();
     this->load();
+    initDoors();
 }
 
 int Map::load() {
@@ -136,7 +140,7 @@ int Map::load() {
         std::string delimiter = ",";
         std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
         std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-        Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.01, Object::Orientation::LEFT);
+        Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 1, Object::Orientation::LEFT);
         this->setPacman(*p);
         std::vector<Ghost> tabGhost;
         int death = 20;
@@ -145,7 +149,7 @@ int Map::load() {
             std::string delimiter = ",";
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 0.008, i+1, Object::Orientation::LEFT, death);
+            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 1, i+1, Object::Orientation::LEFT, death);
             tabGhost.push_back(*g);
             death+=10;
             delete(g);
@@ -217,16 +221,15 @@ int Map::save() {
 
 void Map::initDoors() {
 
-    /*std::vector<Door*> doors = getDoors();
+    std::vector<Door*> doors = getDoors();
     if (doors.size() == 2) {
         doors[0]->setDestX(doors[1]->getPosX());
         doors[0]->setDestY(doors[1]->getPosY());
         doors[1]->setDestX(doors[0]->getPosX());
         doors[1]->setDestY(doors[0]->getPosY());
-
-        m_staticObjects[doors[0]->getPosX()][doors[0]->getPosY()] = doors[0];
-        m_staticObjects[doors[1]->getPosX()][doors[1]->getPosY()] = doors[1];
-    }*/
+        m_staticObjects[doors[0]->getPosY()][doors[0]->getPosX()] = doors[0];
+        m_staticObjects[doors[1]->getPosY()][doors[1]->getPosX()] = doors[1];
+    }
 }
 
 // For console only
@@ -299,7 +302,7 @@ void Map::play(Controller* controller)
 }
 */
 
-// Returns true if can move, false if not
+// Returns true if can move, false if not (or if he takes door)
 bool Map::moveCharacter(Character* character, Controller::Key action)
 {
     switch (action)
@@ -312,6 +315,14 @@ bool Map::moveCharacter(Character* character, Controller::Key action)
             }
 			break;
 		case Controller::Q :
+            if (characterLeftDoorCollision(character))
+            {
+                Door* d = (Door*) m_staticObjects[character->getPosY()][character->getPosX()];
+                character->setPosX(d->getDestX());
+                character->setPosY(d->getDestY());
+                character->moveLeft();
+                return false;
+            }
             if (!characterWallCollision(character, 'Q'))
             {
                 character->moveLeft();
@@ -326,6 +337,14 @@ bool Map::moveCharacter(Character* character, Controller::Key action)
             }
 			break;
 		case Controller::D :
+            if (characterRightDoorCollision(character))
+            {
+                Door* d = (Door*) m_staticObjects[character->getPosY()][character->getPosX()+1];
+                character->setPosX(d->getDestX());
+                character->setPosY(d->getDestY());
+                character->moveRight();
+                return false;
+            }
             if (!characterWallCollision(character, 'D'))
             {
                 character->moveRight();
@@ -614,6 +633,36 @@ bool Map::characterWallCollision(Character* character, char direction) {
 
 }
 
+bool Map::characterLeftDoorCollision(Character* character)
+{
+    float fposX = character->getPosX();
+    int iposX = (int)fposX;
+    int iposY = character->getPosY();
+
+    if (m_staticObjects[iposY][iposX]->getType()=='D')
+    {
+        if (fposX - iposX < 0.1)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Map::characterRightDoorCollision(Character* character)
+{
+    float fposX = character->getPosX();
+    int iposX = (int)fposX;
+    int iposY = character->getPosY();
+
+    if (m_staticObjects[iposY][iposX+1]->getType()=='D')
+    {
+        if (iposX+1 - fposX < 0.1)
+            return true;
+    }
+    return false;
+}
+
 void Map::pacmanEdibleCollision() {
     // If we're going left, we want Pacman to be half inside the cell
     if ((m_pacman.getPosX() - (int)m_pacman.getPosX()) > m_pacman.getWidth())
@@ -629,7 +678,7 @@ void Map::pacmanEdibleCollision() {
 
         m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()]->setType('V');
 
-        std::cout << "Points : " << m_player.getPoints() << std::endl;
+        //std::cout << "Points : " << m_player.getPoints() << std::endl;
     }
 }
 
@@ -757,23 +806,23 @@ int Map::shortestWay(int ghostType, float x, float y) {
         // if goal is at the right top
         if ((gx - x < 0) && (gy - y < 0)) {
             if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
         }
         // if goal is at the right bottom
         else if ((gx - x < 0) && (gy - y > 0)) {
             if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
         }
         // if goal is at the left top
         else if ((gx - x > 0) && (gy - y < 0)) {
             if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
         }
         // if goal is at the left bottom
         else if ((gx - x > 0) && (gy - y > 0)) {

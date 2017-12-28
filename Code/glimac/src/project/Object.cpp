@@ -20,7 +20,8 @@ void Object::setOrientation(Orientation orientation) { m_orientation = orientati
 
 bool Object::collision(Object *c) {
     if (c==NULL) return false;
-    if ((this->getPosX() == c->getPosX()) && (this->getPosY() == c->getPosY())) {
+    if ( (( this->getPosX() >= c->getPosX()) && (this->getPosX() < c->getPosX()+1))
+     && ((this->getPosY() >= c->getPosY()) && (this->getPosY() < c->getPosY()+1)) )  {
         return true;
     }
     return false; 

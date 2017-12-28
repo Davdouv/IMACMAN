@@ -109,7 +109,7 @@ int main(int argc, char** argv) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // On update la ViewMatrix à chaque tour de boucle
-        renderManager.updateMVMatrix(camera);
+        renderManager.updateMVMatrix(camera, map.getPacman());
 
         // --- SPHERE --- //
         // Bind Sphere VAO
