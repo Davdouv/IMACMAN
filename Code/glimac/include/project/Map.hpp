@@ -74,13 +74,11 @@ public:
     void play();
     void play(Controller* controller);
 
-    // Ghost moves AI
-    void ghostMove();
-
 private:
     // Move
     bool moveCharacter(Character*, Controller::Key);
-    void movePacman(Controller* controller);
+    void pacmanMove(Controller* controller);
+    void ghostMove();
 
     // collisions
     bool wallCollisionUP(float fposY, int iposY, int iposX, float speed, Character* character);

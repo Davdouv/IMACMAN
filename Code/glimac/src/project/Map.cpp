@@ -145,7 +145,7 @@ int Map::load() {
             std::string delimiter = ",";
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.25, 0.5, 0.005, i+1, Object::Orientation::LEFT, death);
+            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 0.008, i+1, Object::Orientation::LEFT, death);
             tabGhost.push_back(*g);
             death+=10;
             delete(g);
@@ -167,11 +167,11 @@ int Map::load() {
 
                     case 'W' : o = new Wall(j, i, 1, 1,  Object::Orientation::LEFT);
                         break;
-                    case 'G' : o = new Edible(j, i, 0.15, 0.15, Edible::Type::PAC_GOMME, Object::Orientation::LEFT);
+                    case 'G' : o = new Edible(j, i, 0.20, 0.20, Edible::Type::PAC_GOMME, Object::Orientation::LEFT);
                         break;
-                    case 'S' : o = new Edible(j, i, 0.25, 0.25, Edible::Type::SUPER_PAC_GOMME, Object::Orientation::LEFT);
+                    case 'S' : o = new Edible(j, i, 0.30, 0.30, Edible::Type::SUPER_PAC_GOMME, Object::Orientation::LEFT);
                         break;
-                    case 'B' : o = new Edible(j, i, 1, 1, Edible::Type::FRUIT, Object::Orientation::LEFT);
+                    case 'B' : o = new Edible(j, i, 0.3, 0.3, Edible::Type::FRUIT, Object::Orientation::LEFT);
                         break;
                     case 'D' : o = new Door(j, i, 1, 1, Object::Orientation::LEFT);
                         break;
@@ -338,7 +338,7 @@ bool Map::moveCharacter(Character* character, Controller::Key action)
     return false;
 }
 
-void Map::movePacman(Controller* controller)
+void Map::pacmanMove(Controller* controller)
 {
     Controller::Key action = controller->getPlayerAction();
 
@@ -354,10 +354,10 @@ void Map::movePacman(Controller* controller)
 }
 
 void Map::play(Controller* controller) {
-    movePacman(controller);
+    pacmanMove(controller);
+    ghostMove();
     pacmanGhostCollision();
     pacmanEdibleCollision();
-    ghostMove();
 }
 
 // For console only
