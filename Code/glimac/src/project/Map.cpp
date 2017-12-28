@@ -139,13 +139,15 @@ int Map::load() {
         Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.01, Object::Orientation::LEFT);
         this->setPacman(*p);
         std::vector<Ghost> tabGhost;
+        int death = 20;
         for (int i = 0; i < 4; i++) {
             getline(file,tmp);
             std::string delimiter = ",";
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.25, 0.5, 0.005, i+1, Object::Orientation::LEFT);
+            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.25, 0.5, 0.005, i+1, Object::Orientation::LEFT, death);
             tabGhost.push_back(*g);
+            death+=10;
             delete(g);
         }
         this->setGhosts(tabGhost);
@@ -611,30 +613,40 @@ void Map::pacmanEdibleCollision() {
 // Shadow will follow Pacman all along, so he will find the shortest way to go to Pacman
 void Map::shadowAI() {
 
-    shortestWay(Ghost::Type::SHADOW, m_pacman.getPosX(), m_pacman.getPosY());
+    if (m_ghosts[Ghost::Type::SHADOW].getDeath()) {
+
+        shortestWay(Ghost::Type::SHADOW, m_ghosts[Ghost::Type::SHADOW].getInitY(), m_ghosts[Ghost::Type::SHADOW].getInitX());
+    }
+    else shortestWay(Ghost::Type::SHADOW, m_pacman.getPosX(), m_pacman.getPosY());
 }
 
 // Speedy aims the direction Pacman is going so he find the shortest way to this direction
 void Map::speedyAI() {
 
-    switch(m_pacman.getOrientation()) {
+    if (m_ghosts[Ghost::Type::SPEEDY].getDeath()) {
 
-        case Object::Orientation::LEFT:
-            shortestWay(Ghost::Type::SPEEDY, 0, m_pacman.getPosY());
-            break;
+        shortestWay(Ghost::Type::SPEEDY, m_ghosts[Ghost::Type::SPEEDY].getInitY(), m_ghosts[Ghost::Type::SPEEDY].getInitX());
+    }
+    else {
+        switch(m_pacman.getOrientation()) {
 
-        case Object::Orientation::RIGHT:
-            shortestWay(Ghost::Type::SPEEDY, m_nbX, m_pacman.getPosY());
-            break;
+            case Object::Orientation::LEFT:
+                shortestWay(Ghost::Type::SPEEDY, 0, m_pacman.getPosY());
+                break;
 
-        case Object::Orientation::UP:
-            shortestWay(Ghost::Type::SPEEDY, m_pacman.getPosX(), 0);
-            break;
+            case Object::Orientation::RIGHT:
+                shortestWay(Ghost::Type::SPEEDY, m_nbX, m_pacman.getPosY());
+                break;
 
-        case Object::Orientation::DOWN:
-            shortestWay(Ghost::Type::SPEEDY, m_pacman.getPosX(), m_nbY);
-            break;
-        default:break;
+            case Object::Orientation::UP:
+                shortestWay(Ghost::Type::SPEEDY, m_pacman.getPosX(), 0);
+                break;
+
+            case Object::Orientation::DOWN:
+                shortestWay(Ghost::Type::SPEEDY, m_pacman.getPosX(), m_nbY);
+                break;
+            default:break;
+        }
     }
 
 }
@@ -645,7 +657,11 @@ void Map::speedyAI() {
 
 void Map::bashfulAI() {
 
-    if ((std::abs(m_pacman.getPosX() - m_ghosts[Ghost::Type::BASHFUL].getPosX()) <= 2)  && (std::abs(m_pacman.getPosY() - m_ghosts[Ghost::Type::BASHFUL].getPosY()) <= 10)) {
+    if (m_ghosts[Ghost::Type::BASHFUL].getDeath()) {
+
+        shortestWay(Ghost::Type::BASHFUL, m_ghosts[Ghost::Type::BASHFUL].getInitY(), m_ghosts[Ghost::Type::BASHFUL].getInitX());
+    }
+    else if ((std::abs(m_pacman.getPosX() - m_ghosts[Ghost::Type::BASHFUL].getPosX()) <= 2)  && (std::abs(m_pacman.getPosY() - m_ghosts[Ghost::Type::BASHFUL].getPosY()) <= 10)) {
 
         switch(m_pacman.getOrientation()) {
 
@@ -695,9 +711,15 @@ void Map::bashfulAI() {
 // goes around randomly
 void Map::pokeyAI() {
 
-    int rx = (rand()/RAND_MAX) * m_nbX;
-    int ry = (rand()/RAND_MAX) * m_nbY;
-    shortestWay(Ghost::Type::POKEY, rx, rx);
+    if (m_ghosts[Ghost::Type::POKEY].getDeath()) {
+
+        shortestWay(Ghost::Type::POKEY, m_ghosts[Ghost::Type::POKEY].getInitY(), m_ghosts[Ghost::Type::POKEY].getInitX());
+    }
+    else {
+        int rx = (rand()/RAND_MAX) * m_nbX;
+        int ry = (rand()/RAND_MAX) * m_nbY;
+        shortestWay(Ghost::Type::POKEY, rx, rx);
+    }
 }
 
 // Shortest way for a ghost to get to the position (x, y)
