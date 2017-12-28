@@ -33,9 +33,10 @@ int main(int argc, char** argv) {
 
     // Create Programs (1 fragment shader = 1 program)
     FilePath applicationPath(argv[0]);
-    NormalProgram normalProgram(applicationPath);
+    TextureProgram textureProgram(applicationPath);
     ProgramList programList;
-    programList.normalProgram = &normalProgram;
+    programList.textureProgram = &textureProgram;
+
 
     // Enable GPU depth test for 3D rendering
     glEnable(GL_DEPTH_TEST);
@@ -45,9 +46,11 @@ int main(int argc, char** argv) {
      *********************************/
 
     Map map;
+    //map.setFileMap("classicMap.txt");
     map.setFileMap("classicMap.txt");
-    //map.setFileMap("mapTest.txt");
     map.load();
+    //m.display();
+    //m.play();
 
     // Game Infos
     glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
@@ -57,11 +60,20 @@ int main(int argc, char** argv) {
     FreeflyCamera ffCamera = FreeflyCamera();
     Camera* camera = &tbCamera;
 
+
     RenderManager renderManager = RenderManager(&windowManager, camera, &programList, gameSize);
     Controller controller = Controller(&windowManager);
 
-    // Enable program
-    renderManager.useProgram(NORMAL);
+    Wall wall1(0,0,1,1);
+    Wall wall2(30,0,1,1);
+    Wall wall3(0,30,1,1);
+    Wall wall4(30,30,1,1);
+
+    // Load Textures
+    renderManager.loadTextures();
+
+    //std::vector<Wall*> walls = map.getWalls();
+    //std::cout << map.getWalls() << std::endl;
 
     // Application loop:
     bool done = false;
@@ -73,7 +85,7 @@ int main(int argc, char** argv) {
             {
                 done = true; // Leave the loop after this iteration
             }
-            
+
             // Update controller with key & mouse events each frame
             controller.updateController();
         }
@@ -112,22 +124,24 @@ int main(int argc, char** argv) {
         // --- SPHERE --- //
         // Bind Sphere VAO
         renderManager.bindSphereVAO();
+        renderManager.useProgram(TEXTURE);
         // Draw Pacman only in TPS
-        if(!controller.isFPSactive())
-            renderManager.drawPacman(map.getPacman());
-        renderManager.drawPacGommes(map.getPacGommes());
-        renderManager.drawSuperPacGommes(map.getSuperPacGommes());
+        if(!controller.isFPSactive()) {
+          renderManager.drawPacmanTex(map.getPacman());
+        }
+
+        //renderManager.useProgram(NORMAL);
+
+        //renderManager.drawPacGommes(map.getPacGommes());
+        //renderManager.drawSuperPacGommes(map.getSuperPacGommes());
 
         // De-bind Sphere VAO
         renderManager.debindVAO();
 
         // --- CUBE --- //
-        renderManager.bindCubeVAO();
-
-        renderManager.drawWalls(map.getWalls());
-
-        renderManager.debindVAO();
-
+        //renderManager.bindCubeVAO();
+        //renderManager.drawWalls(map.getWalls());
+        //renderManager.debindVAO();
         // Update the display
         windowManager.swapBuffers();
     }

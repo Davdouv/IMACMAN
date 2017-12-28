@@ -34,9 +34,12 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_NormalMatrix = glm::transpose(glm::inverse(m_MVMatrix));
 
     // Textures
-    m_PacmanTex = new Texture("../Code/assets/textures/EarthMap.jpg");
-    m_GhostTex = new Texture("../Code/assets/textures/EarthMap.jpg");
-    m_WallTex = new Texture("../Code/assets/textures/EarthMap.jpg");
+    // m_PacmanTex = new Texture("../Code/assets/textures/EarthMap.jpg");
+    // m_GhostTex = new Texture("../Code/assets/textures/EarthMap.jpg");
+    // m_WallTex = new Texture("../Code/assets/textures/EarthMap.jpg");
+    m_PacmanTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/EarthMap.jpg");
+    m_GhostTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/EarthMap.jpg");
+    m_WallTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/EarthMap.jpg");
 
     // GLSL Program
     m_programList = programList;
@@ -160,6 +163,10 @@ void RenderManager::useProgram(FS shader)
             m_programList->normalProgram->m_Program.use();
             break;
 
+        case TEXTURE :
+            m_programList->textureProgram->m_Program.use();
+            break;
+
         default :
             m_programList->normalProgram->m_Program.use();
             break;
@@ -202,13 +209,13 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
             break;
 
         case TEXTURE :
-            glUniformMatrix4fv(m_programList->normalProgram->uMVPMatrix, 1, GL_FALSE,
+            glUniformMatrix4fv(m_programList->textureProgram->uMVPMatrix, 1, GL_FALSE,
             glm::value_ptr(m_ProjMatrix * matrix));
 
-            glUniformMatrix4fv(m_programList->normalProgram->uMVMatrix, 1, GL_FALSE,
+            glUniformMatrix4fv(m_programList->textureProgram->uMVMatrix, 1, GL_FALSE,
             glm::value_ptr(matrix));
 
-            glUniformMatrix4fv(m_programList->normalProgram->uNormalMatrix, 1, GL_FALSE,
+            glUniformMatrix4fv(m_programList->textureProgram->uNormalMatrix, 1, GL_FALSE,
             glm::value_ptr(glm::transpose(glm::inverse(matrix))));
             break;
 
@@ -236,7 +243,7 @@ void RenderManager::drawPacmanTex(Pacman* pacman)
 {
     glUniform1i(m_programList->textureProgram->uTexture, 0);
     glm::mat4 transformationMatrix = transformMatrix(pacman);
-    applyTransformations(NORMAL, transformationMatrix);
+    applyTransformations(TEXTURE, transformationMatrix);
     glBindTexture(GL_TEXTURE_2D, m_PacmanTex->getID());
     m_sphere.drawSphere();
     glBindTexture(GL_TEXTURE_2D, 0);
