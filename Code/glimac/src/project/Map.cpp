@@ -140,7 +140,7 @@ int Map::load() {
         std::string delimiter = ",";
         std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
         std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-        Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.01, Object::Orientation::LEFT);
+        Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 1, Object::Orientation::LEFT);
         this->setPacman(*p);
         std::vector<Ghost> tabGhost;
         int death = 20;
@@ -149,7 +149,7 @@ int Map::load() {
             std::string delimiter = ",";
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 0.008, i+1, Object::Orientation::LEFT, death);
+            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 1, i+1, Object::Orientation::LEFT, death);
             tabGhost.push_back(*g);
             death+=10;
             delete(g);
@@ -806,23 +806,23 @@ int Map::shortestWay(int ghostType, float x, float y) {
         // if goal is at the right top
         if ((gx - x < 0) && (gy - y < 0)) {
             if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
         }
         // if goal is at the right bottom
         else if ((gx - x < 0) && (gy - y > 0)) {
             if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
         }
         // if goal is at the left top
         else if ((gx - x > 0) && (gy - y < 0)) {
             if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
-            if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
         }
         // if goal is at the left bottom
         else if ((gx - x > 0) && (gy - y > 0)) {
