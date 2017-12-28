@@ -34,14 +34,14 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_NormalMatrix = glm::transpose(glm::inverse(m_MVMatrix));
 
     // Textures
-    // m_PacmanTex = new Texture("../Code/assets/textures/pacman.png");
-    // m_GhostTex = new Texture("../Code/assets/textures/ghost.jpg");
-    // m_WallTex = new Texture("../Code/assets/textures/wall.jpg");
-    // m_GumTex = new Texture("../Code/assets/textures/gum.png");
-    m_PacmanTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/pacman.jpg");
-    m_GhostTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/ghost.jpg");
-    m_WallTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wall.jpg");
-    m_GumTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/gum.jpg");
+    m_PacmanTex = new Texture("../Code/assets/textures/pacman.png");
+    m_GhostTex = new Texture("../Code/assets/textures/ghost.jpg");
+    m_WallTex = new Texture("../Code/assets/textures/wall.jpg");
+    m_GumTex = new Texture("../Code/assets/textures/gum.png");
+    // m_PacmanTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/pacman.jpg");
+    // m_GhostTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/ghost.jpg");
+    // m_WallTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wall.jpg");
+    // m_GumTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/gum.jpg");
 
     // GLSL Program
     m_programList = programList;
@@ -63,6 +63,7 @@ RenderManager::~RenderManager()
     delete(m_PacmanTex);
     delete(m_GhostTex);
     delete(m_WallTex);
+    delete(m_GumTex);
 }
 
 // ---------------
@@ -242,7 +243,7 @@ void RenderManager::drawPacman(Pacman* pacman)
 }
 
 // Draw Pacman - Sphere - Shader : TEXTURE
-void RenderManager::drawPacmanTex(Pacman* pacman)
+void RenderManager::drawPacman(Pacman* pacman)
 {
     glUniform1i(m_programList->textureProgram->uTexture, 0);
     glm::mat4 transformationMatrix = transformMatrix(pacman);
