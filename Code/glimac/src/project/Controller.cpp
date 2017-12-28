@@ -44,26 +44,65 @@ bool Controller::isMouseDown()
 // Update Player Action Key
 void Controller::updatePlayerAction(Pacman* pacman)
 {
-    if (m_windowManager->isKeyPressed(SDLK_z))
+	if(!FPS)
 	{
-		playerAction = Z;
+		if (m_windowManager->isKeyPressed(SDLK_z))
+			playerAction = Z;
+		else if (m_windowManager->isKeyPressed(SDLK_q))
+			playerAction = Q;
+		else if (m_windowManager->isKeyPressed(SDLK_s))
+			playerAction = S;
+		else if (m_windowManager->isKeyPressed(SDLK_d))
+			playerAction = D;
 	}
-	else if (m_windowManager->isKeyPressed(SDLK_q))
+	// If we are in FPS mode, we look always forward so Keys must changes
+	else
 	{
-		playerAction = Q;
-	}
-	else if (m_windowManager->isKeyPressed(SDLK_s))
-	{
-		playerAction = S;
-	}
-	else if (m_windowManager->isKeyPressed(SDLK_d))
-	{
-		playerAction = D;
-	}
-
-	if(FPS)
-	{
-		//playerAction = getFPSkey(pacman, playerAction);
+		switch(pacman->getOrientation())
+		{
+			case Object::Orientation::UP:
+				if (m_windowManager->isKeyPressed(SDLK_z))
+					playerAction = Z;
+				else if (m_windowManager->isKeyPressed(SDLK_q))
+					playerAction = Q;
+				else if (m_windowManager->isKeyPressed(SDLK_s))
+					playerAction = S;
+				else if (m_windowManager->isKeyPressed(SDLK_d))
+					playerAction = D;
+				break;
+			case Object::Orientation::LEFT:
+				if (m_windowManager->isKeyPressed(SDLK_z))
+					playerAction = Q;
+				else if (m_windowManager->isKeyPressed(SDLK_q))
+					playerAction = S;
+				else if (m_windowManager->isKeyPressed(SDLK_s))
+					playerAction = D;
+				else if (m_windowManager->isKeyPressed(SDLK_d))
+					playerAction = Z;
+				break;
+			case Object::Orientation::RIGHT:
+				if (m_windowManager->isKeyPressed(SDLK_z))
+					playerAction = D;
+				else if (m_windowManager->isKeyPressed(SDLK_q))
+					playerAction = Z;
+				else if (m_windowManager->isKeyPressed(SDLK_s))
+					playerAction = Q;
+				else if (m_windowManager->isKeyPressed(SDLK_d))
+					playerAction = S;
+				break;
+			case Object::Orientation::DOWN:
+				if (m_windowManager->isKeyPressed(SDLK_z))
+					playerAction = S;
+				else if (m_windowManager->isKeyPressed(SDLK_q))
+					playerAction = D;
+				else if (m_windowManager->isKeyPressed(SDLK_s))
+					playerAction = Z;
+				else if (m_windowManager->isKeyPressed(SDLK_d))
+					playerAction = Q;
+				break;
+			default:
+				break;
+		}
 	}
 }
 
@@ -179,66 +218,40 @@ void Controller::setPlayerPreviousAction(Key key)
 }
 
 // If we are in FPS mode, we go forward but keys have other interpretations
-Controller::Key Controller::getFPSkey(Pacman* pacman, Controller::Key action)
+Controller::Key Controller::getFPSkey(Pacman* pacman)
 {
+	Key action;
     switch(pacman->getOrientation())
     {
         case Object::Orientation::LEFT:
-            switch(action)
-            {
-                case Controller::Key::Z:
-                    action = Controller::Key::Q;
-                    break;
-                case Controller::Key::Q:
-                    action = Controller::Key::S;
-                    break;
-                case Controller::Key::S:
-                    action = Controller::Key::D;
-                    break;
-                case Controller::Key::D:
-                    action = Controller::Key::Z;
-                    break;
-                default:
-                    break;
-            }
+            if (m_windowManager->isKeyPressed(SDLK_z))
+                action = Key::Q;
+            else if (m_windowManager->isKeyPressed(SDLK_q))
+                action = Key::S;
+            else if (m_windowManager->isKeyPressed(SDLK_s))
+                action = Key::D;
+            else if (m_windowManager->isKeyPressed(SDLK_d))
+                action = Key::Z;
             break;
         case Object::Orientation::RIGHT:
-            switch(action)
-            {
-                case Controller::Key::Z:
-                    action = Controller::Key::D;
-                    break;
-                case Controller::Key::Q:
-                    action = Controller::Key::Z;
-                    break;
-                case Controller::Key::S:
-                    action = Controller::Key::Q;
-                    break;
-                case Controller::Key::D:
-                    action = Controller::Key::S;
-                    break;
-                default:
-                    break;
-            }
+            if (m_windowManager->isKeyPressed(SDLK_z))
+                action = Key::D;
+            else if (m_windowManager->isKeyPressed(SDLK_q))
+                action = Key::Z;
+            else if (m_windowManager->isKeyPressed(SDLK_s))
+                action = Key::Q;
+            else if (m_windowManager->isKeyPressed(SDLK_d))
+                action = Key::S;
             break;
         case Object::Orientation::DOWN:
-            switch(action)
-            {
-                case Controller::Key::Z:
-                    action = Controller::Key::Z;
-                    break;
-                case Controller::Key::Q:
-                    action = Controller::Key::D;
-                    break;
-                case Controller::Key::S:
-                    action = Controller::Key::S;
-                    break;
-                case Controller::Key::D:
-                    action = Controller::Key::Q;
-                    break;
-                default:
-                    break;
-            }
+            if (m_windowManager->isKeyPressed(SDLK_z))
+                action = Key::S;
+            else if (m_windowManager->isKeyPressed(SDLK_q))
+                action = Key::D;
+            else if (m_windowManager->isKeyPressed(SDLK_s))
+                action = Key::Z;
+            else if (m_windowManager->isKeyPressed(SDLK_d))
+                action = Key::Q;
             break;
         default:
             break;

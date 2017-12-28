@@ -51,7 +51,7 @@ private:
     void updateInterfaceAction();
 
     // Convert FPS key in TPS key
-    Controller::Key getFPSkey(Pacman* pacman, Controller::Key action);
+    Controller::Key getFPSkey(Pacman* pacman);
 };
 
 }
