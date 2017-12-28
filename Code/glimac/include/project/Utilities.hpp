@@ -5,7 +5,7 @@
 #pragma once
 
 static bool isStaticElement(char e) {
-    return !((e!='W') && (e!='V') && (e!='G') && (e!='S') && (e!='P'));
+    return !((e!='W') && (e!='G') && (e!='V') && (e!='S') && (e!='B')&& (e!='D'));
 }
 
 static int charToInt(char c) {
