@@ -9,6 +9,7 @@
 #include "Edible.hpp"
 #include "Wall.hpp"
 #include "Player.hpp"
+#include "Door.hpp"
 using namespace glimac;
 
 class Map {
@@ -49,7 +50,10 @@ public:
     std::vector<Edible*> getSuperPacGommes();
     std::vector<Edible*> getFruits();
     std::vector<Wall*> getWalls();
+    std::vector<Door*> getDoors();
 
+    // Doors
+    void initDoors();
     // setters
     void setState(int);
     void setFileMap(std::string);
