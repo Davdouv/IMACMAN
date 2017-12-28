@@ -34,12 +34,12 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_NormalMatrix = glm::transpose(glm::inverse(m_MVMatrix));
 
     // Textures
-    // m_PacmanTex = new Texture("../Code/assets/textures/EarthMap.jpg");
-    // m_GhostTex = new Texture("../Code/assets/textures/EarthMap.jpg");
-    // m_WallTex = new Texture("../Code/assets/textures/EarthMap.jpg");
-    m_PacmanTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/EarthMap.jpg");
+    m_PacmanTex = new Texture("../Code/assets/textures/EarthMap.jpg");
+    m_GhostTex = new Texture("../Code/assets/textures/EarthMap.jpg");
+    m_WallTex = new Texture("../Code/assets/textures/EarthMap.jpg");
+    /*m_PacmanTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/EarthMap.jpg");
     m_GhostTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/EarthMap.jpg");
-    m_WallTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/EarthMap.jpg");
+    m_WallTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/EarthMap.jpg");*/
 
     // GLSL Program
     m_programList = programList;
