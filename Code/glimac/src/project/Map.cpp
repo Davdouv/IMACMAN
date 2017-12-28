@@ -24,11 +24,11 @@ int Map::getNbX() const { return m_nbX; }
 int Map::getNbY() const { return m_nbY; }
 std::string Map::getFileMap() const { return m_fileMap; }
 Pacman* Map::getPacman() { return &m_pacman; }
-std::vector<Ghost*> Map::getGhosts() { 
+std::vector<Ghost*> Map::getGhosts() {
     std::vector<Ghost*> ghosts;
     for(unsigned int i = 0; i < m_ghosts.size(); i++)
         ghosts.push_back(&m_ghosts[i]);
-    return ghosts; 
+    return ghosts;
 }
 std::vector<std::vector<StaticObject*>> Map::getStaticObjects() const { return m_staticObjects; }
 
