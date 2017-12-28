@@ -6,6 +6,12 @@
 #include "glimac/Camera.hpp"
 
 #include "project/Object.hpp"
+#include "project/Character.hpp"
+#include "project/Pacman.hpp"
+#include "project/Ghost.hpp"
+#include "project/Wall.hpp"
+#include "project/Edible.hpp"
+
 #include "project/GLSLProgram.hpp"
 
 using namespace glimac;
@@ -15,6 +21,11 @@ class RenderManager {
 private:
     // Window Manager
     SDLWindowManager* m_windowManager;
+
+    // Cameras
+    // TrackballCamera* m_tbCamera;    // TPS Cam
+    // FreeflyCamera* m_ffCamera;      // FPS Cam
+    // bool m_fps;                     // false = TPS | true = FPS
 
     // Cube
     Cube m_cube;
@@ -66,6 +77,7 @@ public:
     glm::mat4 getNormalMatrix() const;
     // Update
     void updateMVMatrix(Camera* camera);
+    void updateMVMatrix(Camera* camera, Character* character);
 
     // GLSL Programs functions
     void useProgram(FS shader);
@@ -73,4 +85,21 @@ public:
     // Matrix Transformations
     glm::mat4 transformMatrix(Object* object);
     void applyTransformations(FS shader, glm::mat4 matrix);
+
+    // Specific Transformations & Programs
+    void drawPacman(Pacman* pacman);
+    void drawGhost(Ghost* ghost);
+    void drawWalls(std::vector<Wall*>);
+    void drawPacGommes(std::vector<Edible*>);
+    void drawSuperPacGommes(std::vector<Edible*>);
+    void drawFruits(std::vector<Edible*>);
+
+private:
+    void drawWall(Wall* wall);
+    void drawPacGomme(Edible* edible);
+    void drawSuperPacGomme(Edible* edible);
+    void drawFruit(Edible* edible);
+
+    // Switch camera
+    // void switchCamera();
 };

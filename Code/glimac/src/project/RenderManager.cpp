@@ -10,6 +10,9 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // Window Manager
     m_windowManager = windowManager;
 
+    // Camera
+    // m_ffCamera = camera;
+
     // Cube
     m_cube = Cube();
     m_cubeVBO = m_cube.getVBO();
@@ -118,6 +121,11 @@ void RenderManager::updateMVMatrix(Camera* camera)
 {
     m_MVMatrix = camera->getViewMatrix();
 }
+void RenderManager::updateMVMatrix(Camera* camera, Character* character)
+{
+    m_MVMatrix = camera->getViewMatrix(character);
+}
+
 
 // ---------------
 // GLSL PROGRAM FUNCTIONS
@@ -139,7 +147,7 @@ void RenderManager::useProgram(FS shader)
 }
 
 // ---------------
-// MATRIX TRANSFORMATIONS
+// GENERAL MATRIX TRANSFORMATIONS
 // ---------------
 
 // Do the correct transformations
@@ -173,7 +181,110 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
             glm::value_ptr(glm::transpose(glm::inverse(matrix))));
             break;
 
+        case TEXTURE :
+            glUniformMatrix4fv(m_programList->normalProgram->uMVPMatrix, 1, GL_FALSE, 
+            glm::value_ptr(m_ProjMatrix * matrix));
+
+            glUniformMatrix4fv(m_programList->normalProgram->uMVMatrix, 1, GL_FALSE, 
+            glm::value_ptr(matrix));
+
+            glUniformMatrix4fv(m_programList->normalProgram->uNormalMatrix, 1, GL_FALSE, 
+            glm::value_ptr(glm::transpose(glm::inverse(matrix))));
+            break;
+
         default :
             break;
+    }
+}
+
+// ---------------
+// SPECIFIC TRANSFORMATIONS & PROGRAMS (shader)
+// ---------------
+
+// CHARACTERS
+
+// Draw Pacman - Sphere - Shader : NORMAL
+void RenderManager::drawPacman(Pacman* pacman)
+{
+    glm::mat4 transformationMatrix = transformMatrix(pacman);
+    applyTransformations(NORMAL, transformationMatrix);
+    m_sphere.drawSphere();
+}
+
+// Draw Ghost - Sphere - Shader : NORMAL
+void RenderManager::drawGhost(Ghost* ghost)
+{
+    glm::mat4 transformationMatrix = transformMatrix(ghost);
+    applyTransformations(NORMAL, transformationMatrix);
+    m_sphere.drawSphere();
+}
+
+// STATIC OBJECTS
+
+// ---- 1 OBJECT ----- //
+
+// Draw Wall - Cube - Shader : NORMAL
+void RenderManager::drawWall(Wall* wall)
+{
+    glm::mat4 transformationMatrix = transformMatrix(wall);
+    applyTransformations(NORMAL, transformationMatrix);
+    m_cube.drawCube();
+}
+
+// Draw PacGomme - Sphere - Shader : NORMAL
+void RenderManager::drawPacGomme(Edible* edible)
+{
+    glm::mat4 transformationMatrix = transformMatrix(edible);
+    applyTransformations(NORMAL, transformationMatrix);
+    m_sphere.drawSphere();
+}
+
+// Draw Super PacGomme - Sphere - Shader : NORMAL
+void RenderManager::drawSuperPacGomme(Edible* edible)
+{
+    glm::mat4 transformationMatrix = transformMatrix(edible);
+    applyTransformations(NORMAL, transformationMatrix);
+    m_sphere.drawSphere();
+}
+
+// Draw Fruit - Sphere - Shader : NORMAL
+void RenderManager::drawFruit(Edible* edible)
+{
+    glm::mat4 transformationMatrix = transformMatrix(edible);
+    applyTransformations(NORMAL, transformationMatrix);
+    m_sphere.drawSphere();
+}
+
+// ---- ALL OBJECTS ----- //
+
+void RenderManager::drawWalls(std::vector<Wall*> wall)
+{
+    for (unsigned int i = 0; i < wall.size(); ++i)
+    {
+        drawWall(wall[i]);
+    }
+}
+
+void RenderManager::drawPacGommes(std::vector<Edible*> edible)
+{
+    for (unsigned int i = 0; i < edible.size(); ++i)
+    {
+        drawPacGomme(edible[i]);
+    }
+}
+
+void RenderManager::drawSuperPacGommes(std::vector<Edible*> edible)
+{
+    for (unsigned int i = 0; i < edible.size(); ++i)
+    {
+        drawSuperPacGomme(edible[i]);
+    }
+}
+
+void RenderManager::drawFruits(std::vector<Edible*> edible)
+{
+    for (unsigned int i = 0; i < edible.size(); ++i)
+    {
+        drawFruit(edible[i]);
     }
 }

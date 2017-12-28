@@ -4,9 +4,13 @@
 int main() {
 
     Map m;
-    m.setFileMap("/home/laure/IMACMAN/Code/data/mapTest.txt");
-    m.load();
+    m.setFileMap("mapTest.txt");
+    m.initialization();
     m.display();
     m.play();
+    m.getPacGommes()[1]->display();
+    std::cout << m.getSuperPacGommes().size() << std::endl;
+    m.getSuperPacGommes()[1]->display();
+    m.~Map();
     return 0;
 }

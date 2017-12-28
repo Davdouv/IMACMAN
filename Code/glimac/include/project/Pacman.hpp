@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Character.hpp"
 
 class Pacman : public Character {
@@ -6,7 +8,8 @@ private:
 
 public:
 
-    Pacman(int, int, int, int, int, Orientation);
+    Pacman(float, float, float, float, float, Orientation);
     Pacman();
 
+    void display() override;
 };

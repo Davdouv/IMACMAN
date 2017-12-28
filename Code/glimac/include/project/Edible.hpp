@@ -17,8 +17,13 @@ public:
     Edible();
 
     // getter
-    int getType() const;
+    int getTypeEdible() const;
 
     // setter
-    void setType(int);
+    void setTypeEdible(int);
+
+    void display() override;
+
+    // the bonus given by the edible depending on its type
+    int gain();
 };
