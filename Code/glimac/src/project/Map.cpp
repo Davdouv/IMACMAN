@@ -235,6 +235,7 @@ void Map::play() {
         if (line == "C") play = false;
         pacmanGhostCollision();
         pacmanEdibleCollision();
+        ghostMove();
     }
 }
 
@@ -367,10 +368,12 @@ void Map::display() {
             for (int  j = 0; j < m_nbY; j++) {
                 ghost = false;
                 for (int k = 0; k < m_ghosts.size(); k++) {
-                    if (m_ghosts[k].collision(tmp.at(j))) {std::cout << k+1 << " ";
+                    if ( (( m_ghosts[k].getPosX() >= tmp.at(j)->getPosX()) && (m_ghosts[k].getPosX() < tmp.at(j)->getPosX()+1)) && ((m_ghosts[k].getPosY() >= tmp.at(j)->getPosY()) && (m_ghosts[k].getPosY() < tmp.at(j)->getPosY()+1)) ) 
+                 {std::cout << k+1 << " ";
                     ghost = true;}
                 }
-                if (m_pacman.collision(tmp.at(j))) std::cout << m_pacman.getType() << " ";
+                if ( ((m_pacman.getPosX() >= tmp.at(j)->getPosX()) && (m_pacman.getPosX() < tmp.at(j)->getPosX()+1)) && ((m_pacman.getPosY() >= tmp.at(j)->getPosY()) && (m_pacman.getPosY() < tmp.at(j)->getPosY()+1)) ) 
+                std::cout << m_pacman.getType() << " ";
                 else if ((tmp.at(j) != NULL) && (!ghost)) std::cout << tmp.at(j)->getType() << " ";
                 else if (!ghost) std::cout << "V ";
             }
@@ -714,23 +717,23 @@ int Map::shortestWay(int ghostType, float x, float y) {
         // if goal is at the right top
         if ((gx - x < 0) && (gy - y < 0)) {
             if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
-            else if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
-            else if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
-            else if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
+            if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
+            if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
+            if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
         }
         // if goal is at the right bottom
         else if ((gx - x < 0) && (gy - y > 0)) {
             if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
-            else if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
-            else if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
-            else if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
+            if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
+            if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
+            if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
         }
         // if goal is at the left top
         else if ((gx - x > 0) && (gy - y < 0)) {
             if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
-            else if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
-            else if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
-            else if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
+            if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
+            if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
+            if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
         }
         // if goal is at the left bottom
         else if ((gx - x > 0) && (gy - y > 0)) {
