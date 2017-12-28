@@ -172,25 +172,6 @@ int Map::load() {
 }
 
 /*
-void Map::movePacman(Controller* controller)
-{
-	Controller::Key action = controller->updatePlayerAction();
-
-	switch (action)
-	{
-		case Controller::UP : m_pacman.moveUp();
-			break;
-		case Controller::DOWN : m_pacman.moveDown();
-			break;
-		case Controller::LEFT : m_pacman.moveLeft();
-			break;
-		case Controller::RIGHT : m_pacman.moveRight();
-			break;
-		default :
-			break;
-	}
-}
-/*
 int Map::save() {
 
     std::fstream file;
@@ -212,6 +193,7 @@ int Map::save() {
 }
 
 */
+// For console only
 void Map::play() {
 
     bool play = true;
@@ -221,16 +203,16 @@ void Map::play() {
         std::cout << "Your move : " << std::endl;
         getline(std::cin, line);
         if (line == "Z") {            
-            if (!pacmanWallCollision('Z')) m_pacman.moveUp();
+            if (!characterWallCollision(&m_pacman, 'Z')) m_pacman.moveUp();
         }
         if (line == "Q") {    
-            if (!pacmanWallCollision('Q')) m_pacman.moveLeft();
+            if (!characterWallCollision(&m_pacman, 'Q')) m_pacman.moveLeft();
         }
         if (line == "S") {   
-            if (!pacmanWallCollision('S')) m_pacman.moveDown();
+            if (!characterWallCollision(&m_pacman, 'S')) m_pacman.moveDown();
         }
         if (line == "D") {    
-            if (!pacmanWallCollision('D')) m_pacman.moveRight();
+            if (!characterWallCollision(&m_pacman, 'D')) m_pacman.moveRight();
         }
         if (line == "C") play = false;
         pacmanGhostCollision();
@@ -280,85 +262,61 @@ void Map::play(Controller* controller)
 }
 */
 
-// NOUVELLE VERSION
-void Map::play(Controller* controller) {
-    Controller::Key action = controller->getPlayerAction();
-    bool newAction = false;
-
-	switch (action)
+// Returns true if can move, false if not
+bool Map::moveCharacter(Character* character, Controller::Key action)
+{
+    switch (action)
 	{
 		case Controller::Z :
-            if (!pacmanWallCollision('Z'))
+            if (!characterWallCollision(character, 'Z'))
             {
-                m_pacman.moveUp();
-                newAction = true;
+                character->moveUp();
+                return true;
             }
 			break;
 		case Controller::Q :
-            if (!pacmanWallCollision('Q')) 
+            if (!characterWallCollision(character, 'Q')) 
             {
-                m_pacman.moveLeft();
-                newAction = true;
+                character->moveLeft();
+                return true;
             }
 			break;
 		case Controller::S :
-            if (!pacmanWallCollision('S'))
+            if (!characterWallCollision(character, 'S'))
             {
-                m_pacman.moveDown();
-                newAction = true;
+                character->moveDown();
+                return true;
             }
 			break;
 		case Controller::D :
-            if (!pacmanWallCollision('D')) 
+            if (!characterWallCollision(character, 'D')) 
             {
-                m_pacman.moveRight();
-                newAction = true;
+                character->moveRight();
+                return true;
             }
 			break;
 		default :
 			break;
 	}
+    return false;
+}
 
-    if(newAction)
+void Map::play(Controller* controller) {
+    Controller::Key action = controller->getPlayerAction();
+    
+    if (moveCharacter(&m_pacman, action))
     {
         controller->setPlayerPreviousAction(action);
     }
+    // Else keep doing the previous action
     else
     {
-        switch (controller->getPlayerPreviousAction())
-	    {
-            case Controller::Z :
-                if (!pacmanWallCollision('Z'))
-                {
-                    m_pacman.moveUp();
-                }
-                break;
-            case Controller::Q :
-                if (!pacmanWallCollision('Q'))
-                {
-                    m_pacman.moveLeft();
-                }
-                break;
-            case Controller::S :
-                if (!pacmanWallCollision('S'))
-                {
-                    m_pacman.moveDown();
-                }
-                break;
-            case Controller::D :
-                if (!pacmanWallCollision('D')) 
-                {
-                    m_pacman.moveRight();
-                }                    
-                break;
-            default :
-                break;
-	    }
+	    moveCharacter(&m_pacman, controller->getPlayerPreviousAction());
     }
 }
 
+// For console only
 void Map::display() {
-
     bool ghost = false;
     m_pacman.display();
     if (m_staticObjects.empty()) std::cout << "It's empty!" << std::endl;
@@ -411,113 +369,25 @@ bool Map::ghostCollision() {
     return false;
 }
 
-bool Map::pacmanWallCollision(char direction) {
-    int posX = (int)m_pacman.getPosX();
-    int posY = (int)m_pacman.getPosY();
-    float seuil = 0.01;
-    switch(direction) {
-        case 'Z': 
-            // First check if we can move inside the cell
-            if ((float)posY+m_pacman.getSpeed() < m_pacman.getPosY())
-            {
-                // Then make sure we're not between 2 cells
-                if ((m_pacman.getPosX() - (float)posX) > seuil)
-                {
-                    // Check if we can go up on both cells
-                    if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY][posX+1]->getType()=='W'))
-                        return true;
-                }
-                return false;
-            }
-            // Finally check if we can move to the next cell
-            if (posY-1 >= 0)
-                return (m_staticObjects[posY-1][posX]->getType()=='W');
-            else
-                return true;
-        case 'Q':
-            // First check if we can move inside the cell
-            if ((float)posX+m_pacman.getSpeed() < m_pacman.getPosX())
-            {
-                // Then make sure we're not between 2 cells
-                if ((m_pacman.getPosY() - (float)posY) > seuil)
-                {
-                    std::cout <<(m_pacman.getPosY() - (float)posY)<<std::endl;
-                    // Check if we can go left on both cells
-                    if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY+1][posX]->getType()=='W'))
-                        return true;
-                }
-                return false;
-            }
-                
-            if (posX-1 >= 0)
-                return (m_staticObjects[posY][posX-1]->getType()=='W');
-            else
-                return true;
-        case 'D':
-            // First check if we can move inside the cell
-            if ((float)posX+m_pacman.getSpeed() < m_pacman.getPosX())
-            {
-                // Then make sure we're not between 2 cells
-                if ((m_pacman.getPosY() - (float)posY) > seuil)
-                {
-                    // Check if we can go left on both cells
-                    if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY+1][posX]->getType()=='W'))
-                        return true;
-                }
-                return false;
-            }
-            if (posX+1 <= m_nbY-1)
-            {
-                // Then make sure we're not between 2 cells
-                if ((m_pacman.getPosY() - (float)posY) > seuil)
-                {
-                    // Check if we can go right on both cells
-                    if ((m_staticObjects[posY][posX+1]->getType()=='W') || (m_staticObjects[posY+1][posX+1]->getType()=='W'))
-                        return true;
-                }
-                else
-                    return (m_staticObjects[posY][posX+1]->getType()=='W');
-            }
-                
-            else
-                return true;
-        case 'S':
-            
-            if (posY+1 <= m_nbX-1)
-            {
-                // Make sure we're not between 2 cells
-                if ((m_pacman.getPosX() - (float)posX) > seuil)
-                {
-                    // Check if we can go down on both cells
-                    if ((m_staticObjects[posY+1][posX]->getType()=='W') || (m_staticObjects[posY+1][posX+1]->getType()=='W'))
-                        return true;
-                }
-                else
-                    return (m_staticObjects[posY+1][posX]->getType()=='W');
-            }
-            else
-            {
-                return true;
-            }
-                
-        default:
-            break;
-    }
-    return false;
+bool Map::betweenTwoCells(float characterPos, int cellPos)
+{
+    float seuil = 0.005;
+    if ((characterPos - (float)cellPos) > seuil)
+        return true;
+    else return false;
 }
 
+bool Map::characterWallCollision(Character* character, char direction) {
+    int posX = (int)character->getPosX();
+    int posY = (int)character->getPosY();
 
-bool Map::ghostWallCollision(int ghostType, char direction) {
-    int posX = (int)m_ghosts[ghostType].getPosX();
-    int posY = (int)m_ghosts[ghostType].getPosY();
-    float seuil = 0.01;
     switch(direction) {
         case 'Z': 
             // First check if we can move inside the cell
-            if ((float)posY+m_ghosts[ghostType].getSpeed() < m_ghosts[ghostType].getPosY())
+            if ((float)posY+character->getSpeed() < character->getPosY())
             {
                 // Then make sure we're not between 2 cells
-                if ((m_ghosts[ghostType].getPosX() - (float)posX) > seuil)
+                if (betweenTwoCells(character->getPosX(), posX))
                 {
                     // Check if we can go up on both cells
                     if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY][posX+1]->getType()=='W'))
@@ -527,34 +397,44 @@ bool Map::ghostWallCollision(int ghostType, char direction) {
             }
             // Finally check if we can move to the next cell
             if (posY-1 >= 0)
+            {
+                if (betweenTwoCells(character->getPosX(), posX))
+                    return true;
                 return (m_staticObjects[posY-1][posX]->getType()=='W');
+            }
+                
             else
                 return true;
         case 'Q':
             // First check if we can move inside the cell
-            if ((float)posX+m_ghosts[ghostType].getSpeed() < m_ghosts[ghostType].getPosX())
+            if ((float)posX+character->getSpeed() < character->getPosX())
             {
                 // Then make sure we're not between 2 cells
-                if ((m_ghosts[ghostType].getPosY() - (float)posY) > seuil)
+                if (betweenTwoCells(character->getPosY(), posY))
                 {
-                    std::cout <<(m_ghosts[ghostType].getPosY() - (float)posY)<<std::endl;
                     // Check if we can go left on both cells
                     if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY+1][posX]->getType()=='W'))
+                    {
                         return true;
+                    }
                 }
                 return false;
             }
                 
             if (posX-1 >= 0)
+            {
+                if (betweenTwoCells(character->getPosY(), posY))
+                    return true;
                 return (m_staticObjects[posY][posX-1]->getType()=='W');
+            }
             else
                 return true;
         case 'D':
             // First check if we can move inside the cell
-            if ((float)posX+m_ghosts[ghostType].getSpeed() < m_ghosts[ghostType].getPosX())
+            if ((float)posX+character->getSpeed() < character->getPosX())
             {
                 // Then make sure we're not between 2 cells
-                if ((m_ghosts[ghostType].getPosY() - (float)posY) > seuil)
+                if (betweenTwoCells(character->getPosY(), posY))
                 {
                     // Check if we can go left on both cells
                     if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY+1][posX]->getType()=='W'))
@@ -565,7 +445,7 @@ bool Map::ghostWallCollision(int ghostType, char direction) {
             if (posX+1 <= m_nbY-1)
             {
                 // Then make sure we're not between 2 cells
-                if ((m_ghosts[ghostType].getPosY() - (float)posY) > seuil)
+                if (betweenTwoCells(character->getPosY(), posY))
                 {
                     // Check if we can go right on both cells
                     if ((m_staticObjects[posY][posX+1]->getType()=='W') || (m_staticObjects[posY+1][posX+1]->getType()=='W'))
@@ -582,7 +462,7 @@ bool Map::ghostWallCollision(int ghostType, char direction) {
             if (posY+1 <= m_nbX-1)
             {
                 // Make sure we're not between 2 cells
-                if ((m_ghosts[ghostType].getPosX() - (float)posX) > seuil)
+                if (betweenTwoCells(character->getPosX(), posX))
                 {
                     // Check if we can go down on both cells
                     if ((m_staticObjects[posY+1][posX]->getType()=='W') || (m_staticObjects[posY+1][posX+1]->getType()=='W'))
@@ -716,59 +596,59 @@ int Map::shortestWay(int ghostType, float x, float y) {
 
         // if goal is at the right top
         if ((gx - x < 0) && (gy - y < 0)) {
-            if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
-            if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
-            if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
-            if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
         }
         // if goal is at the right bottom
         else if ((gx - x < 0) && (gy - y > 0)) {
-            if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
-            if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
-            if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
-            if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
         }
         // if goal is at the left top
         else if ((gx - x > 0) && (gy - y < 0)) {
-            if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
-            if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
-            if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
-            if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
         }
         // if goal is at the left bottom
         else if ((gx - x > 0) && (gy - y > 0)) {
-            if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
-            else if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
-            else if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
-            else if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
         }
         // if goal is at the right
         else if ((gx - x < 0) && (gy - y == 0)) {
-            if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
-            else if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
-            else if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
-            else if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
         }
         // if goal is at the left
         else if ((gx - x > 0) && (gy - y == 0)) {
-            if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
-            else if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
-            else if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
-            else if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
         }
         // if goal is at the top
         else if ((gx - x == 0) && (gy - y < 0)) {
-            if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
-            else if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
-            else if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
-            else if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
         }
         // if goal is at the bottom
         else if ((gx - x == 0) && (gy - y > 0)) {
-            if (!ghostWallCollision(ghostType, 'S')) m_ghosts[ghostType].moveDown();
-            else if (!ghostWallCollision(ghostType, 'Z')) m_ghosts[ghostType].moveUp();
-            else if (!ghostWallCollision(ghostType, 'Q')) m_ghosts[ghostType].moveLeft();
-            else if (!ghostWallCollision(ghostType, 'D')) m_ghosts[ghostType].moveRight();
+            if (!characterWallCollision(&m_ghosts[ghostType], 'S')) m_ghosts[ghostType].moveDown();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Z')) m_ghosts[ghostType].moveUp();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'Q')) m_ghosts[ghostType].moveLeft();
+            else if (!characterWallCollision(&m_ghosts[ghostType], 'D')) m_ghosts[ghostType].moveRight();
         }
         return 0;
     }

@@ -70,13 +70,12 @@ public:
     void play();
     void play(Controller* controller);
 
-    //void movePacman(Controller*);
+    bool moveCharacter(Character*, Controller::Key);
 
     // collisions
+    bool characterWallCollision(Character*, char);
     void pacmanGhostCollision();
     bool ghostCollision();
-    bool pacmanWallCollision(char);
-    bool ghostWallCollision(int, char);
     void pacmanEdibleCollision();
 
     // Ghost moves AI
@@ -88,4 +87,7 @@ public:
     
     // Shortest way
     int shortestWay(int, float, float);
+
+private:
+    bool betweenTwoCells(float characterPos, int cellPos);
 };
