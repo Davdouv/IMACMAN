@@ -82,7 +82,6 @@ int main(int argc, char** argv) {
         tbCamera.cameraController(&controller);
         ffCamera.setCameraOnCharacter(map.getPacman());     // NEED TO FIX HERE !!
         map.play(&controller);
-        map.ghostMove();
 
         // Switch Camera mini-function
         if (controller.getInterfaceAction() == Controller::C)
