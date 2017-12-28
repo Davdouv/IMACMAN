@@ -11,7 +11,7 @@ public:
 
 private:
     Map* m_map;
-    PacmanState m_state;
+    PacmanState m_state;    // If pacman can eat ghosts or not
     Player m_player;
 
 public:

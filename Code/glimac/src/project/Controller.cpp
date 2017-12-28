@@ -42,7 +42,7 @@ bool Controller::isMouseDown()
 }
 
 // Update Player Action Key
-void Controller::updatePlayerAction()
+void Controller::updatePlayerAction(Pacman* pacman)
 {
     if (m_windowManager->isKeyPressed(SDLK_z))
 	{
@@ -59,6 +59,11 @@ void Controller::updatePlayerAction()
 	else if (m_windowManager->isKeyPressed(SDLK_d))
 	{
 		playerAction = D;
+	}
+
+	if(FPS)
+	{
+		//playerAction = getFPSkey(pacman, playerAction);
 	}
 }
 
@@ -122,9 +127,9 @@ void Controller::updateInterfaceAction()
 }
 
 // Call all the updates functions
-void Controller::updateController()
+void Controller::updateController(Pacman* pacman)
 {
-    updatePlayerAction();
+    updatePlayerAction(pacman);
     updateCameraAction();
     updateInterfaceAction();
 }
@@ -171,6 +176,75 @@ void Controller::switchFPS()
 void Controller::setPlayerPreviousAction(Key key)
 {
 	previousPlayerAction = key;
+}
+
+// If we are in FPS mode, we go forward but keys have other interpretations
+Controller::Key Controller::getFPSkey(Pacman* pacman, Controller::Key action)
+{
+    switch(pacman->getOrientation())
+    {
+        case Object::Orientation::LEFT:
+            switch(action)
+            {
+                case Controller::Key::Z:
+                    action = Controller::Key::Q;
+                    break;
+                case Controller::Key::Q:
+                    action = Controller::Key::S;
+                    break;
+                case Controller::Key::S:
+                    action = Controller::Key::D;
+                    break;
+                case Controller::Key::D:
+                    action = Controller::Key::Z;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Object::Orientation::RIGHT:
+            switch(action)
+            {
+                case Controller::Key::Z:
+                    action = Controller::Key::D;
+                    break;
+                case Controller::Key::Q:
+                    action = Controller::Key::Z;
+                    break;
+                case Controller::Key::S:
+                    action = Controller::Key::Q;
+                    break;
+                case Controller::Key::D:
+                    action = Controller::Key::S;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Object::Orientation::DOWN:
+            switch(action)
+            {
+                case Controller::Key::Z:
+                    action = Controller::Key::Z;
+                    break;
+                case Controller::Key::Q:
+                    action = Controller::Key::D;
+                    break;
+                case Controller::Key::S:
+                    action = Controller::Key::S;
+                    break;
+                case Controller::Key::D:
+                    action = Controller::Key::Q;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+
+    return action;
 }
 
 }

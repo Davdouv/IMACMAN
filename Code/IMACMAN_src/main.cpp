@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
             }
 
             // Update controller with key & mouse events each frame
-            controller.updateController();
+            controller.updateController(map.getPacman());
         }
 
         // Send the keys to the camera and the map
@@ -91,7 +91,6 @@ int main(int argc, char** argv) {
         // Switch Camera mini-function
         if (controller.getInterfaceAction() == Controller::C)
         {
-            //std::cout << ffCamera.getViewMatrix() << std::endl;
             if(camera == &ffCamera)
             {
                 camera = &tbCamera;

@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
             }
 
             // Update controller with key & mouse events each frame
-            controller.updateController();
+            controller.updateController(map.getPacman());
         }
 
         // Send the keys to the camera and the map
