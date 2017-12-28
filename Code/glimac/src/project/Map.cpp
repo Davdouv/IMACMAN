@@ -227,8 +227,6 @@ void Map::initDoors() {
         doors[0]->setDestY(doors[1]->getPosY());
         doors[1]->setDestX(doors[0]->getPosX());
         doors[1]->setDestY(doors[0]->getPosY());
-        std::cout << doors[0]->getPosX() << std::endl;
-        std::cout << doors[0]->getPosY() << std::endl;
         m_staticObjects[doors[0]->getPosY()][doors[0]->getPosX()] = doors[0];
         m_staticObjects[doors[1]->getPosY()][doors[1]->getPosX()] = doors[1];
     }
@@ -304,7 +302,7 @@ void Map::play(Controller* controller)
 }
 */
 
-// Returns true if can move, false if not
+// Returns true if can move, false if not (or if he takes door)
 bool Map::moveCharacter(Character* character, Controller::Key action)
 {
     switch (action)
@@ -322,6 +320,7 @@ bool Map::moveCharacter(Character* character, Controller::Key action)
                 Door* d = (Door*) m_staticObjects[character->getPosY()][character->getPosX()];
                 character->setPosX(d->getDestX());
                 character->setPosY(d->getDestY());
+                character->moveLeft();
                 return false;
             }
             if (!characterWallCollision(character, 'Q'))
@@ -338,6 +337,14 @@ bool Map::moveCharacter(Character* character, Controller::Key action)
             }
 			break;
 		case Controller::D :
+            if (characterRightDoorCollision(character))
+            {
+                Door* d = (Door*) m_staticObjects[character->getPosY()][character->getPosX()+1];
+                character->setPosX(d->getDestX());
+                character->setPosY(d->getDestY());
+                character->moveRight();
+                return false;
+            }
             if (!characterWallCollision(character, 'D'))
             {
                 character->moveRight();
@@ -634,14 +641,11 @@ bool Map::characterLeftDoorCollision(Character* character)
 
     if (m_staticObjects[iposY][iposX]->getType()=='D')
     {
-        std::cout << iposX << std::endl;
         if (fposX - iposX < 0.1)
         {
             return true;
         }
     }
-    // std::cout << iposX << std::endl;
-    // std::cout << iposY << std::endl;
     return false;
 }
 
