@@ -41,7 +41,7 @@ public:
     int getNbY() const;
     std::string getFileMap() const;
     Pacman* getPacman();
-    std::vector<Ghost> getGhosts() const;
+    std::vector<Ghost*> getGhosts();
     std::vector<std::vector<StaticObject*>> getStaticObjects() const;
 
     // get map elements

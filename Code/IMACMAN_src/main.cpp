@@ -115,6 +115,7 @@ int main(int argc, char** argv) {
         // Draw Pacman only in TPS
         if(!controller.isFPSactive())
             renderManager.drawPacman(map.getPacman());
+        renderManager.drawGhosts(map.getGhosts());
         renderManager.drawPacGommes(map.getPacGommes());
         renderManager.drawSuperPacGommes(map.getSuperPacGommes());
 

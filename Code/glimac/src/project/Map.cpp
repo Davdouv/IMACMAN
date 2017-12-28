@@ -24,7 +24,12 @@ int Map::getNbX() const { return m_nbX; }
 int Map::getNbY() const { return m_nbY; }
 std::string Map::getFileMap() const { return m_fileMap; }
 Pacman* Map::getPacman() { return &m_pacman; }
-std::vector<Ghost> Map::getGhosts() const { return m_ghosts; }
+std::vector<Ghost*> Map::getGhosts() { 
+    std::vector<Ghost*> ghosts;
+    for(unsigned int i = 0; i < m_ghosts.size(); i++)
+        ghosts.push_back(&m_ghosts[i]);
+    return ghosts; 
+}
 std::vector<std::vector<StaticObject*>> Map::getStaticObjects() const { return m_staticObjects; }
 
 void Map::setState(int state) { m_state = state;}
@@ -126,7 +131,7 @@ int Map::load() {
             std::string delimiter = ",";
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.005, i+1, Object::Orientation::LEFT);
+            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.25, 0.5, 0.005, i+1, Object::Orientation::LEFT);
             tabGhost.push_back(*g);
             delete(g);
         }
