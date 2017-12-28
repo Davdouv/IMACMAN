@@ -136,16 +136,18 @@ int Map::load() {
         std::string delimiter = ",";
         std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
         std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-        Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.005, Object::Orientation::LEFT);
+        Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.01, Object::Orientation::LEFT);
         this->setPacman(*p);
         std::vector<Ghost> tabGhost;
+        int death = 20;
         for (int i = 0; i < 4; i++) {
             getline(file,tmp);
             std::string delimiter = ",";
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.25, 0.5, 0.005, i+1, Object::Orientation::LEFT);
+            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 0.008, i+1, Object::Orientation::LEFT, death);
             tabGhost.push_back(*g);
+            death+=10;
             delete(g);
         }
         this->setGhosts(tabGhost);
@@ -165,11 +167,11 @@ int Map::load() {
 
                     case 'W' : o = new Wall(j, i, 1, 1,  Object::Orientation::LEFT);
                         break;
-                    case 'G' : o = new Edible(j, i, 0.15, 0.15, Edible::Type::PAC_GOMME, Object::Orientation::LEFT);
+                    case 'G' : o = new Edible(j, i, 0.20, 0.20, Edible::Type::PAC_GOMME, Object::Orientation::LEFT);
                         break;
-                    case 'S' : o = new Edible(j, i, 0.25, 0.25, Edible::Type::SUPER_PAC_GOMME, Object::Orientation::LEFT);
+                    case 'S' : o = new Edible(j, i, 0.30, 0.30, Edible::Type::SUPER_PAC_GOMME, Object::Orientation::LEFT);
                         break;
-                    case 'B' : o = new Edible(j, i, 1, 1, Edible::Type::FRUIT, Object::Orientation::LEFT);
+                    case 'B' : o = new Edible(j, i, 0.3, 0.3, Edible::Type::FRUIT, Object::Orientation::LEFT);
                         break;
                     case 'D' : o = new Door(j, i, 1, 1, Object::Orientation::LEFT);
                         break;
@@ -336,7 +338,8 @@ bool Map::moveCharacter(Character* character, Controller::Key action)
     return false;
 }
 
-void Map::play(Controller* controller) {
+void Map::pacmanMove(Controller* controller)
+{
     Controller::Key action = controller->getPlayerAction();
 
     if (moveCharacter(&m_pacman, action))
@@ -348,6 +351,13 @@ void Map::play(Controller* controller) {
     {
 	    moveCharacter(&m_pacman, controller->getPlayerPreviousAction());
     }
+}
+
+void Map::play(Controller* controller) {
+    pacmanMove(controller);
+    ghostMove();
+    pacmanGhostCollision();
+    pacmanEdibleCollision();
 }
 
 // For console only
@@ -386,9 +396,12 @@ void Map::pacmanGhostCollision() {
                     for (int i = 0; i < m_ghosts.size(); i++) {
                         m_ghosts[i].reset();
                     }
-                    return;
+                    break;
                 case Map::State::SUPER : m_ghosts[i].reset();
-                    m_player.gainPoints(1000);
+                    m_player.gainPoints(1000);  // (200, 400, 800, 1600)
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -404,121 +417,206 @@ bool Map::ghostCollision() {
     return false;
 }
 
-bool Map::betweenTwoCells(float characterPos, int cellPos)
+bool Map::wallCollisionUP(float fposY, int iposY, int iposX, float speed, Character* character)
 {
-    float seuil = 0.005;
-    if ((characterPos - (float)cellPos) > seuil)
+    // Check if we're still going to be inside the cell
+    if((fposY - speed) > iposY)
+    {
+        // Put the character on the left edge of the cell
+        character->setPosX((float)iposX);
+        // Ok we can move inside the cell
+        return false;
+    }
+    // We're going to be on the upper cell
+    else
+    {
+        // Check if we can go on the upper cell
+        if(iposY >= 1)
+        {
+            // Check if upper cell is a wall
+            if (m_staticObjects[iposY-1][iposX]->getType()=='W')
+            {
+                // It's a wall, return true -> it's a collision, put the character on the top of the cell
+                character->setPosY((float)iposY);
+                return true;
+            }
+            else
+            {
+                // Put the character on the left edge of the cell
+                character->setPosX((float)iposX);
+                // It's ok we can move to the other cell
+                return false;
+            }
+        }
+        else
+        {
+            // We are at the edge of the game
+            character->setPosY((float)iposY);
+            return true;
+        }
+    }
+}
+
+bool Map::wallCollisionLEFT(float fposX, int iposY, int iposX, float speed, Character* character)
+{
+    if((fposX - speed) > iposX)
+    {
+        character->setPosY((float)iposY);
+        return false;
+    }
+    else
+    {
+        if(iposX >= 1)
+        {
+            if (m_staticObjects[iposY][iposX-1]->getType()=='W')
+            {
+                character->setPosX((float)iposX);
+                return true;
+            }
+            else
+            {
+                character->setPosY((float)iposY);
+                return false;
+            }
+        }
+        else
+        {
+            character->setPosX((float)iposX);
+            return true;
+        }
+    }
+}
+
+bool Map::wallCollisionDOWN(float fposY, int iposY, int iposX, float speed, Character* character)
+{
+    // Check if we can go on the bottom cell
+    if(iposY+1 <= m_nbX-1)
+    {
+        // Check if bottom cell is a wall
+        if (m_staticObjects[iposY+1][iposX]->getType()=='W')
+        {
+            character->setPosY((float)iposY);
+            return true;
+        }
+        else
+        {
+            character->setPosX((float)iposX);
+            return false;
+        }
+    }
+    else
+    {
+        character->setPosY((float)iposY);
         return true;
-    else return false;
+    }
+}
+
+bool Map::wallCollisionRIGHT(float fposX, int iposY, int iposX, float speed, Character* character)
+{
+    if(iposX+1 <= m_nbY-1)
+    {
+        if (m_staticObjects[iposY][iposX+1]->getType()=='W')
+        {
+            character->setPosX((float)iposX);
+            return true;
+        }
+        else
+        {
+            character->setPosY((float)iposY);
+            return false;
+        }
+    }
+    else
+    {
+        character->setPosX((float)iposX);
+        return true;
+    }
 }
 
 bool Map::characterWallCollision(Character* character, char direction) {
-    int posX = (int)character->getPosX();
-    int posY = (int)character->getPosY();
+    float fposX = character->getPosX();
+    float fposY = character->getPosY();
+    int iposX = (int)fposX;   // Matrix index X
+    int iposY = (int)fposY;   // Matrix index Y
+    float speed = character->getSpeed();
+    float seuil = 0.005;
 
     switch(direction) {
         case 'Z':
-            // First check if we can move inside the cell
-            if ((float)posY+character->getSpeed() < character->getPosY())
+            // Check if we are close to the left edge
+            if(fposX - iposX <= seuil)
             {
-                // Then make sure we're not between 2 cells
-                if (betweenTwoCells(character->getPosX(), posX))
-                {
-                    // Check if we can go up on both cells
-                    if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY][posX+1]->getType()=='W'))
-                        return true;
-                }
-                return false;
+                return wallCollisionUP(fposY, iposY, iposX, speed, character);
             }
-            // Finally check if we can move to the next cell
-            if (posY-1 >= 0)
+            // Check if we are close to the right edge
+            else if (iposX+1 - fposX <= seuil)
             {
-                if (betweenTwoCells(character->getPosX(), posX))
-                    return true;
-                return (m_staticObjects[posY-1][posX]->getType()=='W');
+                // Consider we're on the right edge
+                return wallCollisionUP(fposY, iposY, iposX+1, speed, character);
             }
-
+            // We are between two cells
             else
+            {
+                // We can't go up
                 return true;
+            }
+            break;
         case 'Q':
-            // First check if we can move inside the cell
-            if ((float)posX+character->getSpeed() < character->getPosX())
+            if(fposY - iposY <= seuil)
             {
-                // Then make sure we're not between 2 cells
-                if (betweenTwoCells(character->getPosY(), posY))
-                {
-                    // Check if we can go left on both cells
-                    if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY+1][posX]->getType()=='W'))
-                    {
-                        return true;
-                    }
-                }
-                return false;
+                return wallCollisionLEFT(fposX, iposY, iposX, speed, character);
             }
-
-            if (posX-1 >= 0)
+            else if (iposY+1 - fposY <= seuil)
             {
-                if (betweenTwoCells(character->getPosY(), posY))
-                    return true;
-                return (m_staticObjects[posY][posX-1]->getType()=='W');
+                return wallCollisionLEFT(fposX, iposY+1, iposX, speed, character);
             }
             else
-                return true;
-        case 'D':
-            // First check if we can move inside the cell
-            if ((float)posX+character->getSpeed() < character->getPosX())
             {
-                // Then make sure we're not between 2 cells
-                if (betweenTwoCells(character->getPosY(), posY))
-                {
-                    // Check if we can go left on both cells
-                    if ((m_staticObjects[posY][posX]->getType()=='W') || (m_staticObjects[posY+1][posX]->getType()=='W'))
-                        return true;
-                }
-                return false;
-            }
-            if (posX+1 <= m_nbY-1)
-            {
-                // Then make sure we're not between 2 cells
-                if (betweenTwoCells(character->getPosY(), posY))
-                {
-                    // Check if we can go right on both cells
-                    if ((m_staticObjects[posY][posX+1]->getType()=='W') || (m_staticObjects[posY+1][posX+1]->getType()=='W'))
-                        return true;
-                }
-                else
-                    return (m_staticObjects[posY][posX+1]->getType()=='W');
-            }
-
-            else
                 return true;
+            }
+            break;
         case 'S':
-
-            if (posY+1 <= m_nbX-1)
+            if(fposX - iposX <= seuil)
             {
-                // Make sure we're not between 2 cells
-                if (betweenTwoCells(character->getPosX(), posX))
-                {
-                    // Check if we can go down on both cells
-                    if ((m_staticObjects[posY+1][posX]->getType()=='W') || (m_staticObjects[posY+1][posX+1]->getType()=='W'))
-                        return true;
-                }
-                else
-                    return (m_staticObjects[posY+1][posX]->getType()=='W');
+                return wallCollisionDOWN(fposY, iposY, iposX, speed, character);
+            }
+            else if (iposX+1 - fposX <= seuil)
+            {
+                return wallCollisionDOWN(fposX, iposY, iposX+1, speed, character);
             }
             else
             {
                 return true;
             }
-
+            break;
+        case 'D':
+            if(fposY - iposY <= seuil)
+            {
+                return wallCollisionRIGHT(fposX, iposY, iposX, speed, character);
+            }
+            else if (iposY+1 - fposY <= seuil)
+            {
+                return wallCollisionRIGHT(fposX, iposY+1, iposX, speed, character);
+            }
+            else
+            {
+                return true;
+            }
+            break;
         default:
+            return true;
             break;
     }
-    return false;
+
 }
 
 void Map::pacmanEdibleCollision() {
-
+    // If we're going left, we want Pacman to be half inside the cell
+    if ((m_pacman.getPosX() - (int)m_pacman.getPosX()) > m_pacman.getWidth())
+        return;
+    // If we're going up, we want Pacman to be half inside the cell
+    if ((m_pacman.getPosY() - (int)m_pacman.getPosY()) > m_pacman.getHeight())
+        return;
     if (m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()]->getType()=='E') {
         Edible *e;
         e =  (Edible*) m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()];
@@ -531,30 +629,40 @@ void Map::pacmanEdibleCollision() {
 // Shadow will follow Pacman all along, so he will find the shortest way to go to Pacman
 void Map::shadowAI() {
 
-    shortestWay(Ghost::Type::SHADOW, m_pacman.getPosX(), m_pacman.getPosY());
+    if (m_ghosts[Ghost::Type::SHADOW].getDeath()) {
+
+        shortestWay(Ghost::Type::SHADOW, m_ghosts[Ghost::Type::SHADOW].getInitY(), m_ghosts[Ghost::Type::SHADOW].getInitX());
+    }
+    else shortestWay(Ghost::Type::SHADOW, m_pacman.getPosX(), m_pacman.getPosY());
 }
 
 // Speedy aims the direction Pacman is going so he find the shortest way to this direction
 void Map::speedyAI() {
 
-    switch(m_pacman.getOrientation()) {
+    if (m_ghosts[Ghost::Type::SPEEDY].getDeath()) {
 
-        case Object::Orientation::LEFT:
-            shortestWay(Ghost::Type::SPEEDY, 0, m_pacman.getPosY());
-            break;
+        shortestWay(Ghost::Type::SPEEDY, m_ghosts[Ghost::Type::SPEEDY].getInitY(), m_ghosts[Ghost::Type::SPEEDY].getInitX());
+    }
+    else {
+        switch(m_pacman.getOrientation()) {
 
-        case Object::Orientation::RIGHT:
-            shortestWay(Ghost::Type::SPEEDY, m_nbX, m_pacman.getPosY());
-            break;
+            case Object::Orientation::LEFT:
+                shortestWay(Ghost::Type::SPEEDY, 0, m_pacman.getPosY());
+                break;
 
-        case Object::Orientation::UP:
-            shortestWay(Ghost::Type::SPEEDY, m_pacman.getPosX(), 0);
-            break;
+            case Object::Orientation::RIGHT:
+                shortestWay(Ghost::Type::SPEEDY, m_nbX, m_pacman.getPosY());
+                break;
 
-        case Object::Orientation::DOWN:
-            shortestWay(Ghost::Type::SPEEDY, m_pacman.getPosX(), m_nbY);
-            break;
-        default:break;
+            case Object::Orientation::UP:
+                shortestWay(Ghost::Type::SPEEDY, m_pacman.getPosX(), 0);
+                break;
+
+            case Object::Orientation::DOWN:
+                shortestWay(Ghost::Type::SPEEDY, m_pacman.getPosX(), m_nbY);
+                break;
+            default:break;
+        }
     }
 
 }
@@ -565,7 +673,11 @@ void Map::speedyAI() {
 
 void Map::bashfulAI() {
 
-    if ((std::abs(m_pacman.getPosX() - m_ghosts[Ghost::Type::BASHFUL].getPosX()) <= 2)  && (std::abs(m_pacman.getPosY() - m_ghosts[Ghost::Type::BASHFUL].getPosY()) <= 10)) {
+    if (m_ghosts[Ghost::Type::BASHFUL].getDeath()) {
+
+        shortestWay(Ghost::Type::BASHFUL, m_ghosts[Ghost::Type::BASHFUL].getInitY(), m_ghosts[Ghost::Type::BASHFUL].getInitX());
+    }
+    else if ((std::abs(m_pacman.getPosX() - m_ghosts[Ghost::Type::BASHFUL].getPosX()) <= 2)  && (std::abs(m_pacman.getPosY() - m_ghosts[Ghost::Type::BASHFUL].getPosY()) <= 10)) {
 
         switch(m_pacman.getOrientation()) {
 
@@ -615,9 +727,15 @@ void Map::bashfulAI() {
 // goes around randomly
 void Map::pokeyAI() {
 
-    int rx = (rand()/RAND_MAX) * m_nbX;
-    int ry = (rand()/RAND_MAX) * m_nbY;
-    shortestWay(Ghost::Type::POKEY, rx, rx);
+    if (m_ghosts[Ghost::Type::POKEY].getDeath()) {
+
+        shortestWay(Ghost::Type::POKEY, m_ghosts[Ghost::Type::POKEY].getInitY(), m_ghosts[Ghost::Type::POKEY].getInitX());
+    }
+    else {
+        int rx = (rand()/RAND_MAX) * m_nbX;
+        int ry = (rand()/RAND_MAX) * m_nbY;
+        shortestWay(Ghost::Type::POKEY, rx, rx);
+    }
 }
 
 // Shortest way for a ghost to get to the position (x, y)

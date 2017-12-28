@@ -6,6 +6,7 @@ class Ghost : public Character {
 
 private:
     int m_type;
+    int m_death; 
 
 public:
     /* 4 GHOSTS :
@@ -17,14 +18,17 @@ public:
     enum Type {SHADOW = 0, SPEEDY = 1, BASHFUL = 2, POKEY = 3};
 
     // constructor
-    Ghost(int, int, float, float, float, int, Orientation);
+    Ghost(int, int, float, float, float, int, Orientation, int);
     Ghost();
 
     // getter
     int getType() const;
+    int getDeath() const;
 
     // setter
     void setType(int);
+    void setDeath(int);
+
     void reset() override;
 
     void display() override;

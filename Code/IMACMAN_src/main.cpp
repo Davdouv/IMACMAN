@@ -117,6 +117,7 @@ int main(int argc, char** argv) {
             renderManager.drawPacman(map.getPacman());
         renderManager.drawPacGommes(map.getPacGommes());
         renderManager.drawSuperPacGommes(map.getSuperPacGommes());
+        renderManager.drawFruits(map.getFruits());
 
         // De-bind Sphere VAO
         renderManager.debindVAO();
