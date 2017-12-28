@@ -5,6 +5,7 @@
 #include <glimac/FilePath.hpp>
 
 #include "project/RenderManager.hpp"
+#include "project/GameManager.hpp"
 
 #include "glimac/TrackballCamera.hpp"
 #include "glimac/FreeflyCamera.hpp"
@@ -51,6 +52,8 @@ int main(int argc, char** argv) {
     //map.setFileMap("mapTest.txt");
     map.initialization();
 
+    GameManager gameManager = GameManager(&map);
+
     // Game Infos
     glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
 
@@ -83,7 +86,7 @@ int main(int argc, char** argv) {
         // Send the keys to the camera and the map
         tbCamera.cameraController(&controller);
         ffCamera.setCameraOnCharacter(map.getPacman());     // NEED TO FIX HERE !!
-        map.play(&controller);
+        gameManager.play(&controller);
 
         // Switch Camera mini-function
         if (controller.getInterfaceAction() == Controller::C)
