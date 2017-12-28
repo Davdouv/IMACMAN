@@ -74,27 +74,28 @@ public:
     void play();
     void play(Controller* controller);
 
+    // Ghost moves AI
+    void ghostMove();
+
+private:
+    // Move
     bool moveCharacter(Character*, Controller::Key);
+    void movePacman(Controller* controller);
 
     // collisions
+    bool wallCollisionUP(float fposY, int iposY, int iposX, float speed, Character* character);
+    bool wallCollisionLEFT(float fposX, int iposY, int iposX, float speed, Character* character);
+    bool wallCollisionDOWN(float fposY, int iposY, int iposX, float speed, Character* character);
+    bool wallCollisionRIGHT(float fposX, int iposY, int iposX, float speed, Character* character);
     bool characterWallCollision(Character*, char);
     void pacmanGhostCollision();
     bool ghostCollision();
     void pacmanEdibleCollision();
 
-    // Ghost moves AI
+    // Ghost moves algorithms
+    int shortestWay(int, float, float);
     void shadowAI();
     void speedyAI();
     void bashfulAI();
     void pokeyAI();
-    void ghostMove();
-    
-    // Shortest way
-    int shortestWay(int, float, float);
-
-private:
-    bool wallCollisionUP(float fposY, int iposY, int iposX, float speed, Character* character);
-    bool wallCollisionLEFT(float fposX, int iposY, int iposX, float speed, Character* character);
-    bool wallCollisionDOWN(float fposY, int iposY, int iposX, float speed, Character* character);
-    bool wallCollisionRIGHT(float fposX, int iposY, int iposX, float speed, Character* character);
 };

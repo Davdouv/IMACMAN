@@ -338,7 +338,8 @@ bool Map::moveCharacter(Character* character, Controller::Key action)
     return false;
 }
 
-void Map::play(Controller* controller) {
+void Map::movePacman(Controller* controller)
+{
     Controller::Key action = controller->getPlayerAction();
 
     if (moveCharacter(&m_pacman, action))
@@ -350,6 +351,13 @@ void Map::play(Controller* controller) {
     {
 	    moveCharacter(&m_pacman, controller->getPlayerPreviousAction());
     }
+}
+
+void Map::play(Controller* controller) {
+    movePacman(controller);
+    pacmanGhostCollision();
+    pacmanEdibleCollision();
+    ghostMove();
 }
 
 // For console only
@@ -388,9 +396,12 @@ void Map::pacmanGhostCollision() {
                     for (int i = 0; i < m_ghosts.size(); i++) {
                         m_ghosts[i].reset();
                     }
-                    return;
+                    break;
                 case Map::State::SUPER : m_ghosts[i].reset();
-                    m_player.gainPoints(1000);
+                    m_player.gainPoints(1000);  // (200, 400, 800, 1600)
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -600,7 +611,12 @@ bool Map::characterWallCollision(Character* character, char direction) {
 }
 
 void Map::pacmanEdibleCollision() {
-
+    // If we're going left, we want Pacman to be half inside the cell
+    if ((m_pacman.getPosX() - (int)m_pacman.getPosX()) > m_pacman.getWidth())
+        return;
+    // If we're going up, we want Pacman to be half inside the cell
+    if ((m_pacman.getPosY() - (int)m_pacman.getPosY()) > m_pacman.getHeight())
+        return;
     if (m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()]->getType()=='E') {
         Edible *e;
         e =  (Edible*) m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()];
