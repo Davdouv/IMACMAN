@@ -45,11 +45,9 @@ int main(int argc, char** argv) {
      *********************************/
 
     Map map;
-    //map.setFileMap("classicMap.txt");
-    map.setFileMap("mapTest.txt");
+    map.setFileMap("classicMap.txt");
+    //map.setFileMap("mapTest.txt");
     map.load();
-    //m.display();
-    //m.play();
 
     // Game Infos
     glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
@@ -59,20 +57,11 @@ int main(int argc, char** argv) {
     FreeflyCamera ffCamera = FreeflyCamera();
     Camera* camera = &tbCamera;
 
-
     RenderManager renderManager = RenderManager(&windowManager, camera, &programList, gameSize);
     Controller controller = Controller(&windowManager);
 
-    Wall wall1(0,0,1,1);
-    Wall wall2(30,0,1,1);
-    Wall wall3(0,30,1,1);
-    Wall wall4(30,30,1,1);
-
     // Enable program
     renderManager.useProgram(NORMAL);
-
-    //std::vector<Wall*> walls = map.getWalls();
-    //std::cout << map.getWalls() << std::endl;
 
     // Application loop:
     bool done = false;
