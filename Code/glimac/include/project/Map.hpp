@@ -97,6 +97,4 @@ private:
     bool wallCollisionLEFT(float fposX, int iposY, int iposX, float speed, Character* character);
     bool wallCollisionDOWN(float fposY, int iposY, int iposX, float speed, Character* character);
     bool wallCollisionRIGHT(float fposX, int iposY, int iposX, float speed, Character* character);
-
-    bool betweenTwoCells(float characterPos, int cellPos);
 };
