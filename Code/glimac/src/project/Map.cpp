@@ -241,6 +241,9 @@ void Map::play() {
         display();
         std::cout << "Your move : " << std::endl;
         getline(std::cin, line);
+        
+        // PACMAN MOVES
+
         if (line == "Z") {
             if (!characterWallCollision(&m_pacman, 'Z')) m_pacman.moveUp();
         }
@@ -254,6 +257,8 @@ void Map::play() {
             if (!characterWallCollision(&m_pacman, 'D')) m_pacman.moveRight();
         }
         if (line == "C") play = false;
+        
+        // GHOST MOVE
         pacmanGhostCollision();
         pacmanEdibleCollision();
         ghostMove();
