@@ -36,8 +36,8 @@ int main(int argc, char** argv) {
     ProgramList programList;
     TextureProgram textureProgram(applicationPath);
     programList.textureProgram = &textureProgram;
-    // NormalProgram normalProgram(applicationPath);
-    // programList.normalProgram = &normalProgram;
+    NormalProgram normalProgram(applicationPath);
+    programList.normalProgram = &normalProgram;
 
 
     // Enable GPU depth test for 3D rendering
@@ -128,6 +128,7 @@ int main(int argc, char** argv) {
         renderManager.bindSphereVAO();
         //renderManager.useProgram(TEXTURE);
         // Draw Pacman only in TPS
+        renderManager.useProgram(TEXTURE);
         if(!controller.isFPSactive()) {
           renderManager.drawPacmanTex(map.getPacman());
         }
