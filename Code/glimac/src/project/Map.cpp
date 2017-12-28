@@ -124,7 +124,7 @@ int Map::load() {
         std::string delimiter = ",";
         std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
         std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-        Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.005, Object::Orientation::LEFT);
+        Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.01, Object::Orientation::LEFT);
         this->setPacman(*p);
         std::vector<Ghost> tabGhost;
         for (int i = 0; i < 4; i++) {
@@ -383,6 +383,7 @@ bool Map::betweenTwoCells(float characterPos, int cellPos)
     else return false;
 }
 
+/*
 bool Map::characterWallCollision(Character* character, char direction) {
     int posX = (int)character->getPosX();
     int posY = (int)character->getPosY();
@@ -486,6 +487,199 @@ bool Map::characterWallCollision(Character* character, char direction) {
             break;
     }
     return false;
+}*/
+
+bool Map::wallCollisionUP(float fposY, int iposY, int iposX, float speed, Character* character)
+{
+    // Check if we're still going to be inside the cell
+    if((fposY - speed) > iposY)
+    {
+        // Put the character on the left edge of the cell
+        character->setPosX((float)iposX);
+        // Ok we can move inside the cell
+        return false;
+    }
+    // We're going to be on the upper cell
+    else
+    {
+        // Check if we can go on the upper cell
+        if(iposY >= 1)
+        {
+            // Check if upper cell is a wall
+            if (m_staticObjects[iposY-1][iposX]->getType()=='W')
+            {
+                // It's a wall, return true -> it's a collision, put the character on the top of the cell
+                character->setPosY((float)iposY);
+                return true;
+            }
+            else
+            {
+                // Put the character on the left edge of the cell
+                character->setPosX((float)iposX);
+                // It's ok we can move to the other cell
+                return false;
+            }
+        }
+        else
+        {
+            // We are at the edge of the game
+            character->setPosY((float)iposY);
+            return true;
+        }
+    }
+}
+
+bool Map::wallCollisionLEFT(float fposX, int iposY, int iposX, float speed, Character* character)
+{
+    if((fposX - speed) > iposX)
+    {
+        character->setPosY((float)iposY);
+        return false;
+    }
+    else
+    {
+        if(iposX >= 1)
+        {
+            if (m_staticObjects[iposY][iposX-1]->getType()=='W')
+            {
+                character->setPosX((float)iposX);
+                return true;
+            }
+            else
+            {
+                character->setPosY((float)iposY);
+                return false;
+            }
+        }
+        else
+        {
+            character->setPosX((float)iposX);
+            return true;
+        }
+    }
+}
+
+bool Map::wallCollisionDOWN(float fposY, int iposY, int iposX, float speed, Character* character)
+{
+    // Check if we can go on the bottom cell
+    if(iposY+1 <= m_nbX-1)
+    {
+        // Check if bottom cell is a wall
+        if (m_staticObjects[iposY+1][iposX]->getType()=='W')
+        {
+            character->setPosY((float)iposY);
+            return true;
+        }
+        else
+        {
+            character->setPosX((float)iposX);
+            return false;
+        }
+    }
+    else
+    {
+        character->setPosY((float)iposY);
+        return true;
+    }
+}
+
+bool Map::wallCollisionRIGHT(float fposX, int iposY, int iposX, float speed, Character* character)
+{
+    if(iposX+1 <= m_nbY-1)
+    {
+        if (m_staticObjects[iposY][iposX+1]->getType()=='W')
+        {
+            character->setPosX((float)iposX);
+            return true;
+        }
+        else
+        {
+            character->setPosY((float)iposY);
+            return false;
+        }
+    }
+    else
+    {
+        character->setPosX((float)iposX);
+        return true;
+    }
+}
+
+bool Map::characterWallCollision(Character* character, char direction) {
+    float fposX = character->getPosX();
+    float fposY = character->getPosY();
+    int iposX = (int)fposX;   // Matrix index X
+    int iposY = (int)fposY;   // Matrix index Y
+    float speed = character->getSpeed();
+    float seuil = 0.005;
+
+    switch(direction) {
+        case 'Z':
+            // Check if we are close to the left edge
+            if(fposX - iposX <= seuil)
+            {
+                return wallCollisionUP(fposY, iposY, iposX, speed, character);
+            }
+            // Check if we are close to the right edge
+            else if (iposX+1 - fposX <= seuil)
+            {
+                // Consider we're on the right edge
+                return wallCollisionUP(fposY, iposY, iposX+1, speed, character);
+            }
+            // We are between two cells
+            else
+            {
+                // We can't go up
+                return true;
+            }
+            break;
+        case 'Q':
+            if(fposY - iposY <= seuil)
+            {
+                return wallCollisionLEFT(fposX, iposY, iposX, speed, character);
+            }
+            else if (iposY+1 - fposY <= seuil)
+            {
+                return wallCollisionLEFT(fposX, iposY+1, iposX, speed, character);
+            }
+            else
+            {
+                return true;
+            }
+            break;
+        case 'S':
+            if(fposX - iposX <= seuil)
+            {
+                return wallCollisionDOWN(fposY, iposY, iposX, speed, character);
+            }
+            else if (iposX+1 - fposX <= seuil)
+            {
+                return wallCollisionDOWN(fposX, iposY, iposX+1, speed, character);
+            }
+            else
+            {
+                return true;
+            }
+            break;
+        case 'D':
+            if(fposY - iposY <= seuil)
+            {
+                return wallCollisionRIGHT(fposX, iposY, iposX, speed, character);
+            }
+            else if (iposY+1 - fposY <= seuil)
+            {
+                return wallCollisionRIGHT(fposX, iposY+1, iposX, speed, character);
+            }
+            else
+            {
+                return true;
+            }
+            break;
+        default:
+            return true;
+            break;
+    }
+
 }
 
 void Map::pacmanEdibleCollision() {
