@@ -4,17 +4,21 @@
 class Door : public StaticObject {
 
 private:
-  int m_destination;
+  float m_destX;
+  float m_destY;
 
 public:
+  
+  // constructors
+  Door(float posX, float posY, float width = 1.0, float height = 1.0, Orientation orientation = RIGHT);
+  Door();
 
-    // constructor
-    Door(float, float, float, float, int, Orientation);
-    Door();
+  // getters
+  float getDestX() const;
+  float getDestY() const;
 
-    // getter
-    int getType() const;
+  // setters
+  void setDestX(float);
+  void setDestY(float);
 
-    // setter
-    void setType(int);
 };

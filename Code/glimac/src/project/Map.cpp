@@ -51,6 +51,18 @@ std::vector<Wall*> Map::getWalls() {
     return walls;
 }
 
+std::vector<Door*> Map::getDoors() {
+
+    std::vector<Door*> doors;
+    for (int i = 0; i < m_nbX; i++) {
+        for (int j = 0; j < m_nbY; j++) {
+            if (m_staticObjects[i][j]->getType() == 'D') doors.push_back((Door*)m_staticObjects[i][j]);
+        }
+    }
+    return doors;
+}
+
+
 std::vector<Edible*> Map::getSuperPacGommes() {
 
     std::vector<Edible*> superpacgomme;
@@ -159,6 +171,8 @@ int Map::load() {
                         break;
                     case 'B' : o = new Edible(j, i, 1, 1, Edible::Type::FRUIT, Object::Orientation::LEFT);
                         break;
+                    case 'D' : o = new Door(j, i, 1, 1, Object::Orientation::LEFT);
+                        break;
                     case 'V' : o = new StaticObject('V', j, i, 1, 1, Object::Orientation::LEFT);
                         break;
                     default : break;
@@ -197,8 +211,22 @@ int Map::save() {
     file.close();
     return 1;
 }
-
 */
+
+void Map::initDoors() {
+
+    std::vector<Door*> doors = getDoors();
+    if (doors.size() == 2) {
+        doors[0]->setDestX(doors[1]->getPosX());
+        doors[0]->setDestY(doors[1]->getPosY());
+        doors[1]->setDestX(doors[0]->getPosX());
+        doors[1]->setDestY(doors[0]->getPosY());
+
+        m_staticObjects[doors[0]->getPosX()][doors[0]->getPosY()] = doors[0];
+        m_staticObjects[doors[1]->getPosX()][doors[1]->getPosY()] = doors[1];
+    }
+}
+
 // For console only
 void Map::play() {
 
@@ -226,6 +254,7 @@ void Map::play() {
         ghostMove();
     }
 }
+
 
 /*  ANCIENNE VERSION
 void Map::play(Controller* controller)
