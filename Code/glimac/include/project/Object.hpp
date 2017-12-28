@@ -4,7 +4,7 @@
 class Object {
 
 public:
-    enum Orientation {LEFT = 180, RIGHT = 0, UP = 90, DOWN = 270};
+    enum Orientation {LEFT = 270, RIGHT = 90, UP = 180, DOWN = 0};
 
 private:
     char m_type;

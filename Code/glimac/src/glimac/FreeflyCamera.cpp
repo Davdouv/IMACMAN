@@ -69,9 +69,40 @@ glm::mat4 FreeflyCamera::getViewMatrix() const
 	return MVMatrix;
 }
 
-void FreeflyCamera::setCameraOnCharacter(Character* character/*, glm::vec2 gameSize*/)
+glm::mat4 FreeflyCamera::getViewMatrix(Character* character) const
 {
-	m_Position = glm::vec3(character->getPosX()-5, 0.5, character->getPosY()-5);
+	glm::mat4 MVMatrix = glm::lookAt(m_Position, m_Position + m_FrontVector, m_UpVector);
+
+	return MVMatrix;
+}
+
+void FreeflyCamera::setCameraOnCharacter(Character* character, glm::vec2 gameSize)
+{
+	float x, y;
+	switch(character->getOrientation())
+	{
+		case Object::Orientation::UP:
+			x = 0;
+			y = 0.35;
+			break;
+		case Object::Orientation::LEFT:
+			x = 0.75;
+			y = -0.5;
+			break;
+		case Object::Orientation::DOWN:
+			x = 0;
+			y = -1;
+			break;
+		case Object::Orientation::RIGHT:
+			x = -0.75;
+			y = -0.5;
+			break;
+		default:
+			x = 0;
+			y = 0;
+			break;
+	}
+	m_Position = glm::vec3(character->getPosX()-(gameSize.x/2)+x, 0.5, character->getPosY()-(gameSize.y/2)+character->getHeight()+y);
 	m_fPhi = (float)character->getOrientation() * glm::pi<float>()/180;
 	//m_fTheta = 0.f;
 	computeDirectionVectors();

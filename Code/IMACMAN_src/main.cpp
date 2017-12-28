@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
 
         // Send the keys to the camera and the map
         tbCamera.cameraController(&controller);
-        ffCamera.setCameraOnCharacter(map.getPacman());     // NEED TO FIX HERE !!
+        ffCamera.setCameraOnCharacter(map.getPacman(), gameSize);     // NEED TO FIX HERE !!
         gameManager.play(&controller);
 
         // Switch Camera mini-function
@@ -112,7 +112,7 @@ int main(int argc, char** argv) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // On update la ViewMatrix à chaque tour de boucle
-        renderManager.updateMVMatrix(camera, map.getPacman());
+        renderManager.updateMVMatrix(camera);
 
         // --- SPHERE --- //
         // Bind Sphere VAO

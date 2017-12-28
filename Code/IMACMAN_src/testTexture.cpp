@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
 
         // Send the keys to the camera and the map
         tbCamera.cameraController(&controller);
-        ffCamera.setCameraOnCharacter(map.getPacman());     // NEED TO FIX HERE !!
+        ffCamera.setCameraOnCharacter(map.getPacman(), gameSize);     // NEED TO FIX HERE !!
         gameManager.play(&controller);
 
         // Switch Camera mini-function
