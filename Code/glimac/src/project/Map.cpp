@@ -391,14 +391,18 @@ void Map::pacmanGhostCollision() {
         if (m_pacman.collision(&m_ghosts[i])) {
             switch(this->getState()) {
 
-                case Map::State::NORMAL : m_player.loseLife();
+                case Map::State::NORMAL : 
+                    m_player.loseLife();
                     m_pacman.reset();
                     for (int i = 0; i < m_ghosts.size(); i++) {
                         m_ghosts[i].reset();
                     }
+                    std::cout << "Life lost. Life : " << m_player.getLife() << std::endl;
                     break;
-                case Map::State::SUPER : m_ghosts[i].reset();
+                case Map::State::SUPER : 
+                    m_ghosts[i].reset();
                     m_player.gainPoints(1000);  // (200, 400, 800, 1600)
+                    std::cout << "Ghost Eaten" << std::endl;
                     break;
                 default:
                     break;
@@ -617,12 +621,15 @@ void Map::pacmanEdibleCollision() {
     // If we're going up, we want Pacman to be half inside the cell
     if ((m_pacman.getPosY() - (int)m_pacman.getPosY()) > m_pacman.getHeight())
         return;
-    if (m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()]->getType()=='E') {
+    if (m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()]->getType()=='E'){
         Edible *e;
         e =  (Edible*) m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()];
         m_player.gainPoints(e->gain());
         if (e->getTypeEdible() == Edible::Type::SUPER_PAC_GOMME) this->setState(Map::State::SUPER);
+        
         m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()]->setType('V');
+
+        std::cout << "Points : " << m_player.getPoints() << std::endl;
     }
 }
 
