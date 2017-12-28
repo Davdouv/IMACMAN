@@ -34,12 +34,14 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_NormalMatrix = glm::transpose(glm::inverse(m_MVMatrix));
 
     // Textures
-    m_PacmanTex = new Texture("../Code/assets/textures/EarthMap.jpg");
-    m_GhostTex = new Texture("../Code/assets/textures/EarthMap.jpg");
-    m_WallTex = new Texture("../Code/assets/textures/EarthMap.jpg");
-    // m_PacmanTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/EarthMap.jpg");
-    // m_GhostTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/EarthMap.jpg");
-    // m_WallTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/EarthMap.jpg");
+    // m_PacmanTex = new Texture("../Code/assets/textures/pacman.png");
+    // m_GhostTex = new Texture("../Code/assets/textures/ghost.jpg");
+    // m_WallTex = new Texture("../Code/assets/textures/wall.jpg");
+    // m_GumTex = new Texture("../Code/assets/textures/gum.png");
+    m_PacmanTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/pacman.jpg");
+    m_GhostTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/ghost.jpg");
+    m_WallTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wall.jpg");
+    m_GumTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/gum.jpg");
 
     // GLSL Program
     m_programList = programList;
@@ -147,6 +149,7 @@ void RenderManager::loadTextures() const
   m_PacmanTex->loadTexture();
   m_GhostTex->loadTexture();
   m_WallTex->loadTexture();
+  m_GumTex->loadTexture();
 }
 
 
@@ -257,6 +260,17 @@ void RenderManager::drawGhost(Ghost* ghost)
     m_cube.drawCube();
 }
 
+// Draw Ghost - Sphere - Shader : TEXTURE
+void RenderManager::drawGhostTex(Ghost* ghost)
+{
+    glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glm::mat4 transformationMatrix = transformMatrix(ghost);
+    applyTransformations(NORMAL, transformationMatrix);
+    glBindTexture(GL_TEXTURE_2D, m_GhostTex->getID());
+    m_cube.drawCube();
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 // STATIC OBJECTS
 
 // ---- 1 OBJECT ----- //
@@ -269,12 +283,15 @@ void RenderManager::drawWall(Wall* wall)
     m_cube.drawCube();
 }
 
-// Draw PacGomme - Sphere - Shader : NORMAL
-void RenderManager::drawPacGomme(Edible* edible)
+// Draw Wall - Cube - Shader : TEXTURE
+void RenderManager::drawWallTex(Wall* wall)
 {
-    glm::mat4 transformationMatrix = transformMatrix(edible);
+    glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glm::mat4 transformationMatrix = transformMatrix(wall);
     applyTransformations(NORMAL, transformationMatrix);
-    m_sphere.drawSphere();
+    glBindTexture(GL_TEXTURE_2D, m_WallTex->getID());
+    m_cube.drawCube();
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 // Draw Super PacGomme - Sphere - Shader : NORMAL
@@ -283,6 +300,25 @@ void RenderManager::drawSuperPacGomme(Edible* edible)
     glm::mat4 transformationMatrix = transformMatrix(edible);
     applyTransformations(NORMAL, transformationMatrix);
     m_sphere.drawSphere();
+}
+
+// Draw PacGomme - Sphere - Shader : NORMAL
+void RenderManager::drawPacGomme(Edible* edible)
+{
+    glm::mat4 transformationMatrix = transformMatrix(edible);
+    applyTransformations(NORMAL, transformationMatrix);
+    m_sphere.drawSphere();
+}
+
+// Draw PacGomme - Sphere - Shader : TEXTURE
+void RenderManager::drawPacGommeTex(Edible* edible)
+{
+    glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glm::mat4 transformationMatrix = transformMatrix(edible);
+    applyTransformations(NORMAL, transformationMatrix);
+    glBindTexture(GL_TEXTURE_2D, m_GumTex->getID());
+    m_sphere.drawSphere();
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 // Draw Fruit - Sphere - Shader : NORMAL
@@ -303,6 +339,14 @@ void RenderManager::drawWalls(std::vector<Wall*> wall)
     }
 }
 
+void RenderManager::drawWallsTex(std::vector<Wall*> wall)
+{
+    for (unsigned int i = 0; i < wall.size(); ++i)
+    {
+        drawWallTex(wall[i]);
+    }
+}
+
 void RenderManager::drawGhosts(std::vector<Ghost*> ghost)
 {
     for (unsigned int i = 0; i < ghost.size(); ++i)
@@ -311,11 +355,27 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost)
     }
 }
 
+void RenderManager::drawGhostsTex(std::vector<Ghost*> ghost)
+{
+    for (unsigned int i = 0; i < ghost.size(); ++i)
+    {
+        drawGhostTex(ghost[i]);
+    }
+}
+
 void RenderManager::drawPacGommes(std::vector<Edible*> edible)
 {
     for (unsigned int i = 0; i < edible.size(); ++i)
     {
         drawPacGomme(edible[i]);
+    }
+}
+
+void RenderManager::drawPacGommesTex(std::vector<Edible*> edible)
+{
+    for (unsigned int i = 0; i < edible.size(); ++i)
+    {
+        drawPacGommeTex(edible[i]);
     }
 }
 

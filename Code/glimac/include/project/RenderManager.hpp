@@ -49,6 +49,7 @@ private:
     Texture* m_PacmanTex;
     Texture* m_GhostTex;
     Texture* m_WallTex;
+    Texture* m_GumTex;
 
     // GLSL Programs
     ProgramList* m_programList;
@@ -100,15 +101,21 @@ public:
     void drawPacmanTex(Pacman* pacman);
     void drawGhosts(Ghost* ghost);
     void drawWalls(std::vector<Wall*>);
+    void drawWallsTex(std::vector<Wall*>);
     void drawGhosts(std::vector<Ghost*>);
+    void drawGhostsTex(std::vector<Ghost*>);
     void drawPacGommes(std::vector<Edible*>);
+    void drawPacGommesTex(std::vector<Edible*>);
     void drawSuperPacGommes(std::vector<Edible*>);
     void drawFruits(std::vector<Edible*>);
 
 private:
     void drawWall(Wall* wall);
+    void drawWallTex(Wall* wall);
     void drawGhost(Ghost* ghost);
+    void drawGhostTex(Ghost* ghost);
     void drawPacGomme(Edible* edible);
+    void drawPacGommeTex(Edible* edible);
     void drawSuperPacGomme(Edible* edible);
     void drawFruit(Edible* edible);
 

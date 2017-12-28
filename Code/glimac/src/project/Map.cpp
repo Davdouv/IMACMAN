@@ -121,8 +121,8 @@ void Map::initialization() {
 int Map::load() {
 
     std::fstream file;
-    //file.open("/home/daphne/PROJET_OPENGL/IMACMAN/Code/data/"+m_fileMap, std::ios::binary | std::ios::out | std::ios::in);
-    file.open("../Code/data/"+m_fileMap, std::ios::binary | std::ios::out | std::ios::in);
+    file.open("/home/daphne/PROJET_OPENGL/IMACMAN/Code/data/"+m_fileMap, std::ios::binary | std::ios::out | std::ios::in);
+    //file.open("../Code/data/"+m_fileMap, std::ios::binary | std::ios::out | std::ios::in);
     if (!file.is_open()) {
         std::cout << " error loading the file " << std::endl;
         return 0;
@@ -391,7 +391,7 @@ void Map::pacmanGhostCollision() {
         if (m_pacman.collision(&m_ghosts[i])) {
             switch(this->getState()) {
 
-                case Map::State::NORMAL : 
+                case Map::State::NORMAL :
                     m_player.loseLife();
                     m_pacman.reset();
                     for (int i = 0; i < m_ghosts.size(); i++) {
@@ -399,7 +399,7 @@ void Map::pacmanGhostCollision() {
                     }
                     std::cout << "Life lost. Life : " << m_player.getLife() << std::endl;
                     break;
-                case Map::State::SUPER : 
+                case Map::State::SUPER :
                     m_ghosts[i].reset();
                     m_player.gainPoints(1000);  // (200, 400, 800, 1600)
                     std::cout << "Ghost Eaten" << std::endl;
@@ -626,7 +626,7 @@ void Map::pacmanEdibleCollision() {
         e =  (Edible*) m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()];
         m_player.gainPoints(e->gain());
         if (e->getTypeEdible() == Edible::Type::SUPER_PAC_GOMME) this->setState(Map::State::SUPER);
-        
+
         m_staticObjects[m_pacman.getPosY()][m_pacman.getPosX()]->setType('V');
 
         std::cout << "Points : " << m_player.getPoints() << std::endl;

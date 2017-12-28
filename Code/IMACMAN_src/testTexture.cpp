@@ -47,6 +47,9 @@ int main(int argc, char** argv) {
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
 
+     // Background color
+     glClearColor(0.11f, 0.1f, 0.24f, 0.0f);
+
     Map map;
     //map.setFileMap("classicMap.txt");
     map.setFileMap("classicMap.txt");
@@ -133,21 +136,17 @@ int main(int argc, char** argv) {
           renderManager.drawPacmanTex(map.getPacman());
         }
 
+        renderManager.drawPacGommesTex(map.getPacGommes());
         renderManager.useProgram(NORMAL);
-        /* Normalement je suis censée utiliser le programme ci dessus pour pouvoir dessiner les autres objets avec le bon programme
-         * Mais ça me fait une erreur de segmentation
-         * Tu peux décommenter la ligne useProgram ainsi que tous les renders en dessous pour voir ce que ça donne
-         */
-
-        renderManager.drawPacGommes(map.getPacGommes());
         renderManager.drawSuperPacGommes(map.getSuperPacGommes());
 
+        renderManager.useProgram(TEXTURE);
         // De-bind Sphere VAO
         renderManager.debindVAO();
 
         // --- CUBE --- //
         renderManager.bindCubeVAO();
-        renderManager.drawWalls(map.getWalls());
+        renderManager.drawWallsTex(map.getWalls());
         renderManager.debindVAO();
         // Update the display
         windowManager.swapBuffers();
