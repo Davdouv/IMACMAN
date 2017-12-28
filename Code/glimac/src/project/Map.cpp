@@ -216,13 +216,15 @@ int Map::save() {
 void Map::initDoors() {
 
     std::vector<Door*> doors = getDoors();
-    doors[0]->setDestX(doors[1]->getPosX());
-    doors[0]->setDestY(doors[1]->getPosY());
-    doors[1]->setDestX(doors[0]->getPosX());
-    doors[1]->setDestY(doors[0]->getPosY());
+    if (doors.size() == 2) {
+        doors[0]->setDestX(doors[1]->getPosX());
+        doors[0]->setDestY(doors[1]->getPosY());
+        doors[1]->setDestX(doors[0]->getPosX());
+        doors[1]->setDestY(doors[0]->getPosY());
 
-    m_staticObjects[doors[0]->getPosX()][doors[0]->getPosY()] = doors[0];
-    m_staticObjects[doors[1]->getPosX()][doors[1]->getPosY()] = doors[1];
+        m_staticObjects[doors[0]->getPosX()][doors[0]->getPosY()] = doors[0];
+        m_staticObjects[doors[1]->getPosX()][doors[1]->getPosY()] = doors[1];
+    }
 }
 
 // For console only
