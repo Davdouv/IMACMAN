@@ -26,6 +26,8 @@ public:
     
     void play();
     void play(Controller* controller);
+    char nextMove(float, float, float, float);
+    int countShortestWay(float, float, float, float);
 
 private:
     // Move

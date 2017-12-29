@@ -532,7 +532,7 @@ void GameManager::pokeyAI() {
     else {
         int rx = (rand()/RAND_MAX) * m_map->getNbX();
         int ry = (rand()/RAND_MAX) * m_map->getNbY();
-        shortestWay(Ghost::Type::POKEY, rx, rx);
+        shortestWay(Ghost::Type::POKEY, rx, ry);
     }
 }
 
@@ -604,6 +604,80 @@ int GameManager::shortestWay(int ghostType, float x, float y) {
         return 0;
     }
     return 1;
+}
+
+
+/* From a starting position dx, dy
+We calculate the shortest way to get to a goal from:
+- dx+1, dy
+- dx-1, dy
+- dx, dy+1
+- dx, dy-1
+
+*/
+
+int GameManager::countShortestWay(float dx, float dy, float ax, float ay) {
+    
+    return 0;
+    /*
+    if (dx == ax && dy == ay) return 0;
+    else {
+        std::vector<int> moves;
+        if ((m_map->getStaticObjects()[dy][dx+1]->getType()!='W') && ((dx+1) >= 0 && (dx+1) < m_map->getNbX()) && (dx >= 0 && dx < m_map->getNbY())) {
+            std::cout << "Added right " << dy << " , " << dx+1 << std::endl;
+            moves.push_back(countShortestWay(dx+1, dy, ax, ay));
+        }
+        else moves.push_back(-1);
+        if ((m_map->getStaticObjects()[dy][dx-1]->getType()!='W') && ((dx-1) >= 0 && (dx-1) < m_map->getNbX()) && (dx >= 0 && dx < m_map->getNbY())) {
+            std::cout << "Added left" << std::endl;
+            moves.push_back(countShortestWay(dx-1, dy, ax, ay));
+        }
+        else moves.push_back(-1);
+        if ((m_map->getStaticObjects()[dy+1][dx]->getType()!='W') && ((dx) >= 0 && (dx) < m_map->getNbX()) && ((dy-1) >= 0 && (dy-1) < m_map->getNbY())) {
+            std::cout << "Added down" << std::endl;
+            moves.push_back(countShortestWay(dx, dy+1, ax, ay));
+        }
+        else moves.push_back(-1);
+        if ((m_map->getStaticObjects()[dy-1][dx]->getType()!='W') && ((dx) >= 0 && (dx) < m_map->getNbX()) && ((dy-1) >= 0 && (dy-1) < m_map->getNbY())) {
+            std::cout << "Added up" << std::endl;
+            moves.push_back(countShortestWay(dx, dy-1, ax, ay));
+        }
+        else moves.push_back(-1);
+        return 1+min(moves);
+    }
+    */
+}
+
+char GameManager::nextMove(float dx, float dy, float ax, float ay) {
+    
+    if (countShortestWay(dx, dy, ax, ay)) {
+        std::cout << "Started : " << std::endl;
+        std::vector<int> moves;
+        if ((m_map->getStaticObjects()[dy][dx+1]->getType()!='W') && ((dx+1) >= 0 && (dx+1) < m_map->getNbX()) && (dx >= 0 && dx < m_map->getNbY())) {
+            moves.push_back(countShortestWay(dx+1, dy, ax, ay));
+        }
+        else moves.push_back(-1);
+        if ((m_map->getStaticObjects()[dy][dx-1]->getType()!='W') && ((dx-1) >= 0 && (dx-1) < m_map->getNbX()) && (dx >= 0 && dx < m_map->getNbY())) {
+            moves.push_back(countShortestWay(dx-1, dy, ax, ay));
+        }
+        else moves.push_back(-1);
+        if ((m_map->getStaticObjects()[dy+1][dx]->getType()!='W') && ((dx) >= 0 && (dx) < m_map->getNbX()) && ((dy-1) >= 0 && (dy-1) < m_map->getNbY())) {
+            moves.push_back(countShortestWay(dx, dy+1, ax, ay));
+        }
+        else moves.push_back(-1);
+        if ((m_map->getStaticObjects()[dy-1][dx]->getType()!='W') && ((dx) >= 0 && (dx) < m_map->getNbX()) && ((dy-1) >= 0 && (dy-1) < m_map->getNbY())) {
+            moves.push_back(countShortestWay(dx, dy-1, ax, ay));
+        }
+        else moves.push_back(-1);
+        int mini  = min(moves);
+        switch(mini) {
+            case 0: return 'D';
+            case 1: return 'Q';
+            case 2: return 'S';
+            case 3: return 'Z';
+        }
+    }
+    return 'N';
 }
 
 void GameManager::ghostMove() {

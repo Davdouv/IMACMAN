@@ -9,10 +9,7 @@ int main() {
     m.initialization();
     m.display();
     GameManager gameManager = GameManager(&m);
-    gameManager.play();
-    m.getPacGommes()[1]->display();
-    std::cout << m.getSuperPacGommes().size() << std::endl;
-    m.getSuperPacGommes()[1]->display();
-    m.~Map();
+    std::cout << gameManager.nextMove(1,2,1,1) << std::endl;
+   // m.~Map();
     return 0;
 }
