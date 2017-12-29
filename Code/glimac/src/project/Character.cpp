@@ -1,16 +1,19 @@
 #include "../include/project/Character.hpp"
 
 
-Character::Character(char type, float posX, float posY, float width, float height, float speed, Orientation orientation) : Object(type, posX, posY, width, height, orientation), m_speed(speed), m_initX(posX), m_initY(posY) { }
+Character::Character(char type, float posX, float posY, float width, float height, float speed, Orientation orientation, bool pacman) :
+    Object(type, posX, posY, width, height, orientation), m_speed(speed), m_initX(posX), m_initY(posY), m_pacman(pacman) { }
 Character::Character() { }
 
 float Character::getSpeed() const { return m_speed; }
 float Character::getInitX() const { return m_initX; }
 float Character::getInitY() const { return m_initY; }
+bool Character::isPacman() const { return m_pacman; }
 
 void Character::setSpeed(float speed) { m_speed = speed;}
 void Character::setInitX(float initX) { m_initX = initX;}
 void Character::setInitY(float initY) { m_initY = initY;}
+void Character::setIsPacman(bool pacman) { m_pacman = pacman;}
 
 void Character::move() {
 
