@@ -16,10 +16,15 @@ GameManager::PacmanState GameManager::getState() const { return m_state;}
 void GameManager::setState(PacmanState state) { m_state = state;}
 
 // returns true if no edible on the map
-
 bool GameManager::won() {
     
     return (m_map->getSuperPacGommes().empty() && m_map->getFruits().empty() && m_map->getPacGommes().empty());
+}
+
+// returns true if the players lost all his lives
+bool GameManager::lost() {
+
+    return (!m_player.getLife());
 }
 
 // For console only

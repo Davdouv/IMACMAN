@@ -29,8 +29,6 @@ public:
     void setType(int);
     void setDeath(int);
 
-    void reset() override;
-
     void display() override;
     void move() override;
 

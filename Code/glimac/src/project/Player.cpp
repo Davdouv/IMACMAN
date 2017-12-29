@@ -18,6 +18,7 @@ void Player::initialization() {
 
 void Player::gainPoints(unsigned int points) {
     m_points += points;
+    if (m_points >= 10000) gainLife();
 }
 
 void Player::losePoints(int points) {

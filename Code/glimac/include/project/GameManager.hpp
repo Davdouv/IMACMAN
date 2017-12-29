@@ -33,6 +33,7 @@ private:
 
     // game state
     bool won();
+    bool lost();
 
     // Move
     bool moveCharacter(Character*, Controller::Key);
