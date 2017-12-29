@@ -138,15 +138,20 @@ void GameManager::pacmanMove(Controller* controller)
 }
 
 void GameManager::play(Controller* controller) {
-    if (!(this->won())) {
+    // If we didn't lost
+    if (!(lost()))
+    {
         pacmanMove(controller);
         ghostMove();
         pacmanGhostCollision();
         pacmanEdibleCollision();
         if(won())
         {
-            std::cout << "Player Score : " << m_player.getPoints() << std::endl;
             newLevel();
+        }
+        if(lost())
+        {
+            std::cout << "Player Score : " << m_player.getPoints() << std::endl;
         }
     }
 }
@@ -164,7 +169,11 @@ void GameManager::pacmanGhostCollision() {
 
                 case GameManager::PacmanState::NORMAL :
                     m_player.loseLife();
-                    m_map->getPacman()->reset();
+                    if (m_player.getLife() != 0)
+                    {
+                        std::cout << m_player.getLife() << std::endl;
+                        m_map->getPacman()->reset();
+                    }
                     for (int i = 0; i < m_map->getGhosts().size(); i++) {
                         m_map->getGhosts()[i]->reset();
                     }
