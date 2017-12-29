@@ -6,6 +6,7 @@
 
 using namespace glimac;
 
+static int once = 0;
 GameManager::GameManager(Map* map)
 {
     m_map = map;
@@ -43,11 +44,12 @@ void GameManager::play() {
     m_map->setPacman(*p);
     std::string line;
     this->setStartTime(SDL_GetTicks());
+    setGhosts();
     while (!(this->won())) {
         if (ready()) {
-            m_map->display();
-            std::cout << "Your move : " << std::endl;
-            getline(std::cin, line);
+            //m_map->display();
+            //std::cout << "Your move : " << std::endl;
+            //getline(std::cin, line);
             if (line == "Z") {
                 if (!characterWallCollision(m_map->getPacman(), 'Z')) m_map->getPacman()->moveUp();
             }
@@ -140,6 +142,8 @@ void GameManager::pacmanMove(Controller* controller)
     }
 }
 
+
+// need to call setGhosts before this function to set them ready 
 void GameManager::play(Controller* controller) {
     // If we didn't lost
     if (!(lost()) && ready())
@@ -723,34 +727,41 @@ char GameManager::nextMove(float dx, float dy, float ax, float ay) {
     return 'N';
 }
 
+void GameManager::setGhosts() {
+    for (int i = 0; i < m_map->getGhosts().size(); i++) m_map->getGhosts()[i]->resetLife();
+}
+
 void GameManager::ghostMove() {
 
     Controller::Key action;
     for (int i = 0; i < m_map->getGhosts().size(); i++) {
-        switch (m_map->getGhosts()[i]->getOrientation()) {
+        if (m_map->getGhosts()[i]->ready()) {
 
-            case Object::Orientation::UP : action = Controller::Z;
-                break;
-            case Object::Orientation::DOWN: action = Controller::S;
-                break;
-            case Object::Orientation::RIGHT: action = Controller::D;
-                break;
-            case Object::Orientation::LEFT :action = Controller::Q;
-                break;
-        }
-        while (!moveCharacter(m_map->getGhosts()[i], action)) {
-            
-            int r =  (rand() % 4);
-            switch (r) {
+            switch (m_map->getGhosts()[i]->getOrientation()) {
 
-                case 0: action = Controller::Z;
+                case Object::Orientation::UP : action = Controller::Z;
                     break;
-                case 1: action = Controller::Q;
+                case Object::Orientation::DOWN: action = Controller::S;
                     break;
-                case 2: action = Controller::D;
+                case Object::Orientation::RIGHT: action = Controller::D;
                     break;
-                case 3:action = Controller::S;
+                case Object::Orientation::LEFT :action = Controller::Q;
                     break;
+            }
+            while (!moveCharacter(m_map->getGhosts()[i], action)) {
+                
+                int r =  (rand() % 4);
+                switch (r) {
+
+                    case 0: action = Controller::Z;
+                        break;
+                    case 1: action = Controller::Q;
+                        break;
+                    case 2: action = Controller::D;
+                        break;
+                    case 3:action = Controller::S;
+                        break;
+                }
             }
         }
     }

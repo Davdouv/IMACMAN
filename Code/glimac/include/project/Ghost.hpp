@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Character.hpp"
+#include "../glimac/SDLWindowManager.hpp"
+
 class Ghost : public Character {
 
 private:
@@ -27,6 +29,8 @@ public:
     void setType(int);
     void setDeath(int);
 
+    bool ready();
+    void resetLife();
     void display() override;
     void move() override;
 
