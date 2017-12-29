@@ -34,18 +34,18 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_NormalMatrix = glm::transpose(glm::inverse(m_MVMatrix));
 
     // Textures
-    // m_PacmanTexture = new Texture("../Code/assets/textures/pacman.png");
-    // m_GhostTexture = new Texture("../Code/assets/textures/ghost.jpg");
-    // m_WallTexture = new Texture("../Code/assets/textures/wall.jpg");
-    // m_GumTexture = new Texture("../Code/assets/textures/gum.png");
-    // m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.png");
-    // m_FruitTexture = new Texture("../Code/assets/textures/fruit.png");
-    m_PacmanTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/pacman.jpg");
-    m_GhostTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/ghost.jpg");
-    m_WallTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wall.jpg");
-    m_GumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/gum.jpg");
-    m_SuperGumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/superpacgum.jpg");
-    m_FruitTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/fruit.jpg");
+    m_PacmanTexture = new Texture("../Code/assets/textures/pacman.png");
+    m_GhostTexture = new Texture("../Code/assets/textures/ghost.jpg");
+    m_WallTexture = new Texture("../Code/assets/textures/wall.jpg");
+    m_GumTexture = new Texture("../Code/assets/textures/gum.png");
+    m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.png");
+    m_FruitTexture = new Texture("../Code/assets/textures/fruit.png");
+    // m_PacmanTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/pacman.jpg");
+    // m_GhostTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/ghost.jpg");
+    // m_WallTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wall.jpg");
+    // m_GumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/gum.jpg");
+    // m_SuperGumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/superpacgum.jpg");
+    // m_FruitTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/fruit.jpg");
 
     // GLSL Program
     m_programList = programList;
