@@ -26,8 +26,6 @@ public:
     
     void play();
     void play(Controller* controller);
-    char nextMove(float, float, float, float);
-    int countShortestWay(float, float, float, float);
 
 private:
 
@@ -65,5 +63,10 @@ private:
     void shadowAI();
     void speedyAI();
     void bashfulAI();
-    void pokeyAI();
+    void pokeyAI();    
+    char nextMove(float, float, float, float);
+    int countShortestWay(float, float, float, float);
+
+    // New game
+    void newLevel();
 };
