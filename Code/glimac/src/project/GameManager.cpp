@@ -19,7 +19,7 @@ void GameManager::setState(PacmanState state) { m_state = state;}
 // returns true if no edible on the map
 bool GameManager::won() {
     
-    return (m_map->getSuperPacGommes().empty() && m_map->getFruits().empty() && m_map->getPacGommes().empty());
+    return (m_map->getSuperPacGommes().empty() && m_map->getPacGommes().empty());
 }
 
 // returns true if the players lost all his lives
@@ -144,40 +144,28 @@ void GameManager::pacmanMove(Controller* controller)
 }
 
 void GameManager::play(Controller* controller) {
-
-    while (!(this->won())) {
+    // If we didn't lost
+    if (!(lost()))
+    {
         pacmanMove(controller);
         ghostMove();
         pacmanGhostCollision();
         pacmanEdibleCollision();
+        if(won())
+        {
+            newLevel();
+        }
+        if(lost())
+        {
+            std::cout << "Player Score : " << m_player.getPoints() << std::endl;
+        }
     }
 }
 
-// For console only
-/*
-void GameManager::display() {
-    bool ghost = false;
-    m_map->getPacman()->display();
-    if (m_map->getStaticObjects().empty()) std::cout << "It's empty!" << std::endl;
-    else {
-        for (int i = 0; i < m_map->getNbX(); i++) {
-            std::vector<StaticObject*> tmp = m_map->getStaticObjects().at(i);
-            for (int  j = 0; j < m_map->getNbY(); j++) {
-                ghost = false;
-                for (int k = 0; k < m_map->getGhosts()->size(); k++) {
-                    if ( (( m_map->getGhosts()[k].getPosX() >= tmp.at(j)->getPosX()) && (m_map->getGhosts()[k].getPosX() < tmp.at(j)->getPosX()+1)) && ((m_map->getGhosts()[k].getPosY() >= tmp.at(j)->getPosY()) && (m_map->getGhosts()[k].getPosY() < tmp.at(j)->getPosY()+1)) )
-                 {std::cout << k+1 << " ";
-                    ghost = true;}
-                }
-                if ( ((m_map->getPacman()->getPosX() >= tmp.at(j)->getPosX()) && (m_map->getPacman()->getPosX() < tmp.at(j)->getPosX()+1)) && ((m_map->getPacman()->getPosY() >= tmp.at(j)->getPosY()) && (m_map->getPacman()->getPosY() < tmp.at(j)->getPosY()+1)) )
-                std::cout << m_map->getPacman()->getType() << " ";
-                else if ((tmp.at(j) != NULL) && (!ghost)) std::cout << tmp.at(j)->getType() << " ";
-                else if (!ghost) std::cout << "V ";
-            }
-            std::cout << std::endl;
-        }
-    }
-}*/
+void GameManager::newLevel()
+{
+    m_map->initialization();
+}
 
 void GameManager::pacmanGhostCollision() {
 
@@ -187,7 +175,11 @@ void GameManager::pacmanGhostCollision() {
 
                 case GameManager::PacmanState::NORMAL :
                     m_player.loseLife();
-                    m_map->getPacman()->reset();
+                    if (m_player.getLife() != 0)
+                    {
+                        std::cout << m_player.getLife() << std::endl;
+                        m_map->getPacman()->reset();
+                    }
                     for (int i = 0; i < m_map->getGhosts().size(); i++) {
                         m_map->getGhosts()[i]->reset();
                     }
@@ -196,7 +188,7 @@ void GameManager::pacmanGhostCollision() {
                 case GameManager::PacmanState::SUPER :
                     m_map->getGhosts()[i]->reset();
                     m_player.gainPoints(1000);  // (200, 400, 800, 1600)
-                    std::cout << "Ghost Eaten" << std::endl;
+                    //std::cout << "Ghost Eaten" << std::endl;
                     break;
                 default:
                     break;

@@ -57,9 +57,9 @@ int main(int argc, char** argv) {
     // Game Infos
     glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
 
-    //TrackballCamera tbCamera = TrackballCamera(gameSize.y,0,0.0f,1.57f);    // CAMERA VUE 2D
-    TrackballCamera tbCamera = TrackballCamera(gameSize.x,0,0.0f,1.0f);
-    FreeflyCamera ffCamera = FreeflyCamera();
+    TrackballCamera tbCamera = TrackballCamera(gameSize.x,0,0.0f,1.57f);    // CAMERA VUE 2D
+    //TrackballCamera tbCamera = TrackballCamera(gameSize.x,0,0.0f,1.f);
+    FreeflyCamera fpsCamera = FreeflyCamera();
     Camera* camera = &tbCamera;
 
     RenderManager renderManager = RenderManager(&windowManager, camera, &programList, gameSize);
@@ -85,20 +85,20 @@ int main(int argc, char** argv) {
 
         // Send the keys to the camera and the map
         tbCamera.cameraController(&controller);
-        ffCamera.setCameraOnCharacter(map.getPacman(), gameSize);     // NEED TO FIX HERE !!
+        fpsCamera.setCameraOnCharacter(map.getPacman(), gameSize);     // NEED TO FIX HERE !!
         gameManager.play(&controller);
 
         // Switch Camera mini-function
         if (controller.getInterfaceAction() == Controller::C)
         {
-            if(camera == &ffCamera)
+            if(camera == &fpsCamera)
             {
                 camera = &tbCamera;
                 controller.setFPS(false);
             }
             else
             {
-                camera = &ffCamera;
+                camera = &fpsCamera;
                 controller.setFPS(true);
             }
             controller.setInterfaceAction(Controller::NONE);
@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // On update la ViewMatrix à chaque tour de boucle
-        renderManager.updateMVMatrix(camera);
+        renderManager.updateMVMatrix(camera, map.getPacman());
 
         // --- SPHERE --- //
         // Bind Sphere VAO

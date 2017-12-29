@@ -33,13 +33,31 @@ glm::mat4 TrackballCamera::getViewMatrix() const
 	return MVMatrix;
 }
 
-glm::mat4 TrackballCamera::getViewMatrix(Character* character, glm::vec2 gameSize) const
+glm::mat4 TrackballCamera::getViewMatrix(glm::mat4 matrix) const
 {
 	// MODIFIER CETTE LIGNE POUR FOCUS SUR PACMAN : 1er parametre du glm::vec3
-	glm::mat4 MVMatrix = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, -(m_fHauteur), -(m_fDistance)));
+	
+	glm::mat4 MVMatrix = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, -m_fHauteur, -m_fDistance));
 	MVMatrix = glm::rotate(MVMatrix, m_fAngleX, glm::vec3(0, 1, 0));
 	MVMatrix = glm::rotate(MVMatrix, m_fAngleY, glm::vec3(1, 0, 0));
 
+	return MVMatrix;
+}
+
+glm::mat4 TrackballCamera::getViewMatrix(Character* character, glm::vec2 gameSize) const
+{	
+	glm::mat4 MVMatrix;
+	MVMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-(character->getPosX()+gameSize.y-3), -m_fHauteur, -(character->getPosY()+gameSize.x+m_fDistance)));
+	// MVMatrix = glm::rotate(MVMatrix, m_fAngleX, glm::vec3(0, 1, 0));
+	// MVMatrix = glm::rotate(MVMatrix, m_fAngleY, glm::vec3(1, 0, 0));
+	// MVMatrix = glm::translate(MVMatrix, glm::vec3(-character->getPosY(), 0.f, 0.f));
+
+	//MVMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-3.f, -3.f, -3.f));
+	MVMatrix = glm::rotate(MVMatrix, m_fAngleX, glm::vec3(0, 1, 0));
+	MVMatrix = glm::rotate(MVMatrix, m_fAngleY, glm::vec3(1, 0, 0));
+	MVMatrix = glm::translate(MVMatrix, glm::vec3(0.f, +character->getPosY(), -(character->getPosY()+gameSize.x)));
+	//std::cout << character->getPosY()+gameSize.x << std::endl;
+	//(character->getPosY()-gameSize.x)
 	return MVMatrix;
 }
 
@@ -63,7 +81,7 @@ bool TrackballCamera::zoomMin()
 void TrackballCamera::cameraController(Controller* controller)
 {
 	Controller::Key action = controller->getCameraAction();
-	float speed = -0.005;
+	float speed = -0.05;
 
 	switch (action)
 	{

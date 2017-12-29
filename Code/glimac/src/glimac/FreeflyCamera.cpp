@@ -69,12 +69,20 @@ glm::mat4 FreeflyCamera::getViewMatrix() const
 	return MVMatrix;
 }
 
-glm::mat4 FreeflyCamera::getViewMatrix(Character* character) const
+glm::mat4 FreeflyCamera::getViewMatrix(glm::mat4 matrix) const
 {
 	glm::mat4 MVMatrix = glm::lookAt(m_Position, m_Position + m_FrontVector, m_UpVector);
 
 	return MVMatrix;
 }
+
+glm::mat4 FreeflyCamera::getViewMatrix(Character* character, glm::vec2 gameSize) const
+{
+	glm::mat4 MVMatrix = glm::lookAt(m_Position, m_Position + m_FrontVector, m_UpVector);
+
+	return MVMatrix;
+}
+
 
 void FreeflyCamera::setCameraOnCharacter(Character* character, glm::vec2 gameSize)
 {
