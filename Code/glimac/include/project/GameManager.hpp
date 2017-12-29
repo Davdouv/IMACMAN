@@ -13,6 +13,7 @@ private:
     Map* m_map;
     PacmanState m_state;    // If pacman can eat ghosts or not
     Player m_player;
+    uint32_t m_startTime;
 
 public:
     // constructor 
@@ -20,9 +21,11 @@ public:
 
     // getters
     PacmanState getState() const;
+    uint32_t getStartTime() const;
 
     // setters
     void setState(PacmanState);
+    void setStartTime(uint32_t);
     
     void play();
     void play(Controller* controller);
@@ -32,7 +35,7 @@ private:
     // game state
     bool won();
     bool lost();
-
+    bool ready();
     // Move
     bool moveCharacter(Character*, Controller::Key);
     void pacmanMove(Controller* controller);

@@ -14,8 +14,9 @@ GameManager::GameManager(Map* map)
 }
 
 GameManager::PacmanState GameManager::getState() const { return m_state;}
+uint32_t GameManager::getStartTime() const { return m_startTime; }
 void GameManager::setState(PacmanState state) { m_state = state;}
-
+void GameManager::setStartTime(uint32_t t) { m_startTime = t;}
 // returns true if no edible on the map
 bool GameManager::won() {
     
@@ -28,6 +29,11 @@ bool GameManager::lost() {
     return (!m_player.getLife());
 }
 
+bool GameManager::ready() {
+
+    return (SDL_GetTicks() - getStartTime() > 1000);
+}
+
 // For console only
 void GameManager::play() {
 
@@ -36,30 +42,29 @@ void GameManager::play() {
     p->setSpeed(1);
     m_map->setPacman(*p);
     std::string line;
+    this->setStartTime(SDL_GetTicks());
     while (!(this->won())) {
-        m_map->display();
-        std::cout << "Your move : " << std::endl;
-        getline(std::cin, line);
-        if (line == "Z") {
-            if (!characterWallCollision(m_map->getPacman(), 'Z')) m_map->getPacman()->moveUp();
+        if (ready()) {
+            m_map->display();
+            std::cout << "Your move : " << std::endl;
+            getline(std::cin, line);
+            if (line == "Z") {
+                if (!characterWallCollision(m_map->getPacman(), 'Z')) m_map->getPacman()->moveUp();
+            }
+            if (line == "Q") {
+                if (!characterWallCollision(m_map->getPacman(), 'Q')) m_map->getPacman()->moveLeft();
+            }
+            if (line == "S") {
+                if (!characterWallCollision(m_map->getPacman(), 'S')) m_map->getPacman()->moveDown();
+            }
+            if (line == "D") {
+                if (!characterWallCollision(m_map->getPacman(), 'D')) m_map->getPacman()->moveRight();
+            }
+            if (line == "C") return;
+            pacmanGhostCollision();
+            pacmanEdibleCollision();
+            ghostMove();
         }
-        if (line == "Q") {
-            if (!characterWallCollision(m_map->getPacman(), 'Q')) m_map->getPacman()->moveLeft();
-        }
-        if (line == "S") {
-            if (!characterWallCollision(m_map->getPacman(), 'S')) m_map->getPacman()->moveDown();
-        }
-        if (line == "D") {
-            if (!characterWallCollision(m_map->getPacman(), 'D')) m_map->getPacman()->moveRight();
-        }
-        if (line == "C") return;
-        std::cout << "pacman move done" << std::endl;
-        pacmanGhostCollision();
-        std::cout << "pacman ghost collision done" << std::endl;
-        pacmanEdibleCollision();
-        std::cout << "pacman edible collision done" << std::endl;
-        ghostMove();
-        std::cout << "ghost move done" << std::endl;
     }
 }
 
@@ -137,7 +142,7 @@ void GameManager::pacmanMove(Controller* controller)
 
 void GameManager::play(Controller* controller) {
     // If we didn't lost
-    if (!(lost()))
+    if (!(lost()) && ready())
     {
         pacmanMove(controller);
         ghostMove();
@@ -748,6 +753,5 @@ void GameManager::ghostMove() {
                     break;
             }
         }
-        std::cout << action << std::endl;   
     }
 }
