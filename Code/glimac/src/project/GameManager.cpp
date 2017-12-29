@@ -18,7 +18,7 @@ void GameManager::setState(PacmanState state) { m_state = state;}
 // returns true if no edible on the map
 bool GameManager::won() {
     
-    return (m_map->getSuperPacGommes().empty() && m_map->getFruits().empty() && m_map->getPacGommes().empty());
+    return (m_map->getSuperPacGommes().empty() && m_map->getPacGommes().empty());
 }
 
 // returns true if the players lost all his lives
@@ -139,7 +139,7 @@ void GameManager::pacmanMove(Controller* controller)
 
 void GameManager::play(Controller* controller) {
 
-    while (!(this->won())) {
+    if (!(this->won())) {
         pacmanMove(controller);
         ghostMove();
         pacmanGhostCollision();
