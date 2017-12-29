@@ -1,12 +1,11 @@
 #pragma once
 
 #include "Character.hpp"
-
 class Ghost : public Character {
 
 private:
     int m_type;
-    int m_death; 
+    int m_death;
 
 public:
     /* 4 GHOSTS :
@@ -24,7 +23,6 @@ public:
     // getter
     int getType() const;
     int getDeath() const;
-
     // setter
     void setType(int);
     void setDeath(int);

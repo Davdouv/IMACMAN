@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <random>
+#include <cstdlib>
 
 using namespace glimac;
 
@@ -30,6 +31,7 @@ bool GameManager::lost() {
 // For console only
 void GameManager::play() {
 
+    Controller * c;
     Pacman *p = m_map->getPacman();
     p->setSpeed(1);
     m_map->setPacman(*p);
@@ -51,9 +53,13 @@ void GameManager::play() {
             if ((!characterWallCollision(m_map->getPacman(), 'D')) && (!pacmanSpawnCollision(m_map->getPacman(), 'D'))) m_map->getPacman()->moveRight();
         }
         if (line == "C") return;
+        std::cout << "pacman move done" << std::endl;
         pacmanGhostCollision();
+        std::cout << "pacman ghost collision done" << std::endl;
         pacmanEdibleCollision();
+        std::cout << "pacman edible collision done" << std::endl;
         ghostMove();
+        std::cout << "ghost move done" << std::endl;
     }
 }
 
@@ -903,8 +909,35 @@ char GameManager::nextMove(float dx, float dy, float ax, float ay) {
 }
 
 void GameManager::ghostMove() {
-    shadowAI();
-    speedyAI();
-    bashfulAI();
-    pokeyAI();
+
+    Controller::Key action;
+    for (int i = 0; i < m_map->getGhosts().size(); i++) {
+        switch (m_map->getGhosts()[i]->getOrientation()) {
+
+            case Object::Orientation::UP : action = Controller::Z;
+                break;
+            case Object::Orientation::DOWN: action = Controller::S;
+                break;
+            case Object::Orientation::RIGHT: action = Controller::D;
+                break;
+            case Object::Orientation::LEFT :action = Controller::Q;
+                break;
+        }
+        while (!moveCharacter(m_map->getGhosts()[i], action)) {
+            
+            int r =  (rand() % 4);
+            switch (r) {
+
+                case 0: action = Controller::Z;
+                    break;
+                case 1: action = Controller::Q;
+                    break;
+                case 2: action = Controller::D;
+                    break;
+                case 3:action = Controller::S;
+                    break;
+            }
+        }
+        std::cout << action << std::endl;   
+    }
 }
