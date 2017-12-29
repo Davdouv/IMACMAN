@@ -9,7 +9,7 @@ int main() {
     m.initialization();
     m.display();
     GameManager gameManager = GameManager(&m);
-    std::cout << gameManager.nextMove(1,2,1,1) << std::endl;
+    gameManager.play();
    // m.~Map();
     return 0;
 }

@@ -30,6 +30,11 @@ public:
     int countShortestWay(float, float, float, float);
 
 private:
+
+    // game state
+    bool won();
+    bool lost();
+
     // Move
     bool moveCharacter(Character*, Controller::Key);
     void pacmanMove(Controller* controller);
@@ -41,6 +46,12 @@ private:
     bool wallCollisionDOWN(float fposY, int iposY, int iposX, float speed, Character* character);
     bool wallCollisionRIGHT(float fposX, int iposY, int iposX, float speed, Character* character);
     bool characterWallCollision(Character*, char);
+
+    bool spawnCollisionUP(float fposY, int iposY, int iposX, float speed, Character* character);
+    bool spawnCollisionLEFT(float fposX, int iposY, int iposX, float speed, Character* character);
+    bool spawnCollisionDOWN(float fposY, int iposY, int iposX, float speed, Character* character);
+    bool spawnCollisionRIGHT(float fposX, int iposY, int iposX, float speed, Character* character);
+    bool pacmanSpawnCollision(Character*, char);
 
     bool characterLeftDoorCollision(Character*);
     bool characterRightDoorCollision(Character*);

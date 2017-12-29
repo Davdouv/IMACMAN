@@ -15,28 +15,42 @@ GameManager::GameManager(Map* map)
 GameManager::PacmanState GameManager::getState() const { return m_state;}
 void GameManager::setState(PacmanState state) { m_state = state;}
 
+// returns true if no edible on the map
+bool GameManager::won() {
+    
+    return (m_map->getSuperPacGommes().empty() && m_map->getFruits().empty() && m_map->getPacGommes().empty());
+}
+
+// returns true if the players lost all his lives
+bool GameManager::lost() {
+
+    return (!m_player.getLife());
+}
+
 // For console only
 void GameManager::play() {
 
-    bool play = true;
+    Pacman *p = m_map->getPacman();
+    p->setSpeed(1);
+    m_map->setPacman(*p);
     std::string line;
-    while (play) {
+    while (!(this->won())) {
         m_map->display();
         std::cout << "Your move : " << std::endl;
         getline(std::cin, line);
         if (line == "Z") {
-            if (!characterWallCollision(m_map->getPacman(), 'Z')) m_map->getPacman()->moveUp();
+            if ((!characterWallCollision(m_map->getPacman(), 'Z')) && (!pacmanSpawnCollision(m_map->getPacman(), 'Z'))) m_map->getPacman()->moveUp();
         }
         if (line == "Q") {
-            if (!characterWallCollision(m_map->getPacman(), 'Q')) m_map->getPacman()->moveLeft();
+            if ((!characterWallCollision(m_map->getPacman(), 'Q')) && (!pacmanSpawnCollision(m_map->getPacman(), 'Q'))) m_map->getPacman()->moveLeft();
         }
         if (line == "S") {
-            if (!characterWallCollision(m_map->getPacman(), 'S')) m_map->getPacman()->moveDown();
+            if ((!characterWallCollision(m_map->getPacman(), 'S')) && (!pacmanSpawnCollision(m_map->getPacman(), 'S'))) m_map->getPacman()->moveDown();
         }
         if (line == "D") {
-            if (!characterWallCollision(m_map->getPacman(), 'D')) m_map->getPacman()->moveRight();
+            if ((!characterWallCollision(m_map->getPacman(), 'D')) && (!pacmanSpawnCollision(m_map->getPacman(), 'D'))) m_map->getPacman()->moveRight();
         }
-        if (line == "C") play = false;
+        if (line == "C") return;
         pacmanGhostCollision();
         pacmanEdibleCollision();
         ghostMove();
@@ -46,13 +60,17 @@ void GameManager::play() {
 // Returns true if can move, false if not (or if he takes door)
 bool GameManager::moveCharacter(Character* character, Controller::Key action)
 {
+    bool pacman = false;
+    if (character->getType() == 'P') pacman = true;
     switch (action)
 	{
 		case Controller::Z :
             if (!characterWallCollision(character, 'Z'))
             {
-                character->moveUp();
-                return true;
+                if ((!pacman) || ((pacman) && (!pacmanSpawnCollision(character, 'Z')))) {
+                    character->moveUp();
+                    return true;
+                }
             }
 			break;
 		case Controller::Q :
@@ -66,15 +84,19 @@ bool GameManager::moveCharacter(Character* character, Controller::Key action)
             }
             if (!characterWallCollision(character, 'Q'))
             {
-                character->moveLeft();
-                return true;
+                if ((!pacman) || ((pacman) && (!pacmanSpawnCollision(character, 'Q')))) {
+                    character->moveLeft();
+                    return true;
+                }
             }
 			break;
 		case Controller::S :
             if (!characterWallCollision(character, 'S'))
             {
-                character->moveDown();
-                return true;
+                if ((!pacman) || ((pacman) && (!pacmanSpawnCollision(character, 'S')))) {
+                    character->moveDown();
+                    return true;
+                }
             }
 			break;
 		case Controller::D :
@@ -88,8 +110,10 @@ bool GameManager::moveCharacter(Character* character, Controller::Key action)
             }
             if (!characterWallCollision(character, 'D'))
             {
-                character->moveRight();
-                return true;
+                if ((!pacman) || ((pacman) && (!pacmanSpawnCollision(character, 'D')))) {
+                    character->moveRight();
+                    return true;
+                }
             }
 			break;
 		default :
@@ -114,10 +138,13 @@ void GameManager::pacmanMove(Controller* controller)
 }
 
 void GameManager::play(Controller* controller) {
-    pacmanMove(controller);
-    ghostMove();
-    pacmanGhostCollision();
-    pacmanEdibleCollision();
+
+    while (!(this->won())) {
+        pacmanMove(controller);
+        ghostMove();
+        pacmanGhostCollision();
+        pacmanEdibleCollision();
+    }
 }
 
 // For console only
@@ -403,6 +430,201 @@ bool GameManager::characterRightDoorCollision(Character* character)
             return true;
     }
     return false;
+}
+
+/** SPAWN **/
+
+bool GameManager::spawnCollisionUP(float fposY, int iposY, int iposX, float speed, Character* character)
+{
+    // Check if we're still going to be inside the cell
+    if((fposY - speed) > iposY)
+    {
+        // Put the character on the left edge of the cell
+        character->setPosX((float)iposX);
+        // Ok we can move inside the cell
+        return false;
+    }
+    // We're going to be on the upper cell
+    else
+    {
+        // Check if we can go on the upper cell
+        if(iposY >= 1)
+        {
+            // Check if upper cell is a wall
+            if (m_map->getStaticObjects()[iposY-1][iposX]->getType()=='X')
+            {
+                // It's a wall, return true -> it's a collision, put the character on the top of the cell
+                character->setPosY((float)iposY);
+                return true;
+            }
+            else
+            {
+                // Put the character on the left edge of the cell
+                character->setPosX((float)iposX);
+                // It's ok we can move to the other cell
+                return false;
+            }
+        }
+        else
+        {
+            // We are at the edge of the game
+            character->setPosY((float)iposY);
+            return true;
+        }
+    }
+}
+
+bool GameManager::spawnCollisionLEFT(float fposX, int iposY, int iposX, float speed, Character* character)
+{
+    if((fposX - speed) > iposX)
+    {
+        character->setPosY((float)iposY);
+        return false;
+    }
+    else
+    {
+        if(iposX >= 1)
+        {
+            if (m_map->getStaticObjects()[iposY][iposX-1]->getType()=='X')
+            {
+                character->setPosX((float)iposX);
+                return true;
+            }
+            else
+            {
+                character->setPosY((float)iposY);
+                return false;
+            }
+        }
+        else
+        {
+            character->setPosX((float)iposX);
+            return true;
+        }
+    }
+}
+
+bool GameManager::spawnCollisionDOWN(float fposY, int iposY, int iposX, float speed, Character* character)
+{
+    // Check if we can go on the bottom cell
+    if(iposY+1 <= m_map->getNbX()-1)
+    {
+        // Check if bottom cell is a wall
+        if (m_map->getStaticObjects()[iposY+1][iposX]->getType()=='X')
+        {
+            character->setPosY((float)iposY);
+            return true;
+        }
+        else
+        {
+            character->setPosX((float)iposX);
+            return false;
+        }
+    }
+    else
+    {
+        character->setPosY((float)iposY);
+        return true;
+    }
+}
+
+bool GameManager::spawnCollisionRIGHT(float fposX, int iposY, int iposX, float speed, Character* character)
+{
+    if(iposX+1 <= m_map->getNbY()-1)
+    {
+        if (m_map->getStaticObjects()[iposY][iposX+1]->getType()=='X')
+        {
+            character->setPosX((float)iposX);
+            return true;
+        }
+        else
+        {
+            character->setPosY((float)iposY);
+            return false;
+        }
+    }
+    else
+    {
+        character->setPosX((float)iposX);
+        return true;
+    }
+}
+
+bool GameManager::pacmanSpawnCollision(Character* character, char direction) {
+    float fposX = character->getPosX();
+    float fposY = character->getPosY();
+    int iposX = (int)fposX;   // Matrix index X
+    int iposY = (int)fposY;   // Matrix index Y
+    float speed = character->getSpeed();
+    float seuil = 0.005;
+
+    switch(direction) {
+        case 'Z':
+            // Check if we are close to the left edge
+            if(fposX - iposX <= seuil)
+            {
+                return spawnCollisionUP(fposY, iposY, iposX, speed, character);
+            }
+            // Check if we are close to the right edge
+            else if (iposX+1 - fposX <= seuil)
+            {
+                // Consider we're on the right edge
+                return spawnCollisionUP(fposY, iposY, iposX+1, speed, character);
+            }
+            // We are between two cells
+            else
+            {
+                // We can't go up
+                return true;
+            }
+            break;
+        case 'Q':
+            if(fposY - iposY <= seuil)
+            {
+                return spawnCollisionLEFT(fposX, iposY, iposX, speed, character);
+            }
+            else if (iposY+1 - fposY <= seuil)
+            {
+                return spawnCollisionLEFT(fposX, iposY+1, iposX, speed, character);
+            }
+            else
+            {
+                return true;
+            }
+            break;
+        case 'S':
+            if(fposX - iposX <= seuil)
+            {
+                return spawnCollisionDOWN(fposY, iposY, iposX, speed, character);
+            }
+            else if (iposX+1 - fposX <= seuil)
+            {
+                return spawnCollisionDOWN(fposX, iposY, iposX+1, speed, character);
+            }
+            else
+            {
+                return true;
+            }
+            break;
+        case 'D':
+            if(fposY - iposY <= seuil)
+            {
+                return spawnCollisionRIGHT(fposX, iposY, iposX, speed, character);
+            }
+            else if (iposY+1 - fposY <= seuil)
+            {
+                return spawnCollisionRIGHT(fposX, iposY+1, iposX, speed, character);
+            }
+            else
+            {
+                return true;
+            }
+            break;
+        default:
+            return true;
+            break;
+    }
+
 }
 
 void GameManager::pacmanEdibleCollision() {
