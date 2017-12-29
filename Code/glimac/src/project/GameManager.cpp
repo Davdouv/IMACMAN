@@ -15,12 +15,21 @@ GameManager::GameManager(Map* map)
 GameManager::PacmanState GameManager::getState() const { return m_state;}
 void GameManager::setState(PacmanState state) { m_state = state;}
 
+// returns true if no edible on the map
+
+bool GameManager::won() {
+    
+    return (m_map->getSuperPacGommes().empty() && m_map->getFruits().empty() && m_map->getPacGommes().empty());
+}
+
 // For console only
 void GameManager::play() {
 
-    bool play = true;
+    Pacman *p = m_map->getPacman();
+    p->setSpeed(1);
+    m_map->setPacman(*p);
     std::string line;
-    while (play) {
+    while (!(this->won())) {
         m_map->display();
         std::cout << "Your move : " << std::endl;
         getline(std::cin, line);
@@ -36,7 +45,7 @@ void GameManager::play() {
         if (line == "D") {
             if (!characterWallCollision(m_map->getPacman(), 'D')) m_map->getPacman()->moveRight();
         }
-        if (line == "C") play = false;
+        if (line == "C") return;
         pacmanGhostCollision();
         pacmanEdibleCollision();
         ghostMove();
@@ -114,10 +123,13 @@ void GameManager::pacmanMove(Controller* controller)
 }
 
 void GameManager::play(Controller* controller) {
-    pacmanMove(controller);
-    ghostMove();
-    pacmanGhostCollision();
-    pacmanEdibleCollision();
+
+    while (!(this->won())) {
+        pacmanMove(controller);
+        ghostMove();
+        pacmanGhostCollision();
+        pacmanEdibleCollision();
+    }
 }
 
 // For console only

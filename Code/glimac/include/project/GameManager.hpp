@@ -30,6 +30,10 @@ public:
     int countShortestWay(float, float, float, float);
 
 private:
+
+    // game state
+    bool won();
+
     // Move
     bool moveCharacter(Character*, Controller::Key);
     void pacmanMove(Controller* controller);
