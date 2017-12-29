@@ -20,12 +20,21 @@ void Object::setOrientation(Orientation orientation) { m_orientation = orientati
 
 bool Object::collision(Object *c) {
     if (c==NULL) return false;
-    if ( (( this->getPosX() >= c->getPosX()) && (this->getPosX() < c->getPosX()+1))
-     && ((this->getPosY() >= c->getPosY()) && (this->getPosY() < c->getPosY()+1)) )  {
+    //float seuil = 0.005;
+    float x1 = this->getPosX();
+    float y1 = this->getPosY();
+    float w1 = this->getWidth();
+    float h1 = this->getHeight();
+    float x2 = c->getPosX();
+    float y2 = c->getPosY();
+    float w2 = c->getWidth();
+    float h2 = c->getHeight();
+
+    if ( ((x1+w1 >= x2) && (x1 < x2+w2))
+     && ((y1+h1 >= y2) && (y1 < y2+h2)) )  {
         return true;
     }
     return false; 
-    
 } 
 
 void Object::display() {
