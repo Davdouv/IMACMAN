@@ -26,7 +26,7 @@ private:
     // Cameras
     // TrackballCamera* m_tbCamera;    // TPS Cam
     // FreeflyCamera* m_ffCamera;      // FPS Cam
-    // bool m_fps;                     // false = TPS | true = FPS
+    // bool m_fps;                     // false = TPS | true = FPS
 
     // Cube
     Cube m_cube;
@@ -46,10 +46,12 @@ private:
     glm::mat4 m_NormalMatrix;
 
     // Textures
-    Texture* m_PacmanTex;
-    Texture* m_GhostTex;
-    Texture* m_WallTex;
-    Texture* m_GumTex;
+    Texture* m_PacmanTexture;
+    Texture* m_GhostTexture;
+    Texture* m_WallTexture;
+    Texture* m_GumTexture;
+    Texture* m_SuperGumTexture;
+    Texture* m_FruitTexture;
 
     // GLSL Programs
     ProgramList* m_programList;
@@ -97,27 +99,26 @@ public:
     void applyTransformations(FS shader, glm::mat4 matrix);
 
     // Specific Transformations & Programs
-    void drawPacman(Pacman* pacman);
-    void drawPacmanTex(Pacman* pacman);
-    void drawGhosts(Ghost* ghost);
-    void drawWalls(std::vector<Wall*>);
-    void drawWallsTex(std::vector<Wall*>);
-    void drawGhosts(std::vector<Ghost*>);
-    void drawGhostsTex(std::vector<Ghost*>);
-    void drawPacGommes(std::vector<Edible*>);
-    void drawPacGommesTex(std::vector<Edible*>);
-    void drawSuperPacGommes(std::vector<Edible*>);
-    void drawFruits(std::vector<Edible*>);
+    void drawPacman(Pacman* pacman, FS shader = NORMAL);
+    void drawPacmanNormal(Pacman* pacman);
+    void drawPacmanTexture(Pacman* pacman);
+    void drawWalls(std::vector<Wall*>, FS shader = NORMAL);
+    void drawGhosts(std::vector<Ghost*>, FS shader = NORMAL);
+    void drawPacGommes(std::vector<Edible*>, FS shader = NORMAL);
+    void drawSuperPacGommes(std::vector<Edible*>, FS shader = NORMAL);
+    void drawFruits(std::vector<Edible*>, FS shader = NORMAL);
 
 private:
-    void drawWall(Wall* wall);
-    void drawWallTex(Wall* wall);
-    void drawGhost(Ghost* ghost);
-    void drawGhostTex(Ghost* ghost);
-    void drawPacGomme(Edible* edible);
-    void drawPacGommeTex(Edible* edible);
-    void drawSuperPacGomme(Edible* edible);
-    void drawFruit(Edible* edible);
+    void drawWallNormal(Wall* wall);
+    void drawWallTexture(Wall* wall);
+    void drawGhostNormal(Ghost* ghost);
+    void drawGhostTexture(Ghost* ghost);
+    void drawPacGommeNormal(Edible* edible);
+    void drawPacGommeTexture(Edible* edible);
+    void drawSuperPacGommeNormal(Edible* edible);
+    void drawSuperPacGommeTexture(Edible* edible);
+    void drawFruitNormal(Edible* edible);
+    void drawFruitTexture(Edible* edible);
 
     // Switch camera
     // void switchCamera();

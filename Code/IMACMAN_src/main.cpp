@@ -65,8 +65,8 @@ int main(int argc, char** argv) {
     RenderManager renderManager = RenderManager(&windowManager, camera, &programList, gameSize);
     Controller controller = Controller(&windowManager);
 
-    // Enable program
-    renderManager.useProgram(NORMAL);
+    // Load Textures
+    renderManager.loadTextures();
 
     // Application loop:
     bool done = false;
@@ -118,10 +118,10 @@ int main(int argc, char** argv) {
         renderManager.bindSphereVAO();
         // Draw Pacman only in TPS
         if(!controller.isFPSactive())
-            renderManager.drawPacman(map.getPacman());
-        renderManager.drawPacGommes(map.getPacGommes());
-        renderManager.drawSuperPacGommes(map.getSuperPacGommes());
-        renderManager.drawFruits(map.getFruits());
+            renderManager.drawPacman(map.getPacman(), TEXTURE);
+        renderManager.drawPacGommes(map.getPacGommes(), TEXTURE);
+        renderManager.drawSuperPacGommes(map.getSuperPacGommes(), TEXTURE);
+        renderManager.drawFruits(map.getFruits(), TEXTURE);
 
         // De-bind Sphere VAO
         renderManager.debindVAO();
@@ -129,8 +129,8 @@ int main(int argc, char** argv) {
         // --- CUBE --- //
         renderManager.bindCubeVAO();
 
-        renderManager.drawWalls(map.getWalls());
-        renderManager.drawGhosts(map.getGhosts());
+        renderManager.drawWalls(map.getWalls(), TEXTURE);
+        renderManager.drawGhosts(map.getGhosts(), TEXTURE);
 
         renderManager.debindVAO();
 

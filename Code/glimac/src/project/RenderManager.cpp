@@ -34,14 +34,18 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_NormalMatrix = glm::transpose(glm::inverse(m_MVMatrix));
 
     // Textures
-    m_PacmanTex = new Texture("../Code/assets/textures/pacman.png");
-    m_GhostTex = new Texture("../Code/assets/textures/ghost.jpg");
-    m_WallTex = new Texture("../Code/assets/textures/wall.jpg");
-    m_GumTex = new Texture("../Code/assets/textures/gum.png");
-    // m_PacmanTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/pacman.jpg");
-    // m_GhostTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/ghost.jpg");
-    // m_WallTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wall.jpg");
-    // m_GumTex = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/gum.jpg");
+    // m_PacmanTexture = new Texture("../Code/assets/textures/pacman.png");
+    // m_GhostTexture = new Texture("../Code/assets/textures/ghost.jpg");
+    // m_WallTexture = new Texture("../Code/assets/textures/wall.jpg");
+    // m_GumTexture = new Texture("../Code/assets/textures/gum.png");
+    // m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.png");
+    // m_FruitTexture = new Texture("../Code/assets/textures/fruit.png");
+    m_PacmanTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/pacman.jpg");
+    m_GhostTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/ghost.jpg");
+    m_WallTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wall.jpg");
+    m_GumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/gum.jpg");
+    m_SuperGumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/superpacgum.jpg");
+    m_FruitTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/fruit.jpg");
 
     // GLSL Program
     m_programList = programList;
@@ -60,10 +64,12 @@ RenderManager::~RenderManager()
     glDeleteBuffers(1, &m_sphereVBO);
     glDeleteVertexArrays(1, &m_sphereVAO);
 
-    delete(m_PacmanTex);
-    delete(m_GhostTex);
-    delete(m_WallTex);
-    delete(m_GumTex);
+    delete(m_PacmanTexture);
+    delete(m_GhostTexture);
+    delete(m_WallTexture);
+    delete(m_GumTexture);
+    delete(m_SuperGumTexture);
+    delete(m_FruitTexture);
 }
 
 // ---------------
@@ -148,10 +154,12 @@ void RenderManager::updateMVMatrix(Camera* camera, Character* character)
 
 void RenderManager::loadTextures() const
 {
-  m_PacmanTex->loadTexture();
-  m_GhostTex->loadTexture();
-  m_WallTex->loadTexture();
-  m_GumTex->loadTexture();
+  m_PacmanTexture->loadTexture();
+  m_GhostTexture->loadTexture();
+  m_WallTexture->loadTexture();
+  m_GumTexture->loadTexture();
+  m_SuperGumTexture->loadTexture();
+  m_FruitTexture->loadTexture();
 }
 
 
@@ -235,8 +243,22 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
 
 // CHARACTERS
 
+void RenderManager::drawPacman(Pacman* pacman, FS shader)
+{
+    if (shader == NORMAL)
+    {
+      useProgram(NORMAL);
+      drawPacmanNormal(pacman);
+    }
+    else if (shader == TEXTURE)
+    {
+      useProgram(TEXTURE);
+      drawPacmanTexture(pacman);
+    }
+}
+
 // Draw Pacman - Sphere - Shader : NORMAL
-void RenderManager::drawPacman(Pacman* pacman)
+void RenderManager::drawPacmanNormal(Pacman* pacman)
 {
     glm::mat4 transformationMatrix = transformMatrix(pacman);
     applyTransformations(NORMAL, transformationMatrix);
@@ -244,18 +266,18 @@ void RenderManager::drawPacman(Pacman* pacman)
 }
 
 // Draw Pacman - Sphere - Shader : TEXTURE
-void RenderManager::drawPacmanTex(Pacman* pacman)
+void RenderManager::drawPacmanTexture(Pacman* pacman)
 {
     glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glBindTexture(GL_TEXTURE_2D, m_PacmanTexture->getID());
     glm::mat4 transformationMatrix = transformMatrix(pacman);
     applyTransformations(TEXTURE, transformationMatrix);
-    glBindTexture(GL_TEXTURE_2D, m_PacmanTex->getID());
     m_sphere.drawSphere();
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 // Draw Ghost - Sphere - Shader : NORMAL
-void RenderManager::drawGhost(Ghost* ghost)
+void RenderManager::drawGhostNormal(Ghost* ghost)
 {
     glm::mat4 transformationMatrix = transformMatrix(ghost);
     applyTransformations(NORMAL, transformationMatrix);
@@ -263,12 +285,12 @@ void RenderManager::drawGhost(Ghost* ghost)
 }
 
 // Draw Ghost - Sphere - Shader : TEXTURE
-void RenderManager::drawGhostTex(Ghost* ghost)
+void RenderManager::drawGhostTexture(Ghost* ghost)
 {
     glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glBindTexture(GL_TEXTURE_2D, m_GhostTexture->getID());
     glm::mat4 transformationMatrix = transformMatrix(ghost);
-    applyTransformations(NORMAL, transformationMatrix);
-    glBindTexture(GL_TEXTURE_2D, m_GhostTex->getID());
+    applyTransformations(TEXTURE, transformationMatrix);
     m_cube.drawCube();
     glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -278,7 +300,7 @@ void RenderManager::drawGhostTex(Ghost* ghost)
 // ---- 1 OBJECT ----- //
 
 // Draw Wall - Cube - Shader : NORMAL
-void RenderManager::drawWall(Wall* wall)
+void RenderManager::drawWallNormal(Wall* wall)
 {
     glm::mat4 transformationMatrix = transformMatrix(wall);
     applyTransformations(NORMAL, transformationMatrix);
@@ -286,26 +308,37 @@ void RenderManager::drawWall(Wall* wall)
 }
 
 // Draw Wall - Cube - Shader : TEXTURE
-void RenderManager::drawWallTex(Wall* wall)
+void RenderManager::drawWallTexture(Wall* wall)
 {
     glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glBindTexture(GL_TEXTURE_2D, m_WallTexture->getID());
     glm::mat4 transformationMatrix = transformMatrix(wall);
-    applyTransformations(NORMAL, transformationMatrix);
-    glBindTexture(GL_TEXTURE_2D, m_WallTex->getID());
+    applyTransformations(TEXTURE, transformationMatrix);
     m_cube.drawCube();
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 // Draw Super PacGomme - Sphere - Shader : NORMAL
-void RenderManager::drawSuperPacGomme(Edible* edible)
+void RenderManager::drawSuperPacGommeNormal(Edible* edible)
 {
     glm::mat4 transformationMatrix = transformMatrix(edible);
     applyTransformations(NORMAL, transformationMatrix);
     m_sphere.drawSphere();
 }
 
+// Draw Super PacGomme - Sphere - Shader : TEXTURE
+void RenderManager::drawSuperPacGommeTexture(Edible* edible)
+{
+    glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glBindTexture(GL_TEXTURE_2D, m_SuperGumTexture->getID());
+    glm::mat4 transformationMatrix = transformMatrix(edible);
+    applyTransformations(TEXTURE, transformationMatrix);
+    m_sphere.drawSphere();
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 // Draw PacGomme - Sphere - Shader : NORMAL
-void RenderManager::drawPacGomme(Edible* edible)
+void RenderManager::drawPacGommeNormal(Edible* edible)
 {
     glm::mat4 transformationMatrix = transformMatrix(edible);
     applyTransformations(NORMAL, transformationMatrix);
@@ -313,86 +346,129 @@ void RenderManager::drawPacGomme(Edible* edible)
 }
 
 // Draw PacGomme - Sphere - Shader : TEXTURE
-void RenderManager::drawPacGommeTex(Edible* edible)
+void RenderManager::drawPacGommeTexture(Edible* edible)
 {
     glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glBindTexture(GL_TEXTURE_2D, m_GumTexture->getID());
     glm::mat4 transformationMatrix = transformMatrix(edible);
-    applyTransformations(NORMAL, transformationMatrix);
-    glBindTexture(GL_TEXTURE_2D, m_GumTex->getID());
+    applyTransformations(TEXTURE, transformationMatrix);
     m_sphere.drawSphere();
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 // Draw Fruit - Sphere - Shader : NORMAL
-void RenderManager::drawFruit(Edible* edible)
+void RenderManager::drawFruitNormal(Edible* edible)
 {
     glm::mat4 transformationMatrix = transformMatrix(edible);
     applyTransformations(NORMAL, transformationMatrix);
     m_sphere.drawSphere();
 }
 
+// Draw Fruit - Sphere - Shader : TEXTURE
+void RenderManager::drawFruitTexture(Edible* edible)
+{
+    glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glBindTexture(GL_TEXTURE_2D, m_FruitTexture->getID());
+    glm::mat4 transformationMatrix = transformMatrix(edible);
+    applyTransformations(TEXTURE, transformationMatrix);
+    m_sphere.drawSphere();
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 // ---- ALL OBJECTS ----- //
 
-void RenderManager::drawWalls(std::vector<Wall*> wall)
+void RenderManager::drawWalls(std::vector<Wall*> wall, FS shader)
 {
-    for (unsigned int i = 0; i < wall.size(); ++i)
-    {
-        drawWall(wall[i]);
+    if (shader == NORMAL) {
+      useProgram(NORMAL);
+      for (unsigned int i = 0; i < wall.size(); ++i)
+      {
+          drawWallNormal(wall[i]);
+      }
     }
+    else if (shader == TEXTURE)
+    {
+      useProgram(TEXTURE);
+      for (unsigned int i = 0; i < wall.size(); ++i)
+      {
+          drawWallTexture(wall[i]);
+      }
+    }
+
 }
 
-void RenderManager::drawWallsTex(std::vector<Wall*> wall)
+void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
 {
-    for (unsigned int i = 0; i < wall.size(); ++i)
-    {
-        drawWallTex(wall[i]);
-    }
-}
-
-void RenderManager::drawGhosts(std::vector<Ghost*> ghost)
-{
+  if (shader == NORMAL) {
+    useProgram(NORMAL);
     for (unsigned int i = 0; i < ghost.size(); ++i)
     {
-        drawGhost(ghost[i]);
+        drawGhostNormal(ghost[i]);
     }
-}
-
-void RenderManager::drawGhostsTex(std::vector<Ghost*> ghost)
-{
+  }
+  else if (shader == TEXTURE)
+  {
+    useProgram(TEXTURE);
     for (unsigned int i = 0; i < ghost.size(); ++i)
     {
-        drawGhostTex(ghost[i]);
+        drawGhostTexture(ghost[i]);
     }
+  }
 }
 
-void RenderManager::drawPacGommes(std::vector<Edible*> edible)
+void RenderManager::drawPacGommes(std::vector<Edible*> edible, FS shader)
 {
+  if (shader == NORMAL) {
+    useProgram(NORMAL);
     for (unsigned int i = 0; i < edible.size(); ++i)
     {
-        drawPacGomme(edible[i]);
+        drawPacGommeNormal(edible[i]);
     }
+  }
+  else if (shader == TEXTURE)
+  {
+    useProgram(TEXTURE);
+    for (unsigned int i = 0; i < edible.size(); ++i)
+    {
+        drawPacGommeTexture(edible[i]);
+    }
+  }
 }
 
-void RenderManager::drawPacGommesTex(std::vector<Edible*> edible)
+void RenderManager::drawSuperPacGommes(std::vector<Edible*> edible, FS shader)
 {
+  if (shader == NORMAL) {
+    useProgram(NORMAL);
     for (unsigned int i = 0; i < edible.size(); ++i)
     {
-        drawPacGommeTex(edible[i]);
+        drawSuperPacGommeNormal(edible[i]);
     }
+  }
+  else if (shader == TEXTURE)
+  {
+    useProgram(TEXTURE);
+    for (unsigned int i = 0; i < edible.size(); ++i)
+    {
+        drawSuperPacGommeTexture(edible[i]);
+    }
+  }
 }
 
-void RenderManager::drawSuperPacGommes(std::vector<Edible*> edible)
+void RenderManager::drawFruits(std::vector<Edible*> edible, FS shader)
 {
+  if (shader == NORMAL) {
+    useProgram(NORMAL);
     for (unsigned int i = 0; i < edible.size(); ++i)
     {
-        drawSuperPacGomme(edible[i]);
+        drawFruitNormal(edible[i]);
     }
-}
-
-void RenderManager::drawFruits(std::vector<Edible*> edible)
-{
+  }
+  else if (shader == TEXTURE)
+  {
+    useProgram(TEXTURE);
     for (unsigned int i = 0; i < edible.size(); ++i)
     {
-        drawFruit(edible[i]);
+        drawFruitTexture(edible[i]);
     }
+  }
 }

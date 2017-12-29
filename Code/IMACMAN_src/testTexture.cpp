@@ -130,24 +130,20 @@ int main(int argc, char** argv) {
         // --- SPHERE --- //
         // Bind Sphere VAO
         renderManager.bindSphereVAO();
-        //renderManager.useProgram(TEXTURE);
         // Draw Pacman only in TPS
-        renderManager.useProgram(TEXTURE);
         if(!controller.isFPSactive()) {
-          renderManager.drawPacmanTex(map.getPacman());
+          renderManager.drawPacman(map.getPacman(), TEXTURE);
         }
 
-        renderManager.drawPacGommesTex(map.getPacGommes());
-        renderManager.useProgram(NORMAL);
+        renderManager.drawPacGommes(map.getPacGommes(), TEXTURE);
         renderManager.drawSuperPacGommes(map.getSuperPacGommes());
 
-        renderManager.useProgram(TEXTURE);
         // De-bind Sphere VAO
         renderManager.debindVAO();
 
         // --- CUBE --- //
         renderManager.bindCubeVAO();
-        renderManager.drawWallsTex(map.getWalls());
+        renderManager.drawWalls(map.getWalls(), TEXTURE);
         renderManager.debindVAO();
         // Update the display
         windowManager.swapBuffers();

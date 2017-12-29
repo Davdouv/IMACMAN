@@ -59,7 +59,7 @@ std::vector<Door*> Map::getDoors() {
             if (m_staticObjects[i][j]->getType() == 'D')
             {
                 doors.push_back((Door*)m_staticObjects[i][j]);
-            } 
+            }
         }
     }
     return doors;
@@ -121,8 +121,8 @@ void Map::initialization() {
 int Map::load() {
 
     std::fstream file;
-    //file.open("/home/daphne/PROJET_OPENGL/IMACMAN/Code/data/"+m_fileMap, std::ios::binary | std::ios::out | std::ios::in);
-    file.open("../Code/data/"+m_fileMap, std::ios::binary | std::ios::out | std::ios::in);
+    file.open("/home/daphne/PROJET_OPENGL/IMACMAN/Code/data/"+m_fileMap, std::ios::binary | std::ios::out | std::ios::in);
+    //file.open("../Code/data/"+m_fileMap, std::ios::binary | std::ios::out | std::ios::in);
     if (!file.is_open()) {
         std::cout << " error loading the file " << std::endl;
         return 0;
