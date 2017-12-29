@@ -6,7 +6,7 @@
 #include <vector>
 
 static bool isStaticElement(char e) {
-    return !((e!='W') && (e!='G') && (e!='V') && (e!='S') && (e!='B')&& (e!='D'));
+    return !((e!='W') && (e!='G') && (e!='V') && (e!='S') && (e!='B')&& (e!='D') && (e!='X'));
 }
 
 static int charToInt(char c) {

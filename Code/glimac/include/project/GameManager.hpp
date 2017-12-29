@@ -47,6 +47,12 @@ private:
     bool wallCollisionRIGHT(float fposX, int iposY, int iposX, float speed, Character* character);
     bool characterWallCollision(Character*, char);
 
+    bool spawnCollisionUP(float fposY, int iposY, int iposX, float speed, Character* character);
+    bool spawnCollisionLEFT(float fposX, int iposY, int iposX, float speed, Character* character);
+    bool spawnCollisionDOWN(float fposY, int iposY, int iposX, float speed, Character* character);
+    bool spawnCollisionRIGHT(float fposX, int iposY, int iposX, float speed, Character* character);
+    bool pacmanSpawnCollision(Character*, char);
+
     bool characterLeftDoorCollision(Character*);
     bool characterRightDoorCollision(Character*);
 

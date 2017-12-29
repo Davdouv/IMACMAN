@@ -177,6 +177,7 @@ int Map::load() {
                         break;
                     case 'V' : o = new StaticObject('V', j, i, 1, 1, Object::Orientation::LEFT);
                         break;
+                    case 'X' : o = new StaticObject('X', j, i, 1, 1, Object::Orientation::LEFT);
                     default : break;
                 }
                 row.push_back(o);
