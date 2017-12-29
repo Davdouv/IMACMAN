@@ -136,7 +136,7 @@ int Map::load() {
         std::string delimiter = ",";
         std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
         std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-        Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.05, Object::Orientation::LEFT);
+        Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.02, Object::Orientation::LEFT);
         this->setPacman(*p);
         std::vector<Ghost> tabGhost;
         int death = 20;
@@ -145,7 +145,7 @@ int Map::load() {
             std::string delimiter = ",";
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 0.09, i+1, Object::Orientation::LEFT, death);
+            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 0.015, i+1, Object::Orientation::LEFT, death);
             tabGhost.push_back(*g);
             death+=10;
             delete(g);
