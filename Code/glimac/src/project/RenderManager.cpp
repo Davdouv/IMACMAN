@@ -138,7 +138,8 @@ void RenderManager::updateMVMatrix(Camera* camera)
 }
 void RenderManager::updateMVMatrix(Camera* camera, Character* character)
 {
-    m_MVMatrix = camera->getViewMatrix(character,m_gameSize);
+    //m_MVMatrix = camera->getViewMatrix(transformMatrix(character));
+    m_MVMatrix = camera->getViewMatrix(character, m_gameCorner);
 }
 
 // ---------------

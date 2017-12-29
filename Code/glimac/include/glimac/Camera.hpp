@@ -12,7 +12,8 @@ public:
     virtual void rotateUp(float degrees) = 0; // permettant de tourner verticalement autour du centre de vision.
 
 	virtual glm::mat4 getViewMatrix() const = 0; // calcule la ViewMatrix de la caméra
-    virtual glm::mat4 getViewMatrix(Character* character, glm::vec2 gameSize) const {}; // calcule la ViewMatrix de la caméra
+    virtual glm::mat4 getViewMatrix(glm::mat4) const = 0; // calcule la ViewMatrix de la caméra
+    virtual glm::mat4 getViewMatrix(Character*, glm::vec2 gameSize) const = 0;
 };
 
 }
