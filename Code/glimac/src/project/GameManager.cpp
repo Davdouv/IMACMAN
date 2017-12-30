@@ -185,7 +185,7 @@ void GameManager::play(Controller* controller) {
 
 void GameManager::newLevel(Controller* controller)
 {
-    controller->setPlayerPreviousAction(Controller::Key:Q);
+    controller->setPlayerPreviousAction(Controller::Key::Q);
     setState(NORMAL);
     m_map->initialization();
     setGhosts();
