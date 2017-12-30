@@ -70,8 +70,8 @@ int main(int argc, char** argv) {
     // Load Textures
     renderManager.loadTextures();
 
-    // initialize the ghosts
-    gameManager.setGhosts();
+    // initialize the timers
+    gameManager.setTimers();
 
     windowManager.updateDeltaTime();
 

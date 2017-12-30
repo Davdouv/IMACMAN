@@ -18,11 +18,13 @@ GameManager::GameManager(Map* map)
 GameManager::PacmanState GameManager::getState() const { return m_state;}
 uint32_t GameManager::getStartTime() const { return m_startTime; }
 uint32_t GameManager::getSuperTimer() const { return m_superTimer; }
+uint32_t GameManager::getFruitTimer() const { return m_fruitTimer; }
 bool GameManager::isPause() { return m_pause; }
 int GameManager::getEatenGhosts() const { return m_eatenGhosts; }
 void GameManager::setState(PacmanState state) { m_state = state;}
 void GameManager::setStartTime(uint32_t t) { m_startTime = t;}
 void GameManager::setSuperTimer(uint32_t t) { m_superTimer = t;}
+void GameManager::setFruitTimer(uint32_t t) { m_fruitTimer = t; }
 void GameManager::switchPause() { m_pause=!isPause();}
 void GameManager::setEatenGhosts(int eatenGhosts) { m_eatenGhosts = eatenGhosts;}
 // returns true if no edible on the map
@@ -54,7 +56,7 @@ void GameManager::pause(Controller* controller) {
 
 void GameManager::start() {
 
-    setGhosts();
+    setTimers();
     play();
 }
 
@@ -68,7 +70,7 @@ void GameManager::play() {
 
     std::string line;
     this->setStartTime(SDL_GetTicks());
-    setGhosts();
+    setTimers();
     while (!(this->won())) {
         if (ready()) {
             stateManager();
@@ -169,7 +171,7 @@ void GameManager::pacmanMove(Controller* controller)
 }
 
 
-// need to call setGhosts before this function to set them ready 
+// need to call setTimers before this function to set them ready 
 void GameManager::play(Controller* controller) {
 
     if (!(lost()) && ready() && !isPause())
@@ -197,7 +199,7 @@ void GameManager::newLevel(Controller* controller)
     controller->setPlayerPreviousAction(Controller::Key::Q);
     setState(NORMAL);
     m_map->initialization();
-    setGhosts();
+    setTimers();
 }
 
 void GameManager::pacmanGhostCollision() {
@@ -818,7 +820,8 @@ char GameManager::nextMove(float dx, float dy, float ax, float ay) {
     return 'N';
 }
 
-void GameManager::setGhosts() {
+void GameManager::setTimers() {
+    setFruitTimer(SDL_GetTicks());
     for (int i = 0; i < m_map->getGhosts().size(); i++) m_map->getGhosts()[i]->reset();
 }
 
@@ -876,7 +879,7 @@ void GameManager::updateSpeed(uint32_t deltaTime)
 
 void GameManager::activateFruit() {
     // Every 30sec
-    if ((int)(0.001f * SDL_GetTicks() - m_startTime) % 30 == 0)  {
+    if ((int)(0.001f * SDL_GetTicks() - m_fruitTimer) > 30)  {
         if (!m_map->getFruits().empty())
         {
             std::cout << "Fruit available!" << m_map->getFruits().size() << std::endl;
