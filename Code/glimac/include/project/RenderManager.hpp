@@ -52,6 +52,7 @@ private:
     Texture* m_GumTexture;
     Texture* m_SuperGumTexture;
     Texture* m_FruitTexture;
+    Texture* m_SkyboxTexture;
 
     // GLSL Programs
     ProgramList* m_programList;
@@ -107,6 +108,7 @@ public:
     void drawPacGommes(std::vector<Edible*>, FS shader = NORMAL);
     void drawSuperPacGommes(std::vector<Edible*>, FS shader = NORMAL);
     void drawFruits(std::vector<Edible*>, FS shader = NORMAL);
+    void drawSkybox();
 
 private:
     void drawWallNormal(Wall* wall);

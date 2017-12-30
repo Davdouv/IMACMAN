@@ -119,6 +119,7 @@ int main(int argc, char** argv) {
         // Draw Pacman only in TPS
         if(!controller.isFPSactive())
             renderManager.drawPacman(map.getPacman(), TEXTURE);
+
         renderManager.drawPacGommes(map.getPacGommes(), TEXTURE);
         renderManager.drawSuperPacGommes(map.getSuperPacGommes(), TEXTURE);
         renderManager.drawFruits(map.getFruits(), TEXTURE);
@@ -129,6 +130,7 @@ int main(int argc, char** argv) {
         // --- CUBE --- //
         renderManager.bindCubeVAO();
 
+        renderManager.drawSkybox();
         renderManager.drawWalls(map.getWalls(), TEXTURE);
         renderManager.drawGhosts(map.getGhosts(), TEXTURE);
 

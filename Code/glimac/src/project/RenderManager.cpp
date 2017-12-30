@@ -27,25 +27,26 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
 
     // Matrix
     // Projection Matrix (world) : vertical view angle, window ratio, near, far
-    m_ProjMatrix = glm::perspective(glm::radians(70.f), windowManager->getRatio(), 0.1f, 100.f);
+    m_ProjMatrix = glm::perspective(glm::radians(70.f), windowManager->getRatio(), 0.1f, 200.f);
     // ModelView Matrix (camera)
     m_MVMatrix = camera->getViewMatrix();
     // Normal Matrix in the camera landmark
     m_NormalMatrix = glm::transpose(glm::inverse(m_MVMatrix));
 
     // Textures
-    m_PacmanTexture = new Texture("../Code/assets/textures/pacman.png");
-    m_GhostTexture = new Texture("../Code/assets/textures/ghost.jpg");
-    m_WallTexture = new Texture("../Code/assets/textures/wall.jpg");
-    m_GumTexture = new Texture("../Code/assets/textures/gum.png");
-    m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.png");
-    m_FruitTexture = new Texture("../Code/assets/textures/fruit.png");
-    // m_PacmanTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/pacman.jpg");
-    // m_GhostTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/ghost.jpg");
-    // m_WallTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wall.jpg");
-    // m_GumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/gum.jpg");
-    // m_SuperGumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/superpacgum.jpg");
-    // m_FruitTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/fruit.jpg");
+    // m_PacmanTexture = new Texture("../Code/assets/textures/pacman.png");
+    // m_GhostTexture = new Texture("../Code/assets/textures/ghost.jpg");
+    // m_WallTexture = new Texture("../Code/assets/textures/wall.jpg");
+    // m_GumTexture = new Texture("../Code/assets/textures/gum.png");
+    // m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.png");
+    // m_FruitTexture = new Texture("../Code/assets/textures/fruit.png");
+    m_PacmanTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/pacman.jpg");
+    m_GhostTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/ghost.jpg");
+    m_WallTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wall.jpg");
+    m_GumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/gum.jpg");
+    m_SuperGumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/superpacgum.jpg");
+    m_FruitTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/fruit.jpg");
+    m_SkyboxTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg");
 
     // GLSL Program
     m_programList = programList;
@@ -70,6 +71,7 @@ RenderManager::~RenderManager()
     delete(m_GumTexture);
     delete(m_SuperGumTexture);
     delete(m_FruitTexture);
+    delete(m_SkyboxTexture);
 }
 
 // ---------------
@@ -160,6 +162,7 @@ void RenderManager::loadTextures() const
   m_GumTexture->loadTexture();
   m_SuperGumTexture->loadTexture();
   m_FruitTexture->loadTexture();
+  m_SkyboxTexture->loadTexture();
 }
 
 
@@ -471,4 +474,20 @@ void RenderManager::drawFruits(std::vector<Edible*> edible, FS shader)
         drawFruitTexture(edible[i]);
     }
   }
+}
+
+
+// ---- SKYBOX ----- //
+
+void RenderManager::drawSkybox()
+{
+  useProgram(TEXTURE);
+  float size = 50.f;
+  StaticObject skybox('K', m_gameSize.y/2, m_gameSize.x/2, size, size);
+  glUniform1i(m_programList->textureProgram->uTexture, 0);
+  glBindTexture(GL_TEXTURE_2D, m_SkyboxTexture->getID());
+  glm::mat4 transformationMatrix = transformMatrix(&skybox);
+  applyTransformations(TEXTURE, transformationMatrix);
+  m_cube.drawCube();
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
