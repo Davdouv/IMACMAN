@@ -173,6 +173,7 @@ void GameManager::play(Controller* controller) {
 
     if (!(lost()) && ready() && !isPause())
     {
+        stateManager();
         pacmanMove(controller);
         ghostMove();
         pacmanGhostCollision();
