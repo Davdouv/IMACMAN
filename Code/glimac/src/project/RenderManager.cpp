@@ -37,7 +37,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_NormalMatrix = glm::transpose(glm::inverse(m_MVMatrix));
 
     // Textures
-    m_PacmanTexture = new Texture("../Code/assets/textures/pacman.png");
+    m_PacmanTexture = new Texture("../Code/assets/textures/pacman.jpg");
     m_GhostTexture = new Texture("../Code/assets/textures/ghost.jpg");
     m_WallTexture = new Texture("../Code/assets/textures/wall.jpg");
     m_GumTexture = new Texture("../Code/assets/textures/gum.jpg");

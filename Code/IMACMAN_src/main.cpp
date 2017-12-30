@@ -75,8 +75,6 @@ int main(int argc, char** argv) {
     // initialize Skybox
     renderManager.initSkybox();
 
-    // initialize the ghosts
-    gameManager.setGhosts();
     // initialize the timers
     gameManager.setTimers();
 
