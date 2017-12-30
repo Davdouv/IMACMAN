@@ -32,7 +32,8 @@ bool Ghost::ready() {
 
 void Ghost::reset () {
     setPosX(getInitX());
-    setPosY(getInitY());  
+    setPosY(getInitY());
+    setSpeed(getSpeed()*1.5);  
     m_death = SDL_GetTicks();
     m_super = false;
     

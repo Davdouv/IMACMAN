@@ -507,7 +507,10 @@ void GameManager::switchSuperState() {
     this->setState(GameManager::PacmanState::SUPER);
     this->setSuperTimer(SDL_GetTicks());
     this->setEatenGhosts(0);
-    for (int i = 0; i < m_map->getGhosts().size(); i++) m_map->getGhosts()[i]->setSuper(true);
+    for (int i = 0; i < m_map->getGhosts().size(); i++) { 
+        m_map->getGhosts()[i]->setSuper(true);
+        m_map->getGhosts()[i]->slowDown();
+    }
 }
 
 void GameManager::stateManager() {
