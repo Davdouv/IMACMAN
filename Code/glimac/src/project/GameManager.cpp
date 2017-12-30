@@ -167,6 +167,7 @@ void GameManager::play(Controller* controller) {
         pacmanEdibleCollision();
         if(won())
         {
+            setState(NORMAL);
             newLevel();
         }
         if(lost())
