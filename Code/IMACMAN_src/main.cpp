@@ -141,7 +141,11 @@ int main(int argc, char** argv) {
 
         renderManager.drawSkybox();
         renderManager.drawWalls(map.getWalls(), TEXTURE);
-        renderManager.drawGhosts(map.getGhosts(), TEXTURE);
+
+        // Change Ghost Shader if we eat a Super Pac Gomme
+        //if (gameManager.getState() == GameManager::NORMAL)
+            renderManager.drawGhosts(map.getGhosts(), TEXTURE);
+        //else renderManager.drawGhosts(map.getGhosts(), NORMAL);
 
         renderManager.debindVAO();
 
