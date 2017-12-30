@@ -70,5 +70,5 @@ private:
 
     void setGhosts();
     // New game
-    void newLevel();
+    void newLevel(Controller*);
 };

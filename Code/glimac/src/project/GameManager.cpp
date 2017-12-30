@@ -167,8 +167,7 @@ void GameManager::play(Controller* controller) {
         pacmanEdibleCollision();
         if(won())
         {
-            setState(NORMAL);
-            newLevel();
+            newLevel(controller);
         }
         if(lost())
         {
@@ -178,8 +177,10 @@ void GameManager::play(Controller* controller) {
     pause(controller);
 }
 
-void GameManager::newLevel()
+void GameManager::newLevel(Controller* controller)
 {
+    controller->setPlayerPreviousAction(Controller::Key:Q);
+    setState(NORMAL);
     m_map->initialization();
 }
 
