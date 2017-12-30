@@ -85,6 +85,6 @@ private:
 
     // super state
     void switchSuperState();
-    void superStateManager();
+    void stateManager();
     void eatGhost();
 };

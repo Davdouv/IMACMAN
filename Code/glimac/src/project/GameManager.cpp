@@ -71,7 +71,7 @@ void GameManager::play() {
     setGhosts();
     while (!(this->won())) {
         if (ready()) {
-            if (this->getState() == GameManager::PacmanState::SUPER) this->superStateManager();
+            stateManager();
             m_map->display();
             std::cout << "Your move : " << std::endl;
             getline(std::cin, line);
@@ -509,12 +509,13 @@ void GameManager::switchSuperState() {
     for (int i = 0; i < m_map->getGhosts().size(); i++) m_map->getGhosts()[i]->setSuper(true);
 }
 
-void GameManager::superStateManager() {
+void GameManager::stateManager() {
 
-    std::cout << SDL_GetTicks() - this->getSuperTimer() << std::endl;
-    if (SDL_GetTicks() - this->getSuperTimer() > 60000) {
-        this->setState(GameManager::PacmanState::NORMAL);
-        this->setEatenGhosts(0);
+    if (this->getState() == GameManager::PacmanState::SUPER) {
+        if (SDL_GetTicks() - this->getSuperTimer() > 60000) {
+            this->setState(GameManager::PacmanState::NORMAL);
+            this->setEatenGhosts(0);
+        }
     }
 }
 
