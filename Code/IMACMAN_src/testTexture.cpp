@@ -49,6 +49,7 @@ int main(int argc, char** argv) {
      *********************************/
 
      // Background color
+     
      glClearColor(0.11f, 0.1f, 0.24f, 0.0f);
 
     Map map;
@@ -153,4 +154,5 @@ int main(int argc, char** argv) {
     //See ~renderManager destructor
 
     return EXIT_SUCCESS;
+    return 0;
 }

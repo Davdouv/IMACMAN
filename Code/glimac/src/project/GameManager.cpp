@@ -18,11 +18,13 @@ GameManager::GameManager(Map* map)
 GameManager::PacmanState GameManager::getState() const { return m_state;}
 uint32_t GameManager::getStartTime() const { return m_startTime; }
 uint32_t GameManager::getSuperTimer() const { return m_superTimer; }
+uint32_t GameManager::getFruitTimer() const { return m_fruitTimer; }
 bool GameManager::isPause() { return m_pause; }
 int GameManager::getEatenGhosts() const { return m_eatenGhosts; }
 void GameManager::setState(PacmanState state) { m_state = state;}
 void GameManager::setStartTime(uint32_t t) { m_startTime = t;}
 void GameManager::setSuperTimer(uint32_t t) { m_superTimer = t;}
+void GameManager::setFruitTimer(uint32_t t) { m_fruitTimer = t; }
 void GameManager::switchPause() { m_pause=!isPause();}
 void GameManager::setEatenGhosts(int eatenGhosts) { m_eatenGhosts = eatenGhosts;}
 // returns true if no edible on the map
@@ -54,7 +56,7 @@ void GameManager::pause(Controller* controller) {
 
 void GameManager::start() {
 
-    setGhosts();
+    setTimers();
     play();
 }
 
@@ -68,10 +70,11 @@ void GameManager::play() {
 
     std::string line;
     this->setStartTime(SDL_GetTicks());
-    setGhosts();
+    setTimers();
     while (!(this->won())) {
         if (ready()) {
             stateManager();
+            activateFruit();
             m_map->display();
             std::cout << "Your move : " << std::endl;
             getline(std::cin, line);
@@ -168,12 +171,13 @@ void GameManager::pacmanMove(Controller* controller)
 }
 
 
-// need to call setGhosts before this function to set them ready 
+// need to call setTimers before this function to set them ready 
 void GameManager::play(Controller* controller) {
 
     if (!(lost()) && ready() && !isPause())
     {
         stateManager();
+        activateFruit();
         pacmanMove(controller);
         ghostMove();
         pacmanGhostCollision();
@@ -195,7 +199,7 @@ void GameManager::newLevel(Controller* controller)
     controller->setPlayerPreviousAction(Controller::Key::Q);
     setState(NORMAL);
     m_map->initialization();
-    setGhosts();
+    setTimers();
 }
 
 void GameManager::pacmanGhostCollision() {
@@ -491,13 +495,36 @@ void GameManager::pacmanEdibleCollision() {
     if ((m_map->getPacman()->getPosY() - (int)m_map->getPacman()->getPosY()) > m_map->getPacman()->getHeight())
         return;
     if (m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()]->getType()=='E'){
+        //std::cout << "we're here ! " << std::endl;
         Edible *e;
         e =  (Edible*) m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()];
-        m_player.gainPoints(e->gain());
-        if (e->getTypeEdible() == Edible::Type::SUPER_PAC_GOMME) switchSuperState();
+        switch (e->getTypeEdible()) {
 
-        m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()]->setType('V');
+            case Edible::Type::FRUIT : 
+                if (e->getAvailability()) {
+                    std::cout << "Fruit caught" << std::endl;
+                    m_player.gainPoints(e->gain());
+                    e->setAvailability(false);
+                    setFruitTimer(SDL_GetTicks());
+                    m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()] = e;
+                }
+                break;
 
+            case Edible::Type::PAC_GOMME :
+                //std::cout << "Pac gomme caught! " << std::endl;
+                m_player.gainPoints(e->gain());
+                m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()]->setType('V');
+
+                break;
+
+            case Edible::Type::SUPER_PAC_GOMME :
+                //std::cout << " Super pac gomme caught" << std::endl;
+                m_player.gainPoints(e->gain());
+                switchSuperState();
+                m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()]->setType('V');
+                break;
+            default:return;
+        }
         //std::cout << "Points : " << m_player.getPoints() << std::endl;
     }
 }
@@ -794,7 +821,8 @@ char GameManager::nextMove(float dx, float dy, float ax, float ay) {
     return 'N';
 }
 
-void GameManager::setGhosts() {
+void GameManager::setTimers() {
+    setFruitTimer(SDL_GetTicks());
     for (int i = 0; i < m_map->getGhosts().size(); i++) m_map->getGhosts()[i]->reset();
 }
 
@@ -846,6 +874,17 @@ void GameManager::updateSpeed(uint32_t deltaTime)
         for (unsigned int i = 0; i < m_map->getGhosts().size(); ++i)
         {
             m_map->getGhosts()[i]->setSpeed(speed*deltaTime);
+        }
+    }
+}
+
+void GameManager::activateFruit() {
+    // Every 30sec
+    if (SDL_GetTicks() - m_fruitTimer > 30000)  {
+        if (!m_map->getFruits().empty())
+        {
+            std::cout << "Fruit available!" << m_map->getFruits().size() << std::endl;
+            if (!m_map->getFruits()[0]->getAvailability()) m_map->getFruits()[0]->setAvailability(true);
         }
     }
 }

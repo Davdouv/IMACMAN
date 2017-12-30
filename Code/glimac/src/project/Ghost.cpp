@@ -13,7 +13,7 @@ void Ghost::setDeath(int death) { m_death = death; }
 void Ghost::setSuper(bool super) { m_super = super; }
 
 void Ghost::display() {
-    std::cout << "Ghost" << std::endl;
+    std::cout << "G";
 }
 
 bool Ghost::ready() {

@@ -44,27 +44,30 @@ glm::mat4 TrackballCamera::getViewMatrix(glm::mat4 matrix) const
 	return MVMatrix;
 }
 
+// This function was made especially for Pacman Game
 glm::mat4 TrackballCamera::getViewMatrix(Character* character, glm::vec2 gameSize) const
 {	
-	glm::mat4 MVMatrix;
-	MVMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-(character->getPosX()+gameSize.y-3), -m_fHauteur, -(character->getPosY()+gameSize.x+m_fDistance)));
-	// MVMatrix = glm::rotate(MVMatrix, m_fAngleX, glm::vec3(0, 1, 0));
-	// MVMatrix = glm::rotate(MVMatrix, m_fAngleY, glm::vec3(1, 0, 0));
-	// MVMatrix = glm::translate(MVMatrix, glm::vec3(-character->getPosY(), 0.f, 0.f));
+	// Values I tried to center Pacman
+	float var1 = 3;
+	float var2 = 19;
 
-	//MVMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-3.f, -3.f, -3.f));
-	MVMatrix = glm::rotate(MVMatrix, m_fAngleX, glm::vec3(0, 1, 0));
-	MVMatrix = glm::rotate(MVMatrix, m_fAngleY, glm::vec3(1, 0, 0));
-	MVMatrix = glm::translate(MVMatrix, glm::vec3(0.f, +character->getPosY(), -(character->getPosY()+gameSize.x+3)));
-	//std::cout << character->getPosY()+gameSize.x << std::endl;
-	//(character->getPosY()-gameSize.x)
+	glm::mat4 MVMatrix;
+	// First we rotate the camera. m_fAngleY must be between 0 (Upper view) and -1.57 (Frontal view)
+	MVMatrix = glm::rotate(glm::mat4(1.f), m_fAngleY, glm::vec3(1, 0, 0));
+	// Then we set the X and Z position of the camera to be placed ON pacman, and the Y position was just guessed magicaly
+	MVMatrix = glm::translate(MVMatrix, glm::vec3(-(character->getPosX()+gameSize.y-var1), 
+	 							-m_fHauteur + (m_fDistance - var2)/2, -(character->getPosY()+gameSize.x+m_fDistance)));
+	// Then we rotate the cam 90° so it will have the good rotation
+	MVMatrix = glm::rotate(MVMatrix, 1.57f, glm::vec3(1, 0, 0));
+	// Finally, we do some translation to cancel the Zoom effect
+	MVMatrix = glm::translate(MVMatrix, glm::vec3(0.f, +character->getPosY(), -(character->getPosY()+gameSize.x+var1)));
 	return MVMatrix;
 }
 
 // Tells if we can zoom or not
 bool TrackballCamera::zoomMax()
 {
-	if (m_fDistance <= 2.0)
+	if (m_fDistance <= 25.0)
 		return true;
 	else
 		return false;

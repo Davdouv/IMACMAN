@@ -19,6 +19,8 @@
 using namespace glimac;
 
 int main(int argc, char** argv) {
+
+
     // Default window size
     glm::vec2 defaultWindowSize = glm::vec2(1280,720);
 
@@ -59,10 +61,10 @@ int main(int argc, char** argv) {
     // Game Infos
     glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
 
-    TrackballCamera tbCamera = TrackballCamera(gameSize.x,0,0.0f,1.57f);    // CAMERA VUE 2D
-    //TrackballCamera tbCamera = TrackballCamera(gameSize.x,0,0.0f,1.f);
+    //TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,0.0f);    // CAMERA VUE 2D
+    TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,-0.4f);
     FreeflyCamera fpsCamera = FreeflyCamera();
-    Camera* camera = &tbCamera;
+    Camera* camera = &tpsCamera;
 
     RenderManager renderManager = RenderManager(&windowManager, camera, &programList, gameSize);
     Controller controller = Controller(&windowManager);
@@ -75,6 +77,8 @@ int main(int argc, char** argv) {
 
     // initialize the ghosts
     gameManager.setGhosts();
+    // initialize the timers
+    gameManager.setTimers();
 
     windowManager.updateDeltaTime();
 
@@ -98,7 +102,7 @@ int main(int argc, char** argv) {
         }
 
         // Send the keys to the camera and the map
-        tbCamera.cameraController(&controller);
+        tpsCamera.cameraController(&controller);
         fpsCamera.setCameraOnCharacter(map.getPacman(), gameSize);     // NEED TO FIX HERE !!
         gameManager.play(&controller);
 
@@ -107,7 +111,7 @@ int main(int argc, char** argv) {
         {
             if(camera == &fpsCamera)
             {
-                camera = &tbCamera;
+                camera = &tpsCamera;
                 controller.setFPS(false);
             }
             else
@@ -162,4 +166,6 @@ int main(int argc, char** argv) {
     // See ~renderManager destructor
 
     return EXIT_SUCCESS;
+
+    return 0;
 }

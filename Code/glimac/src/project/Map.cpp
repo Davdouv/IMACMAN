@@ -166,11 +166,11 @@ int Map::load() {
 
                     case 'W' : o = new Wall(j, i, 1, 1,  Object::Orientation::LEFT);
                         break;
-                    case 'G' : o = new Edible(j, i, 0.20, 0.20, Edible::Type::PAC_GOMME, Object::Orientation::LEFT);
+                    case 'G' : o = new Edible(j, i, 0.20, 0.20, Edible::Type::PAC_GOMME, true, Object::Orientation::LEFT);
                         break;
-                    case 'S' : o = new Edible(j, i, 0.30, 0.30, Edible::Type::SUPER_PAC_GOMME, Object::Orientation::LEFT);
+                    case 'S' : o = new Edible(j, i, 0.30, 0.30, Edible::Type::SUPER_PAC_GOMME, true, Object::Orientation::LEFT);
                         break;
-                    case 'B' : o = new Edible(j, i, 0.3, 0.3, Edible::Type::FRUIT, Object::Orientation::LEFT);
+                    case 'B' : o = new Edible(j, i, 0.3, 0.3, Edible::Type::FRUIT, false, Object::Orientation::LEFT);
                         break;
                     case 'D' : o = new Door(j, i, 1, 1, Object::Orientation::LEFT);
                         break;
@@ -246,7 +246,9 @@ void Map::display() {
                 }
                 if ( ((m_pacman.getPosX() >= tmp.at(j)->getPosX()) && (m_pacman.getPosX() < tmp.at(j)->getPosX()+1)) && ((m_pacman.getPosY() >= tmp.at(j)->getPosY()) && (m_pacman.getPosY() < tmp.at(j)->getPosY()+1)) )
                 std::cout << m_pacman.getType() << " ";
-                else if ((tmp.at(j) != NULL) && (!ghost)) std::cout << tmp.at(j)->getType() << " ";
+                else if ((tmp.at(j) != NULL) && (!ghost)) {
+                    std::cout << tmp.at(j)->getType() << " ";
+                }
                 else if (!ghost) std::cout << "V ";
             }
             std::cout << std::endl;

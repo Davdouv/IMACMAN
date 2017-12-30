@@ -7,5 +7,5 @@ Wall::Wall() { }
 
 
 void Wall::display() {
-    std::cout << "Wall " << std::endl;
+    std::cout << "W ";
 }

@@ -15,6 +15,7 @@ private:
     Player m_player;
     uint32_t m_startTime;
     uint32_t m_superTimer;
+    uint32_t m_fruitTimer;
     bool m_pause;
     int m_eatenGhosts;
 
@@ -26,6 +27,7 @@ public:
     PacmanState getState() const;
     uint32_t getStartTime() const;
     uint32_t getSuperTimer() const;
+    uint32_t getFruitTimer() const;
     bool isPause();
     int getEatenGhosts() const;
 
@@ -33,6 +35,7 @@ public:
     void setState(PacmanState);
     void setStartTime(uint32_t);
     void setSuperTimer(uint32_t);
+    void setFruitTimer(uint32_t);
     void switchPause();
     void setEatenGhosts(int);
 
@@ -40,7 +43,7 @@ public:
     void play();
     void play(Controller* controller);
 
-    void setGhosts();
+    void setTimers();
 
     // Use of Delta Time
     void updateSpeed(uint32_t deltaTime);
@@ -87,4 +90,6 @@ private:
     void switchSuperState();
     void stateManager();
     void eatGhost();
+
+    void activateFruit();
 };
