@@ -59,8 +59,8 @@ int main(int argc, char** argv) {
     // Game Infos
     glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
 
-    TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,1.57f);    // CAMERA VUE 2D
-    //TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,1.f);
+    //TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,0.0f);    // CAMERA VUE 2D
+    TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,-0.4f);
     FreeflyCamera fpsCamera = FreeflyCamera();
     Camera* camera = &tpsCamera;
 
