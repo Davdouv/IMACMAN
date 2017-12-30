@@ -15,6 +15,8 @@ SDLWindowManager::SDLWindowManager(uint32_t width, uint32_t height, const char* 
     SDL_WM_SetCaption(title, nullptr);
     m_width = width;
     m_height = height;
+    lastTickTime = 0;
+    deltaTime = 0;
 }
 
 SDLWindowManager::~SDLWindowManager() {
@@ -48,10 +50,15 @@ float SDLWindowManager::getTime() const {
     return 0.001f * SDL_GetTicks();
 }
 
-float SDLWindowManager::getDeltaTime() const {
-    float time1 = getTime();
-    float time2 = getTime();
-    float deltaTime = time2 - time1;
+uint32_t SDLWindowManager::getDeltaTime() {
+    return deltaTime;
+}
+
+void SDLWindowManager::updateDeltaTime()
+{
+    uint32_t tickTime = SDL_GetTicks();
+    deltaTime = tickTime - lastTickTime;
+    lastTickTime = tickTime;
 }
 
 float SDLWindowManager::getRatio() const
