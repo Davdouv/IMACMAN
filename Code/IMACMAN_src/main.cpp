@@ -43,6 +43,8 @@ int main(int argc, char** argv) {
     // Enable GPU depth test for 3D rendering
     glEnable(GL_DEPTH_TEST);
 
+    std::cout << windowManager.getDeltaTime() << std::endl;
+
     /*********************************
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/

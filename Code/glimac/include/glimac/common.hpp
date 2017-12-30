@@ -9,6 +9,7 @@
 
 namespace glimac {
 
+// --- GEOMETRY & RENDERING IN OPENGL 3.0 --- //
 // Previous version of Vertex3D
 struct ShapeVertex {
     glm::vec3 position;

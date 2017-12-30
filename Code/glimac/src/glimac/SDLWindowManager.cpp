@@ -48,16 +48,22 @@ float SDLWindowManager::getTime() const {
     return 0.001f * SDL_GetTicks();
 }
 
-float SDLWindowManager::getRatio()
+float SDLWindowManager::getDeltaTime() const {
+    float time1 = getTime();
+    float time2 = getTime();
+    float deltaTime = time2 - time1;
+}
+
+float SDLWindowManager::getRatio() const
 {
     return (float)m_width/m_height;
 }
 
-uint32_t SDLWindowManager::getWidth()
+uint32_t SDLWindowManager::getWidth() const
 {
     return m_width;
 }
-uint32_t SDLWindowManager::getHeight()
+uint32_t SDLWindowManager::getHeight() const
 {
     return m_height;
 }
