@@ -36,6 +36,9 @@ public:
 
     void setGhosts();
 
+    // Use of Delta Time
+    void updateSpeed(uint32_t deltaTime);
+
 private:
 
     // game state

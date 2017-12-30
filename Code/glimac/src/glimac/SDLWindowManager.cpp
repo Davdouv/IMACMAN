@@ -50,7 +50,7 @@ float SDLWindowManager::getTime() const {
     return 0.001f * SDL_GetTicks();
 }
 
-uint32_t SDLWindowManager::getDeltaTime() {
+uint32_t SDLWindowManager::getDeltaTime() const {
     return deltaTime;
 }
 

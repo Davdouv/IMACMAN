@@ -791,3 +791,19 @@ void GameManager::ghostMove() {
         }
     }
 }
+
+// Update speed with delta time
+void GameManager::updateSpeed(uint32_t deltaTime)
+{
+    if(deltaTime > 0)
+    {
+        // Basic speed should be arround 0.02
+        double speed = 0.004;
+        m_map->getPacman()->setSpeed(speed*deltaTime);
+
+        for (unsigned int i = 0; i < m_map->getGhosts().size(); ++i)
+        {
+            m_map->getGhosts()[i]->setSpeed(speed*deltaTime);
+        }
+    }
+}
