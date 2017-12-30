@@ -46,18 +46,23 @@ glm::mat4 TrackballCamera::getViewMatrix(glm::mat4 matrix) const
 
 glm::mat4 TrackballCamera::getViewMatrix(Character* character, glm::vec2 gameSize) const
 {	
-	glm::mat4 MVMatrix;
-	MVMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-(character->getPosX()+gameSize.y-3), -m_fHauteur, -(character->getPosY()+gameSize.x+m_fDistance)));
-	// MVMatrix = glm::rotate(MVMatrix, m_fAngleX, glm::vec3(0, 1, 0));
-	// MVMatrix = glm::rotate(MVMatrix, m_fAngleY, glm::vec3(1, 0, 0));
-	// MVMatrix = glm::translate(MVMatrix, glm::vec3(-character->getPosY(), 0.f, 0.f));
+	float var1 = 3;
+	float var2 = 19;
 
-	//MVMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-3.f, -3.f, -3.f));
-	MVMatrix = glm::rotate(MVMatrix, m_fAngleX, glm::vec3(0, 1, 0));
-	MVMatrix = glm::rotate(MVMatrix, m_fAngleY, glm::vec3(1, 0, 0));
-	MVMatrix = glm::translate(MVMatrix, glm::vec3(0.f, +character->getPosY(), -(character->getPosY()+gameSize.x+3)));
-	//std::cout << character->getPosY()+gameSize.x << std::endl;
-	//(character->getPosY()-gameSize.x)
+	glm::mat4 MVMatrix;
+
+	//MVMatrix = glm::translate(glm::mat4(1.f), glm::vec3(0.0f, -3.0f, 0.0f));
+	//MVMatrix = glm::rotate(glm::mat4(1.f), m_fAngleY, glm::vec3(1, 0, 0));
+	// MVMatrix = glm::translate(MVMatrix, glm::vec3(-(character->getPosX()+gameSize.y-var1), 
+	//  							-m_fHauteur + (m_fDistance - var2), -(character->getPosY()+gameSize.x+m_fDistance)));
+								 
+	
+	MVMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-(character->getPosX()+gameSize.y-var1), 
+	 							-m_fHauteur, -(character->getPosY()+gameSize.x+m_fDistance)));
+
+	//MVMatrix = glm::rotate(MVMatrix, m_fAngleX, glm::vec3(0, 1, 0));
+	MVMatrix = glm::rotate(MVMatrix, 1.57f, glm::vec3(1, 0, 0));
+	MVMatrix = glm::translate(MVMatrix, glm::vec3(0.f, +character->getPosY(), -(character->getPosY()+gameSize.x+var1)));
 	return MVMatrix;
 }
 
