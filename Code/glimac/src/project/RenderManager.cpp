@@ -13,6 +13,9 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // Camera
     // m_ffCamera = camera;
 
+    // Skybox
+    m_skybox = new StaticObject('K', 15.f, 20.f, 300.f, 300.f);
+
     // Cube
     m_cube = Cube();
     m_cubeVBO = m_cube.getVBO();
@@ -40,28 +43,13 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_GumTexture = new Texture("../Code/assets/textures/gum.jpg");
     m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.jpg");
     m_FruitTexture = new Texture("../Code/assets/textures/fruit.jpg");
-    m_Skybox2DTexture = new Texture("../Code/assets/textures/wormz.jpg");
-    m_SkyboxTexture = new CubeMap("../Code/assets/textures/wormz.jpg",
-                                  "../Code/assets/textures/wormz.jpg",
-                                  "../Code/assets/textures/wormz.jpg",
-                                  "../Code/assets/textures/wormz.jpg",
-                                  "../Code/assets/textures/wormz.jpg",
-                                  "../Code/assets/textures/wormz.jpg"
+    m_SkyboxTexture = new CubeMap("../Code/assets/textures/darkness.jpg",
+                                  "../Code/assets/textures/darkness.jpg",
+                                  "../Code/assets/textures/darkness.jpg",
+                                  "../Code/assets/textures/darkness.jpg",
+                                  "../Code/assets/textures/darkness.jpg",
+                                  "../Code/assets/textures/darkness.jpg"
                                 );
-    // m_PacmanTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/pacman.jpg");
-    // m_GhostTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/ghost.jpg");
-    // m_WallTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wall.jpg");
-    // m_GumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/gum.jpg");
-    // m_SuperGumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/superpacgum.jpg");
-    // m_FruitTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/fruit.jpg");
-    // m_Skybox2DTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg");
-    // m_SkyboxTexture = new CubeMap("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg",
-    //                               "/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg",
-    //                               "/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg",
-    //                               "/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg",
-    //                               "/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg",
-    //                               "/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg"
-    //                             );
 
     // GLSL Program
     m_programList = programList;
@@ -86,7 +74,6 @@ RenderManager::~RenderManager()
     delete(m_GumTexture);
     delete(m_SuperGumTexture);
     delete(m_FruitTexture);
-    delete(m_Skybox2DTexture);
     delete(m_SkyboxTexture);
 }
 
@@ -178,8 +165,8 @@ void RenderManager::loadTextures() const
   m_GumTexture->loadTexture();
   m_SuperGumTexture->loadTexture();
   m_FruitTexture->loadTexture();
-  m_Skybox2DTexture->loadTexture();
   m_SkyboxTexture->loadCubeMap();
+
 }
 
 
@@ -201,7 +188,7 @@ void RenderManager::useProgram(FS shader)
             break;
 
         case CUBEMAP :
-            m_programList->cubeMapProgram->m_Program.use();
+            m_programList->cubemapProgram->m_Program.use();
             break;
 
         default :
@@ -257,13 +244,13 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
             break;
 
         case CUBEMAP :
-            glUniformMatrix4fv(m_programList->cubeMapProgram->uMVPMatrix, 1, GL_FALSE,
+            glUniformMatrix4fv(m_programList->cubemapProgram->uMVPMatrix, 1, GL_FALSE,
             glm::value_ptr(m_ProjMatrix * matrix));
 
-            glUniformMatrix4fv(m_programList->cubeMapProgram->uMVMatrix, 1, GL_FALSE,
+            glUniformMatrix4fv(m_programList->cubemapProgram->uMVMatrix, 1, GL_FALSE,
             glm::value_ptr(matrix));
 
-            glUniformMatrix4fv(m_programList->cubeMapProgram->uNormalMatrix, 1, GL_FALSE,
+            glUniformMatrix4fv(m_programList->cubemapProgram->uNormalMatrix, 1, GL_FALSE,
             glm::value_ptr(glm::transpose(glm::inverse(matrix))));
             break;
 
@@ -303,7 +290,6 @@ void RenderManager::drawPacmanNormal(Pacman* pacman)
 // Draw Pacman - Sphere - Shader : TEXTURE
 void RenderManager::drawPacmanTexture(Pacman* pacman)
 {
-    glUniform1i(m_programList->textureProgram->uTexture, 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_PacmanTexture->getID());
     glm::mat4 transformationMatrix = transformMatrix(pacman);
@@ -522,33 +508,21 @@ void RenderManager::drawFruits(std::vector<Edible*> edible, FS shader)
 
 
 // ---- SKYBOX ----- //
+void RenderManager::initSkybox()
+{
+  useProgram(CUBEMAP);
+  glm::mat4 transformationMatrix = transformMatrix(m_skybox);
+  applyTransformations(CUBEMAP, transformationMatrix);
+}
 
 void RenderManager::drawSkybox()
 {
   glDepthMask(GL_FALSE);
   useProgram(CUBEMAP);
-  float size = 200.f;
-  StaticObject skybox('K', m_gameSize.y/2, m_gameSize.x/2, size, size);
-  glUniform1i(m_programList->cubeMapProgram->cubeTexture, 0);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_CUBE_MAP, m_SkyboxTexture->getID());
-  glm::mat4 transformationMatrix = transformMatrix(&skybox);
-  applyTransformations(CUBEMAP, transformationMatrix);
   m_cube.drawCube();
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
   glDepthMask(GL_TRUE);
-
-  // glDepthMask(GL_FALSE);
-  // useProgram(TEXTURE);
-  // float size = 200.f;
-  // StaticObject skybox('K', m_gameSize.y/2, m_gameSize.x/2, size, size);
-  // glUniform1i(m_programList->textureProgram->uTexture, 0);
-  // glActiveTexture(GL_TEXTURE0);
-  // glBindTexture(GL_TEXTURE_2D, m_Skybox2DTexture->getID());
-  // glm::mat4 transformationMatrix = transformMatrix(&skybox);
-  // applyTransformations(TEXTURE, transformationMatrix);
-  // m_cube.drawCube();
-  // glBindTexture(GL_TEXTURE_2D, 0);
-  // glDepthMask(GL_TRUE);
 }

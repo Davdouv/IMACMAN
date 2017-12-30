@@ -36,9 +36,11 @@ int main(int argc, char** argv) {
     FilePath applicationPath(argv[0]);
     NormalProgram normalProgram(applicationPath);
     TextureProgram textureProgram(applicationPath);
+    CubeMapProgram cubemapProgram(applicationPath);
     ProgramList programList;
     programList.normalProgram = &normalProgram;
     programList.textureProgram = &textureProgram;
+    programList.cubemapProgram = &cubemapProgram;
 
     // Enable GPU depth test for 3D rendering
     glEnable(GL_DEPTH_TEST);
@@ -67,6 +69,9 @@ int main(int argc, char** argv) {
 
     // Load Textures
     renderManager.loadTextures();
+
+    // initialize Skybox
+    renderManager.initSkybox();
 
     // initialize the ghosts
     gameManager.setGhosts();

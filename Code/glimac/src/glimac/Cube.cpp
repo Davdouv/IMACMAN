@@ -10,7 +10,7 @@ void Cube::build(GLfloat width = 1.0, GLfloat height = 1.0, GLfloat thickness = 
     w = width/2;
     h = height/2;
     t = thickness/2;
-    
+
     // Build all vertices
     // Front face
     m_VertexBuffer[0].position = glm::vec3(-w, -h, t);     // Bottom Left
