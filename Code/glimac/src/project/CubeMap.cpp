@@ -23,11 +23,11 @@ bool CubeMap::loadCubeMapSide(GLenum sideTarget, const std::string ImgFile) {
   // copy image data into 'target' side of cube map
   glTexImage2D( sideTarget,
                 0,
-                GL_RGBA,
+                GL_RGBA8,
                 ImgTexture->getWidth(),
                 ImgTexture->getHeight(),
                 0,
-                GL_RGBA,
+                GL_BGRA,
                 GL_UNSIGNED_BYTE,
                 ImgTexture->getPixels()
               );
@@ -41,12 +41,12 @@ bool CubeMap::loadCubeMap() {
   glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
 
   // load each image and copy into a side of the cube-map texture
-  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, m_ImgFileFront);
-  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, m_ImgFileBack);
-  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, m_ImgFileTop);
-  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, m_ImgFileBottom);
-  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, m_ImgFileLeft);
-  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_POSITIVE_X, m_ImgFileRight);
+  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_POSITIVE_X+0, m_ImgFileFront);
+  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_POSITIVE_X+1, m_ImgFileBack);
+  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_POSITIVE_X+2, m_ImgFileTop);
+  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_POSITIVE_X+3, m_ImgFileBottom);
+  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_POSITIVE_X+4, m_ImgFileLeft);
+  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_POSITIVE_X+5, m_ImgFileRight);
 
   // format cube map texture
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -54,6 +54,8 @@ bool CubeMap::loadCubeMap() {
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0); 
 
   glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 

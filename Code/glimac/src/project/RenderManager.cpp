@@ -200,6 +200,10 @@ void RenderManager::useProgram(FS shader)
             m_programList->textureProgram->m_Program.use();
             break;
 
+        case CUBEMAP :
+            m_programList->cubeMapProgram->m_Program.use();
+            break;
+
         default :
             m_programList->normalProgram->m_Program.use();
             break;
@@ -249,6 +253,17 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
             glm::value_ptr(matrix));
 
             glUniformMatrix4fv(m_programList->textureProgram->uNormalMatrix, 1, GL_FALSE,
+            glm::value_ptr(glm::transpose(glm::inverse(matrix))));
+            break;
+
+        case CUBEMAP :
+            glUniformMatrix4fv(m_programList->cubeMapProgram->uMVPMatrix, 1, GL_FALSE,
+            glm::value_ptr(m_ProjMatrix * matrix));
+
+            glUniformMatrix4fv(m_programList->cubeMapProgram->uMVMatrix, 1, GL_FALSE,
+            glm::value_ptr(matrix));
+
+            glUniformMatrix4fv(m_programList->cubeMapProgram->uNormalMatrix, 1, GL_FALSE,
             glm::value_ptr(glm::transpose(glm::inverse(matrix))));
             break;
 
@@ -503,7 +518,6 @@ void RenderManager::drawSkybox()
   float size = 200.f;
   StaticObject skybox('K', m_gameSize.y/2, m_gameSize.x/2, size, size);
   glUniform1i(m_programList->cubeMapProgram->cubeTexture, 0);
-  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_CUBE_MAP, m_SkyboxTexture->getID());
   glm::mat4 transformationMatrix = transformMatrix(&skybox);
   applyTransformations(CUBEMAP, transformationMatrix);
