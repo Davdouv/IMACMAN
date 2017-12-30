@@ -60,9 +60,9 @@ void GameManager::play() {
     setGhosts();
     while (!(this->won())) {
         if (ready()) {
-            //m_map->display();
-            //std::cout << "Your move : " << std::endl;
-            //getline(std::cin, line);
+            m_map->display();
+            std::cout << "Your move : " << std::endl;
+            getline(std::cin, line);
             if (line == "Z") {
                 if (!characterWallCollision(m_map->getPacman(), 'Z')) m_map->getPacman()->moveUp();
             }
@@ -195,6 +195,7 @@ void GameManager::pacmanGhostCollision() {
                     {
                         std::cout << m_player.getLife() << std::endl;
                         m_map->getPacman()->reset();
+                        setStartTime(SDL_GetTicks());
                     }
                     for (int i = 0; i < m_map->getGhosts().size(); i++) {
                         m_map->getGhosts()[i]->reset();
@@ -202,6 +203,7 @@ void GameManager::pacmanGhostCollision() {
                     std::cout << "Life lost. Life : " << m_player.getLife() << std::endl;
                     break;
                 case GameManager::PacmanState::SUPER :
+                    m_map->getGhosts()[i]->reset();
                     m_map->getGhosts()[i]->reset();
                     m_player.gainPoints(1000);  // (200, 400, 800, 1600)
                     //std::cout << "Ghost Eaten" << std::endl;
