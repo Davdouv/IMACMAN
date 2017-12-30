@@ -29,9 +29,12 @@ public:
     void setState(PacmanState);
     void setStartTime(uint32_t);
     void switchPause();
-    
+
+    void start();
     void play();
     void play(Controller* controller);
+
+    void setGhosts();
 
 private:
 
@@ -68,7 +71,6 @@ private:
     char nextMove(float, float, float, float);
     int countShortestWay(float, float, float, float);
 
-    void setGhosts();
     // New game
     void newLevel(Controller*);
 };
