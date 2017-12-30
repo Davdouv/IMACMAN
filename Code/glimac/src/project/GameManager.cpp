@@ -17,10 +17,14 @@ GameManager::GameManager(Map* map)
 
 GameManager::PacmanState GameManager::getState() const { return m_state;}
 uint32_t GameManager::getStartTime() const { return m_startTime; }
+uint32_t GameManager::getSuperTimer() const { return m_superTimer; }
 bool GameManager::isPause() { return m_pause; }
+int GameManager::getEatenGhosts() const { return m_eatenGhosts; }
 void GameManager::setState(PacmanState state) { m_state = state;}
 void GameManager::setStartTime(uint32_t t) { m_startTime = t;}
+void GameManager::setSuperTimer(uint32_t t) { m_superTimer = t;}
 void GameManager::switchPause() { m_pause=!isPause();}
+void GameManager::setEatenGhosts(int eatenGhosts) { m_eatenGhosts = eatenGhosts;}
 // returns true if no edible on the map
 bool GameManager::won() {
     
@@ -61,11 +65,13 @@ void GameManager::play() {
     Pacman *p = m_map->getPacman();
     p->setSpeed(1);
     m_map->setPacman(*p);
+
     std::string line;
     this->setStartTime(SDL_GetTicks());
     setGhosts();
     while (!(this->won())) {
         if (ready()) {
+            if (this->getState() == GameManager::PacmanState::SUPER) this->superStateManager();
             m_map->display();
             std::cout << "Your move : " << std::endl;
             getline(std::cin, line);
@@ -213,8 +219,7 @@ void GameManager::pacmanGhostCollision() {
                 case GameManager::PacmanState::SUPER :
                     m_map->getGhosts()[i]->reset();
                     m_map->getGhosts()[i]->reset();
-                    m_player.gainPoints(1000);  // (200, 400, 800, 1600)
-                    //std::cout << "Ghost Eaten" << std::endl;
+                    eatGhost();
                     break;
                 default:
                     break;
@@ -488,7 +493,7 @@ void GameManager::pacmanEdibleCollision() {
         Edible *e;
         e =  (Edible*) m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()];
         m_player.gainPoints(e->gain());
-        if (e->getTypeEdible() == Edible::Type::SUPER_PAC_GOMME) this->setState(GameManager::PacmanState::SUPER);
+        if (e->getTypeEdible() == Edible::Type::SUPER_PAC_GOMME) switchSuperState();
 
         m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()]->setType('V');
 
@@ -496,6 +501,38 @@ void GameManager::pacmanEdibleCollision() {
     }
 }
 
+void GameManager::switchSuperState() {
+            
+    this->setState(GameManager::PacmanState::SUPER);
+    this->setSuperTimer(SDL_GetTicks());
+    this->setEatenGhosts(0);
+    for (int i = 0; i < m_map->getGhosts().size(); i++) m_map->getGhosts()[i]->setSuper(true);
+}
+
+void GameManager::superStateManager() {
+
+    std::cout << SDL_GetTicks() - this->getSuperTimer() << std::endl;
+    if (SDL_GetTicks() - this->getSuperTimer() > 60000) {
+        this->setState(GameManager::PacmanState::NORMAL);
+        this->setEatenGhosts(0);
+    }
+}
+
+void GameManager::eatGhost() {
+
+    this->setEatenGhosts(this->getEatenGhosts()+1);
+    switch (this->getEatenGhosts()) {
+        case 1: m_player.gainPoints(200);
+            break; 
+        case 2: m_player.gainPoints(400);
+            break;
+        case 3: m_player.gainPoints(800);
+            break;
+        case 4: m_player.gainPoints(1600);
+            break;
+        default:return;
+    }
+}
 // Shadow will follow Pacman all along, so he will find the shortest way to go to Pacman
 void GameManager::shadowAI() {
 
@@ -753,7 +790,7 @@ char GameManager::nextMove(float dx, float dy, float ax, float ay) {
 }
 
 void GameManager::setGhosts() {
-    for (int i = 0; i < m_map->getGhosts().size(); i++) m_map->getGhosts()[i]->resetLife();
+    for (int i = 0; i < m_map->getGhosts().size(); i++) m_map->getGhosts()[i]->reset();
 }
 
 void GameManager::ghostMove() {

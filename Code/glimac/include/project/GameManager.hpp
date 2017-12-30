@@ -14,7 +14,9 @@ private:
     PacmanState m_state;    // If pacman can eat ghosts or not
     Player m_player;
     uint32_t m_startTime;
+    uint32_t m_superTimer;
     bool m_pause;
+    int m_eatenGhosts;
 
 public:
     // constructor 
@@ -23,12 +25,16 @@ public:
     // getters
     PacmanState getState() const;
     uint32_t getStartTime() const;
+    uint32_t getSuperTimer() const;
     bool isPause();
+    int getEatenGhosts() const;
 
     // setters
     void setState(PacmanState);
     void setStartTime(uint32_t);
+    void setSuperTimer(uint32_t);
     void switchPause();
+    void setEatenGhosts(int);
 
     void start();
     void play();
@@ -76,4 +82,9 @@ private:
 
     // New game
     void newLevel(Controller*);
+
+    // super state
+    void switchSuperState();
+    void superStateManager();
+    void eatGhost();
 };

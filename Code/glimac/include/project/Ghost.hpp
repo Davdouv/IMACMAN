@@ -8,6 +8,7 @@ class Ghost : public Character {
 private:
     int m_type;
     int m_death;
+    bool m_super;
 
 public:
     /* 4 GHOSTS :
@@ -25,12 +26,15 @@ public:
     // getter
     int getType() const;
     int getDeath() const;
+    bool getSuper() const;
+
     // setter
     void setType(int);
     void setDeath(int);
+    void setSuper(bool);
 
     bool ready();
-    void resetLife();
+    void reset() override;
     void display() override;
     void move() override;
 
