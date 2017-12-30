@@ -505,6 +505,7 @@ void GameManager::pacmanEdibleCollision() {
                     std::cout << "Fruit caught" << std::endl;
                     m_player.gainPoints(e->gain());
                     e->setAvailability(false);
+                    setFruitTimer(SDL_GetTicks());
                     m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()] = e;
                 }
                 break;
