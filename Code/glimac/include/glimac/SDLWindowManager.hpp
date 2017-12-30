@@ -26,10 +26,14 @@ public:
     // Return the time in seconds
     float getTime() const;
 
-    float getRatio();
+    // Delta Time (using SDL_GetTicks())
+    uint32_t getDeltaTime() const;
+    void updateDeltaTime();
 
-    uint32_t getWidth();
-    uint32_t getHeight();
+    float getRatio() const;
+
+    uint32_t getWidth() const;
+    uint32_t getHeight() const;
 
     void setWidth(uint32_t width);
     void setHeight(uint32_t height);
@@ -37,6 +41,9 @@ public:
 private:
     uint32_t m_width;
     uint32_t m_height;
+
+    uint32_t lastTickTime;
+    uint32_t deltaTime;
 };
 
 }

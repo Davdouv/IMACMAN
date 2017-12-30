@@ -12,6 +12,7 @@
 #include "project/Wall.hpp"
 #include "project/Edible.hpp"
 #include "project/Texture.hpp"
+#include "project/CubeMap.hpp"
 
 #include "project/GLSLProgram.hpp"
 
@@ -52,7 +53,8 @@ private:
     Texture* m_GumTexture;
     Texture* m_SuperGumTexture;
     Texture* m_FruitTexture;
-    Texture* m_SkyboxTexture;
+    Texture* m_Skybox2DTexture;
+    CubeMap* m_SkyboxTexture;
 
     // GLSL Programs
     ProgramList* m_programList;

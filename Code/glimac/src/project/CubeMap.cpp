@@ -7,16 +7,47 @@ CubeMap::CubeMap(std::string ImgFileFront, std::string ImgFileBack, std::string 
 
 GLuint CubeMap::getID() const { return m_id; }
 
+bool CubeMap::loadCubeMapSide(GLenum sideTarget, const std::string ImgFile) {
+
+  int x, y, n;
+  int force_channels = 4;
+  std::unique_ptr<glimac::Image> ImgTexture = glimac::loadImage(ImgFile);
+  x = ImgTexture->getWidth();
+  y = ImgTexture->getHeight();
+
+  // non-power-of-2 dimensions check
+  if ((x & (x - 1)) != 0 || (y & (y - 1)) != 0) {
+    std::cerr << "WARNING: image '" << ImgFile << "' is not power-of-2 dimensions" << std::endl;
+  }
+
+  // copy image data into 'target' side of cube map
+  glTexImage2D( sideTarget,
+                0,
+                GL_RGBA,
+                ImgTexture->getWidth(),
+                ImgTexture->getHeight(),
+                0,
+                GL_RGBA,
+                GL_UNSIGNED_BYTE,
+                ImgTexture->getPixels()
+              );
+
+  return true;
+}
+
 bool CubeMap::loadCubeMap() {
+  glActiveTexture(GL_TEXTURE0);
   glGenTextures(1, &m_id);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
 
   // load each image and copy into a side of the cube-map texture
-  loadCubeMapSide(m_id, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, m_ImgFileFront);
-  loadCubeMapSide(m_id, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, m_ImgFileBack);
-  loadCubeMapSide(m_id, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, m_ImgFileTop);
-  loadCubeMapSide(m_id, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, m_ImgFileBottom);
-  loadCubeMapSide(m_id, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, m_ImgFileLeft);
-  loadCubeMapSide(m_id, GL_TEXTURE_CUBE_MAP_POSITIVE_X, m_ImgFileRight);
+  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, m_ImgFileFront);
+  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, m_ImgFileBack);
+  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, m_ImgFileTop);
+  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, m_ImgFileBottom);
+  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, m_ImgFileLeft);
+  loadCubeMapSide(GL_TEXTURE_CUBE_MAP_POSITIVE_X, m_ImgFileRight);
+
   // format cube map texture
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -24,35 +55,7 @@ bool CubeMap::loadCubeMap() {
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  return true;
-}
-
-bool loadCubeMapSide(GLuint texture, GLenum side_target, const std::string ImgFile) {
-  glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
-
-  int x, y, n;
-  int force_channels = 4;
-  std::unique_ptr<glimac::Image> ImgTexture = glimac::loadImage(ImgFile);
-  if (!ImgTexture) {
-    std::cerr << "ERROR: could not load" << ImgFile << std::endl;
-    return false;
-  }
-  // non-power-of-2 dimensions check
-  if ((x & (x - 1)) != 0 || (y & (y - 1)) != 0) {
-    std::cerr << "WARNING: image" << ImgFile << "is not power-of-2 dimensions" << std::endl;
-  }
-
-  // copy image data into 'target' side of cube map
-  glTexImage2D( side_target,
-                0,
-                GL_RGBA,
-                ImgTexture->getWidth(),
-                ImgTexture->getHeight(),
-                0,
-                GL_RGBA,
-                GL_FLOAT,
-                ImgTexture->getPixels()
-              );
+  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
   return true;
 }

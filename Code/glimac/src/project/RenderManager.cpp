@@ -34,19 +34,34 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_NormalMatrix = glm::transpose(glm::inverse(m_MVMatrix));
 
     // Textures
-    // m_PacmanTexture = new Texture("../Code/assets/textures/pacman.png");
-    // m_GhostTexture = new Texture("../Code/assets/textures/ghost.jpg");
-    // m_WallTexture = new Texture("../Code/assets/textures/wall.jpg");
-    // m_GumTexture = new Texture("../Code/assets/textures/gum.png");
-    // m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.png");
-    // m_FruitTexture = new Texture("../Code/assets/textures/fruit.png");
-    m_PacmanTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/pacman.jpg");
-    m_GhostTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/ghost.jpg");
-    m_WallTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wall.jpg");
-    m_GumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/gum.jpg");
-    m_SuperGumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/superpacgum.jpg");
-    m_FruitTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/fruit.jpg");
-    m_SkyboxTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg");
+    m_PacmanTexture = new Texture("../Code/assets/textures/pacman.png");
+    m_GhostTexture = new Texture("../Code/assets/textures/ghost.jpg");
+    m_WallTexture = new Texture("../Code/assets/textures/wall.jpg");
+    m_GumTexture = new Texture("../Code/assets/textures/gum.jpg");
+    m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.jpg");
+    m_FruitTexture = new Texture("../Code/assets/textures/fruit.jpg");
+    m_Skybox2DTexture = new Texture("../Code/assets/textures/wormz.jpg");
+    m_SkyboxTexture = new CubeMap("../Code/assets/textures/wormz.jpg",
+                                  "../Code/assets/textures/wormz.jpg",
+                                  "../Code/assets/textures/wormz.jpg",
+                                  "../Code/assets/textures/wormz.jpg",
+                                  "../Code/assets/textures/wormz.jpg",
+                                  "../Code/assets/textures/wormz.jpg"
+                                );
+    // m_PacmanTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/pacman.jpg");
+    // m_GhostTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/ghost.jpg");
+    // m_WallTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wall.jpg");
+    // m_GumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/gum.jpg");
+    // m_SuperGumTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/superpacgum.jpg");
+    // m_FruitTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/fruit.jpg");
+    // m_Skybox2DTexture = new Texture("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg");
+    // m_SkyboxTexture = new CubeMap("/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg",
+    //                               "/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg",
+    //                               "/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg",
+    //                               "/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg",
+    //                               "/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg",
+    //                               "/home/daphne/PROJET_OPENGL/IMACMAN/Code/assets/textures/wormz.jpg"
+    //                             );
 
     // GLSL Program
     m_programList = programList;
@@ -71,6 +86,7 @@ RenderManager::~RenderManager()
     delete(m_GumTexture);
     delete(m_SuperGumTexture);
     delete(m_FruitTexture);
+    delete(m_Skybox2DTexture);
     delete(m_SkyboxTexture);
 }
 
@@ -162,7 +178,8 @@ void RenderManager::loadTextures() const
   m_GumTexture->loadTexture();
   m_SuperGumTexture->loadTexture();
   m_FruitTexture->loadTexture();
-  m_SkyboxTexture->loadTexture();
+  m_Skybox2DTexture->loadTexture();
+  m_SkyboxTexture->loadCubeMap();
 }
 
 
@@ -481,13 +498,29 @@ void RenderManager::drawFruits(std::vector<Edible*> edible, FS shader)
 
 void RenderManager::drawSkybox()
 {
-  useProgram(TEXTURE);
-  float size = 50.f;
+  glDepthMask(GL_FALSE);
+  useProgram(CUBEMAP);
+  float size = 200.f;
   StaticObject skybox('K', m_gameSize.y/2, m_gameSize.x/2, size, size);
-  glUniform1i(m_programList->textureProgram->uTexture, 0);
-  glBindTexture(GL_TEXTURE_2D, m_SkyboxTexture->getID());
+  glUniform1i(m_programList->cubeMapProgram->cubeTexture, 0);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, m_SkyboxTexture->getID());
   glm::mat4 transformationMatrix = transformMatrix(&skybox);
-  applyTransformations(TEXTURE, transformationMatrix);
+  applyTransformations(CUBEMAP, transformationMatrix);
   m_cube.drawCube();
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+  glDepthMask(GL_TRUE);
+
+  // glDepthMask(GL_FALSE);
+  // useProgram(TEXTURE);
+  // float size = 200.f;
+  // StaticObject skybox('K', m_gameSize.y/2, m_gameSize.x/2, size, size);
+  // glUniform1i(m_programList->textureProgram->uTexture, 0);
+  // glActiveTexture(GL_TEXTURE0);
+  // glBindTexture(GL_TEXTURE_2D, m_Skybox2DTexture->getID());
+  // glm::mat4 transformationMatrix = transformMatrix(&skybox);
+  // applyTransformations(TEXTURE, transformationMatrix);
+  // m_cube.drawCube();
+  // glBindTexture(GL_TEXTURE_2D, 0);
+  // glDepthMask(GL_TRUE);
 }

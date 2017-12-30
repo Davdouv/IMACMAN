@@ -55,7 +55,7 @@ glm::mat4 TrackballCamera::getViewMatrix(Character* character, glm::vec2 gameSiz
 	//MVMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-3.f, -3.f, -3.f));
 	MVMatrix = glm::rotate(MVMatrix, m_fAngleX, glm::vec3(0, 1, 0));
 	MVMatrix = glm::rotate(MVMatrix, m_fAngleY, glm::vec3(1, 0, 0));
-	MVMatrix = glm::translate(MVMatrix, glm::vec3(0.f, +character->getPosY(), -(character->getPosY()+gameSize.x)));
+	MVMatrix = glm::translate(MVMatrix, glm::vec3(0.f, +character->getPosY(), -(character->getPosY()+gameSize.x+3)));
 	//std::cout << character->getPosY()+gameSize.x << std::endl;
 	//(character->getPosY()-gameSize.x)
 	return MVMatrix;

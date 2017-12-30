@@ -12,17 +12,17 @@ private:
 public:
 
     // constructor 
-    Character(char, float, float, float, float, float, Orientation, bool);
+    Character(char, float, float, float, float, double, Orientation, bool);
     Character();
 
     // getter
-    float getSpeed() const;
+    double getSpeed() const;
     float getInitX() const;
     float getInitY() const;
     bool isPacman() const;
 
     // setter
-    void setSpeed(float);
+    void setSpeed(double);
     void setInitX(float);
     void setInitY(float);
     void setIsPacman(bool);

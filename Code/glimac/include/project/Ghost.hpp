@@ -19,7 +19,7 @@ public:
     enum Type {SHADOW = 0, SPEEDY = 1, BASHFUL = 2, POKEY = 3};
 
     // constructor
-    Ghost(int, int, float, float, float, int, Orientation, int);
+    Ghost(int, int, float, float, double, int, Orientation, int);
     Ghost();
 
     // getter

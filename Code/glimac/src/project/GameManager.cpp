@@ -12,12 +12,15 @@ GameManager::GameManager(Map* map)
     m_map = map;
     m_state = NORMAL;
     m_player.initialization();
+    m_pause = false;
 }
 
 GameManager::PacmanState GameManager::getState() const { return m_state;}
 uint32_t GameManager::getStartTime() const { return m_startTime; }
+bool GameManager::isPause() { return m_pause; }
 void GameManager::setState(PacmanState state) { m_state = state;}
 void GameManager::setStartTime(uint32_t t) { m_startTime = t;}
+void GameManager::switchPause() { m_pause=!isPause();}
 // returns true if no edible on the map
 bool GameManager::won() {
     
@@ -35,6 +38,22 @@ bool GameManager::ready() {
     return (SDL_GetTicks() - getStartTime() > 1000);
 }
 
+void GameManager::pause(Controller* controller) {
+
+    if (controller->getInterfaceAction() == Controller::ESCAPE)
+    {
+                switchPause();
+                controller->setInterfaceAction(Controller::NONE);
+    }
+        
+}
+
+void GameManager::start() {
+
+    setGhosts();
+    play();
+}
+
 // For console only
 void GameManager::play() {
 
@@ -47,9 +66,9 @@ void GameManager::play() {
     setGhosts();
     while (!(this->won())) {
         if (ready()) {
-            //m_map->display();
-            //std::cout << "Your move : " << std::endl;
-            //getline(std::cin, line);
+            m_map->display();
+            std::cout << "Your move : " << std::endl;
+            getline(std::cin, line);
             if (line == "Z") {
                 if (!characterWallCollision(m_map->getPacman(), 'Z')) m_map->getPacman()->moveUp();
             }
@@ -145,8 +164,8 @@ void GameManager::pacmanMove(Controller* controller)
 
 // need to call setGhosts before this function to set them ready 
 void GameManager::play(Controller* controller) {
-    // If we didn't lost
-    if (!(lost()) && ready())
+
+    if (!(lost()) && ready() && !isPause())
     {
         pacmanMove(controller);
         ghostMove();
@@ -154,18 +173,22 @@ void GameManager::play(Controller* controller) {
         pacmanEdibleCollision();
         if(won())
         {
-            newLevel();
+            newLevel(controller);
         }
         if(lost())
         {
             std::cout << "Player Score : " << m_player.getPoints() << std::endl;
         }
     }
+    pause(controller);
 }
 
-void GameManager::newLevel()
+void GameManager::newLevel(Controller* controller)
 {
+    controller->setPlayerPreviousAction(Controller::Key::Q);
+    setState(NORMAL);
     m_map->initialization();
+    setGhosts();
 }
 
 void GameManager::pacmanGhostCollision() {
@@ -180,6 +203,7 @@ void GameManager::pacmanGhostCollision() {
                     {
                         std::cout << m_player.getLife() << std::endl;
                         m_map->getPacman()->reset();
+                        setStartTime(SDL_GetTicks());
                     }
                     for (int i = 0; i < m_map->getGhosts().size(); i++) {
                         m_map->getGhosts()[i]->reset();
@@ -187,6 +211,7 @@ void GameManager::pacmanGhostCollision() {
                     std::cout << "Life lost. Life : " << m_player.getLife() << std::endl;
                     break;
                 case GameManager::PacmanState::SUPER :
+                    m_map->getGhosts()[i]->reset();
                     m_map->getGhosts()[i]->reset();
                     m_player.gainPoints(1000);  // (200, 400, 800, 1600)
                     //std::cout << "Ghost Eaten" << std::endl;
@@ -763,6 +788,22 @@ void GameManager::ghostMove() {
                         break;
                 }
             }
+        }
+    }
+}
+
+// Update speed with delta time
+void GameManager::updateSpeed(uint32_t deltaTime)
+{
+    if(deltaTime > 0)
+    {
+        // Basic speed should be arround 0.02
+        double speed = 0.004;
+        m_map->getPacman()->setSpeed(speed*deltaTime);
+
+        for (unsigned int i = 0; i < m_map->getGhosts().size(); ++i)
+        {
+            m_map->getGhosts()[i]->setSpeed(speed*deltaTime);
         }
     }
 }

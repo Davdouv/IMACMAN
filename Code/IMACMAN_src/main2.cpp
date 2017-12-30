@@ -70,15 +70,13 @@ int main(int argc, char** argv) {
 
     // initialize the ghosts
     gameManager.setGhosts();
-
-    windowManager.updateDeltaTime();
-
-    // Application loop:a
+    //windowManager.updateDeltaTime();
+    // Application loop:
     bool done = false;
     while(!done) {
 
-        windowManager.updateDeltaTime();
-        gameManager.updateSpeed(windowManager.getDeltaTime());
+        //windowManager.updateDeltaTime();
+        //gameManager.updateSpeed(windowManager.getDeltaTime());
 
         // Event loop:
         SDL_Event e;
@@ -139,7 +137,7 @@ int main(int argc, char** argv) {
         // --- CUBE --- //
         renderManager.bindCubeVAO();
 
-        renderManager.drawSkybox();
+        //renderManager.drawSkybox();
         renderManager.drawWalls(map.getWalls(), TEXTURE);
         renderManager.drawGhosts(map.getGhosts(), TEXTURE);
 
