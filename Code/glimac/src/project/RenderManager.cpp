@@ -304,10 +304,12 @@ void RenderManager::drawPacmanNormal(Pacman* pacman)
 void RenderManager::drawPacmanTexture(Pacman* pacman)
 {
     glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_PacmanTexture->getID());
     glm::mat4 transformationMatrix = transformMatrix(pacman);
     applyTransformations(TEXTURE, transformationMatrix);
     m_sphere.drawSphere();
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -323,10 +325,12 @@ void RenderManager::drawGhostNormal(Ghost* ghost)
 void RenderManager::drawGhostTexture(Ghost* ghost)
 {
     glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_GhostTexture->getID());
     glm::mat4 transformationMatrix = transformMatrix(ghost);
     applyTransformations(TEXTURE, transformationMatrix);
     m_cube.drawCube();
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -346,10 +350,12 @@ void RenderManager::drawWallNormal(Wall* wall)
 void RenderManager::drawWallTexture(Wall* wall)
 {
     glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_WallTexture->getID());
     glm::mat4 transformationMatrix = transformMatrix(wall);
     applyTransformations(TEXTURE, transformationMatrix);
     m_cube.drawCube();
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -365,10 +371,12 @@ void RenderManager::drawSuperPacGommeNormal(Edible* edible)
 void RenderManager::drawSuperPacGommeTexture(Edible* edible)
 {
     glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_SuperGumTexture->getID());
     glm::mat4 transformationMatrix = transformMatrix(edible);
     applyTransformations(TEXTURE, transformationMatrix);
     m_sphere.drawSphere();
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -384,10 +392,12 @@ void RenderManager::drawPacGommeNormal(Edible* edible)
 void RenderManager::drawPacGommeTexture(Edible* edible)
 {
     glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_GumTexture->getID());
     glm::mat4 transformationMatrix = transformMatrix(edible);
     applyTransformations(TEXTURE, transformationMatrix);
     m_sphere.drawSphere();
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -403,10 +413,12 @@ void RenderManager::drawFruitNormal(Edible* edible)
 void RenderManager::drawFruitTexture(Edible* edible)
 {
     glUniform1i(m_programList->textureProgram->uTexture, 0);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_FruitTexture->getID());
     glm::mat4 transformationMatrix = transformMatrix(edible);
     applyTransformations(TEXTURE, transformationMatrix);
     m_sphere.drawSphere();
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -518,10 +530,12 @@ void RenderManager::drawSkybox()
   float size = 200.f;
   StaticObject skybox('K', m_gameSize.y/2, m_gameSize.x/2, size, size);
   glUniform1i(m_programList->cubeMapProgram->cubeTexture, 0);
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_CUBE_MAP, m_SkyboxTexture->getID());
   glm::mat4 transformationMatrix = transformMatrix(&skybox);
   applyTransformations(CUBEMAP, transformationMatrix);
   m_cube.drawCube();
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
   glDepthMask(GL_TRUE);
 
