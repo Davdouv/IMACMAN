@@ -140,10 +140,9 @@ int main(int argc, char** argv) {
         renderManager.drawWalls(map.getWalls(), TEXTURE);
  
         // Change Ghost Shader if we eat a Super Pac Gomme
-        if (gameManager.getState() == GameManager::NORMAL)
+        //if (gameManager.getState() == GameManager::NORMAL)
             renderManager.drawGhosts(map.getGhosts(), TEXTURE);
-        else
-            renderManager.drawGhosts(map.getGhosts(), NORMAL);
+        //else renderManager.drawGhosts(map.getGhosts(), NORMAL);
 
         renderManager.debindVAO();
 
