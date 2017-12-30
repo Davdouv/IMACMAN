@@ -126,6 +126,7 @@ int main(int argc, char** argv) {
         // Draw Pacman only in TPS
         if(!controller.isFPSactive())
             renderManager.drawPacman(map.getPacman(), TEXTURE);
+        
         renderManager.drawPacGommes(map.getPacGommes(), TEXTURE);
         renderManager.drawSuperPacGommes(map.getSuperPacGommes(), TEXTURE);
         renderManager.drawFruits(map.getFruits(), TEXTURE);
@@ -137,7 +138,12 @@ int main(int argc, char** argv) {
         renderManager.bindCubeVAO();
 
         renderManager.drawWalls(map.getWalls(), TEXTURE);
-        renderManager.drawGhosts(map.getGhosts(), TEXTURE);
+ 
+        // Change Ghost Shader if we eat a Super Pac Gomme
+        if (gameManager.getState() == GameManager::NORMAL)
+            renderManager.drawGhosts(map.getGhosts(), TEXTURE);
+        else
+            renderManager.drawGhosts(map.getGhosts(), NORMAL);
 
         renderManager.debindVAO();
 
