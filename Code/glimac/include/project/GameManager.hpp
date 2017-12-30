@@ -87,4 +87,6 @@ private:
     void switchSuperState();
     void stateManager();
     void eatGhost();
+
+    void activateFruit();
 };

@@ -19,6 +19,8 @@
 using namespace glimac;
 
 int main(int argc, char** argv) {
+
+    
     // Default window size
     glm::vec2 defaultWindowSize = glm::vec2(1280,720);
 
@@ -157,4 +159,6 @@ int main(int argc, char** argv) {
     // See ~renderManager destructor
 
     return EXIT_SUCCESS;
+    
+    return 0;
 }

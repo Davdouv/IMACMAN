@@ -5,11 +5,11 @@
 int main() {
 
     Map m;
-    m.setFileMap("classicMap.txt");
+    m.setFileMap("mapTest.txt");
     m.initialization();
     m.display();
     GameManager gameManager = GameManager(&m);
     gameManager.play();
-   // m.~Map();
+    m.~Map();
     return 0;
 }
