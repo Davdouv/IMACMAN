@@ -175,6 +175,7 @@ void GameManager::play(Controller* controller) {
     if (!(lost()) && ready() && !isPause())
     {
         stateManager();
+        activateFruit();
         pacmanMove(controller);
         ghostMove();
         pacmanGhostCollision();
@@ -874,7 +875,7 @@ void GameManager::updateSpeed(uint32_t deltaTime)
 void GameManager::activateFruit() {
 
 
-    if (SDL_GetTicks() - m_startTime > 60000)  {
+    if (SDL_GetTicks() - m_startTime > 30000)  {
         std::cout << "Fruit available!" << m_map->getFruits().size() << std::endl;
         if (!m_map->getFruits()[0]->getAvailability()) m_map->getFruits()[0]->setAvailability(true);
     }
