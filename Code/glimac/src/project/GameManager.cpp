@@ -880,7 +880,7 @@ void GameManager::updateSpeed(uint32_t deltaTime)
 
 void GameManager::activateFruit() {
     // Every 30sec
-    if ((int)(0.001f * SDL_GetTicks() - m_fruitTimer) > 30)  {
+    if ((int)(0.001f * SDL_GetTicks()) - (int)(0.001f * m_fruitTimer) > 30)  {
         if (!m_map->getFruits().empty())
         {
             std::cout << "Fruit available!" << m_map->getFruits().size() << std::endl;
