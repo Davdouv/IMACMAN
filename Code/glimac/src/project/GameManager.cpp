@@ -48,6 +48,12 @@ void GameManager::pause(Controller* controller) {
         
 }
 
+void GameManager::start() {
+
+    setGhosts();
+    play();
+}
+
 // For console only
 void GameManager::play() {
 
@@ -181,6 +187,7 @@ void GameManager::play(Controller* controller) {
 void GameManager::newLevel()
 {
     m_map->initialization();
+    setGhosts();
 }
 
 void GameManager::pacmanGhostCollision() {

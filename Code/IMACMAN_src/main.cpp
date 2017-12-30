@@ -68,6 +68,9 @@ int main(int argc, char** argv) {
     // Load Textures
     renderManager.loadTextures();
 
+    // initialize the ghosts
+    gameManager.setGhosts();
+
     // Application loop:
     bool done = false;
     while(!done) {
