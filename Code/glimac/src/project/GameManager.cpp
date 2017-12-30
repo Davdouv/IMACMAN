@@ -507,13 +507,15 @@ void GameManager::pacmanEdibleCollision() {
                 }
                 break;
 
-            case Edible::Type::PAC_GOMME : std::cout << "Pac gomme caught! " << std::endl;
+            case Edible::Type::PAC_GOMME :
+                //std::cout << "Pac gomme caught! " << std::endl;
                 m_player.gainPoints(e->gain());
                 m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()]->setType('V');
 
                 break;
 
-            case Edible::Type::SUPER_PAC_GOMME : std::cout << " Super pac gomme caught" << std::endl;
+            case Edible::Type::SUPER_PAC_GOMME :
+                //std::cout << " Super pac gomme caught" << std::endl;
                 m_player.gainPoints(e->gain());
                 switchSuperState();
                 m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()]->setType('V');
@@ -873,9 +875,8 @@ void GameManager::updateSpeed(uint32_t deltaTime)
 }
 
 void GameManager::activateFruit() {
-
     // Every 30sec
-    if ((SDL_GetTicks() - m_startTime) % 30000 == 0)  {
+    if ((int)(0.001f * SDL_GetTicks() - m_startTime) % 30 == 0)  {
         if (!m_map->getFruits().empty())
         {
             std::cout << "Fruit available!" << m_map->getFruits().size() << std::endl;
