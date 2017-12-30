@@ -154,10 +154,7 @@ void Controller::updateInterfaceAction()
 	else if (m_windowManager->isKeyPressed(SDLK_c))
 	{
 		interfaceAction = C;
-		if(FPS)
-			FPS = false;
-		else
-			FPS = true;
+		FPS =! FPS;
 	}
     else
     {

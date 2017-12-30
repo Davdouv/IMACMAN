@@ -12,12 +12,15 @@ GameManager::GameManager(Map* map)
     m_map = map;
     m_state = NORMAL;
     m_player.initialization();
+    m_pause = false;
 }
 
 GameManager::PacmanState GameManager::getState() const { return m_state;}
 uint32_t GameManager::getStartTime() const { return m_startTime; }
+bool GameManager::isPause() { return m_pause; }
 void GameManager::setState(PacmanState state) { m_state = state;}
 void GameManager::setStartTime(uint32_t t) { m_startTime = t;}
+void GameManager::switchPause() { m_pause=!isPause();}
 // returns true if no edible on the map
 bool GameManager::won() {
     
@@ -33,6 +36,16 @@ bool GameManager::lost() {
 bool GameManager::ready() {
 
     return (SDL_GetTicks() - getStartTime() > 1000);
+}
+
+void GameManager::pause(Controller* controller) {
+
+    if (controller->getInterfaceAction() == Controller::ESCAPE)
+    {
+                switchPause();
+                controller->setInterfaceAction(Controller::NONE);
+    }
+        
 }
 
 // For console only
@@ -145,8 +158,8 @@ void GameManager::pacmanMove(Controller* controller)
 
 // need to call setGhosts before this function to set them ready 
 void GameManager::play(Controller* controller) {
-    // If we didn't lost
-    if (!(lost()) && ready())
+
+    if (!(lost()) && ready() && !isPause())
     {
         pacmanMove(controller);
         ghostMove();
@@ -161,6 +174,7 @@ void GameManager::play(Controller* controller) {
             std::cout << "Player Score : " << m_player.getPoints() << std::endl;
         }
     }
+    pause(controller);
 }
 
 void GameManager::newLevel()
