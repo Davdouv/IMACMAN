@@ -1,6 +1,7 @@
 # IMACMAN
 
-IMACMAN is a 3D game made in .cpp with OpenGL3 by a group of 3 IMAC Students
+IMACMAN is a 3D game made in .cpp with OpenGL3 by a group of 3 IMAC Students.
+It's basically Pacman Game, but in 3D
 
 ## HOW TO GET THE SOURCE CODE
 
