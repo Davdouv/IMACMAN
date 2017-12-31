@@ -391,7 +391,7 @@ bool GameManager::characterWallCollision(Character* character, char direction) {
     int iposX = (int)fposX;   // Matrix index X
     int iposY = (int)fposY;   // Matrix index Y
     float speed = character->getSpeed();
-    float seuil = 0.005;
+    float seuil = 0.021;
 
     switch(direction) {
         case 'Z':
@@ -400,12 +400,13 @@ bool GameManager::characterWallCollision(Character* character, char direction) {
             {
                 return wallCollisionUP(fposY, iposY, iposX, speed, character);
             }
+            /* Finally we want the player to go through each cells */
             // Check if we are close to the right edge
-            else if (iposX+1 - fposX <= seuil)
-            {
-                // Consider we're on the right edge
-                return wallCollisionUP(fposY, iposY, iposX+1, speed, character);
-            }
+            // else if (iposX+1 - fposX <= seuil)
+            // {
+            //     // Consider we're on the right edge
+            //     return wallCollisionUP(fposY, iposY, iposX+1, speed, character);
+            // }
             // We are between two cells
             else
             {
@@ -418,10 +419,11 @@ bool GameManager::characterWallCollision(Character* character, char direction) {
             {
                 return wallCollisionLEFT(fposX, iposY, iposX, speed, character);
             }
-            else if (iposY+1 - fposY <= seuil)
-            {
-                return wallCollisionLEFT(fposX, iposY+1, iposX, speed, character);
-            }
+            /* Finally we want the player to go through each cells */
+            // else if (iposY+1 - fposY <= seuil)
+            // {
+            //     return wallCollisionLEFT(fposX, iposY+1, iposX, speed, character);
+            // }
             else
             {
                 return true;
