@@ -549,9 +549,13 @@ void GameManager::switchSuperState() {
 void GameManager::stateManager() {
 
     if (this->getState() == GameManager::PacmanState::SUPER) {
-        if (SDL_GetTicks() - this->getSuperTimer() > 60000) {
+        int timer = 7000; // 1 second * 1000
+        if (SDL_GetTicks() - this->getSuperTimer() > timer) {
             this->setState(GameManager::PacmanState::NORMAL);
             this->setEatenGhosts(0);
+            for (int i = 0; i < m_map->getGhosts().size(); i++) { 
+                m_map->getGhosts()[i]->setSuper(false);
+            } 
         }
     }
 }
