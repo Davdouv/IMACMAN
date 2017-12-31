@@ -16,9 +16,11 @@ find_package(GLEW REQUIRED)
 
 ## Directories
 
-include_directories(${SDL_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} glimac/include third-party/include)
+include_directories(${SDL_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} glimac/include third-party/include third-party/include/freetype2/include)
 
 set(ALL_LIBRARIES glimac ${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARY})
+
+set(CMAKE_CXX_FLAGS "-O2 -std=c++11")
 
 add_subdirectory(glimac)
 
