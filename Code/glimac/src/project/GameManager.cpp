@@ -879,7 +879,7 @@ void GameManager::updateSpeed(uint32_t deltaTime)
 
 void GameManager::activateFruit() {
     // Every 30sec
-    if (SDL_GetTicks() - m_fruitTimer > 5000)  {
+    if (SDL_GetTicks() - m_fruitTimer > 45000)  {
         if (!m_map->getFruits().empty())
         {
             if (!m_map->getFruits()[0]->getAvailability() && m_map->getFruits()[0]->getFruit() != Edible::Fruit::NONE ) 
