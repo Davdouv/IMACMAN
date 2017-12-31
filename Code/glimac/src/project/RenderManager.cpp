@@ -508,7 +508,8 @@ void RenderManager::drawFruits(std::vector<Edible*> edible, FS shader)
     useProgram(NORMAL);
     for (unsigned int i = 0; i < edible.size(); ++i)
     {
-        drawFruitNormal(edible[i]);
+        if (edible[i]->getAvailability())
+            drawFruitNormal(edible[i]);
     }
   }
   else if (shader == TEXTURE)
@@ -516,7 +517,8 @@ void RenderManager::drawFruits(std::vector<Edible*> edible, FS shader)
     useProgram(TEXTURE);
     for (unsigned int i = 0; i < edible.size(); ++i)
     {
-        drawFruitTexture(edible[i]);
+        if (edible[i]->getAvailability())
+            drawFruitTexture(edible[i]);
     }
   }
 }
