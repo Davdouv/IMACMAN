@@ -63,7 +63,6 @@ public:
     // map initialization
     void initialization();
 
-    // loads a file and converts it to a Cell matrix
     int load();
     int save();
     

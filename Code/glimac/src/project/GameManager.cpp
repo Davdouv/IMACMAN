@@ -90,7 +90,10 @@ void GameManager::play() {
             if (line == "D") {
                 if (!characterWallCollision(m_map->getPacman(), 'D')) m_map->getPacman()->moveRight();
             }
-            if (line == "C") return;
+            if (line == "C") {
+                m_map->save(); 
+                return;
+            }
             pacmanGhostCollision();
             pacmanEdibleCollision();
             ghostMove();
@@ -505,7 +508,8 @@ void GameManager::pacmanEdibleCollision() {
                     m_player.gainPoints(e->gain());
                     e->upgradeFruit();
                     setFruitTimer(SDL_GetTicks());
-                    m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()] = e;
+                    if (e->getFruit() == Edible::Fruit::NONE) m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()]->setType('V');
+                    else m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()] = e;
                 }
                 break;
 

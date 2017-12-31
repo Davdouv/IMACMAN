@@ -193,19 +193,41 @@ int Map::load() {
     return 1;
 }
 
-/*
+
 int Map::save() {
 
     std::fstream file;
-    file.open(m_fileMap, std::ios::binary | std::ios::out | std::ios::in);
+    file.open("../Code/data/save_"+m_fileMap, std::ios::binary | std::ios::out | std::ios::in);
     if (!file.is_open()) {
-        std::cout << " error loading the file " << std::endl;
-        return 0;
+        std::ofstream outfile("../Code/data/save_"+m_fileMap);
+        outfile.close();
+        save();
     }
     else {
-        for (int i = 0; i < m_nbX; i++) {
-            for (int j = 0; i < m_nbY; j++) {
-                file << m_cells[i][j].getStaticElement();
+        file.seekg(0);
+        // save Map state
+        // save player lives
+        // save player points
+        file << "P" << m_pacman.getInitX() << "," << m_pacman.getInitY() << std::endl;
+        file << "G" << m_ghosts[Ghost::Type::SHADOW].getInitX() << "," << m_ghosts[Ghost::Type::SHADOW].getInitY() << std::endl;
+        file << "G" << m_ghosts[Ghost::Type::SPEEDY].getInitX() << "," << m_ghosts[Ghost::Type::SPEEDY].getInitY() << std::endl;
+        file << "G" << m_ghosts[Ghost::Type::BASHFUL].getInitX() << "," << m_ghosts[Ghost::Type::BASHFUL].getInitY() << std::endl;
+        file << "G" << m_ghosts[Ghost::Type::POKEY].getInitX() << "," << m_ghosts[Ghost::Type::POKEY].getInitY() << std::endl;
+        for (int i = 0; i < getNbX(); i++) {
+            for (int j = 0; j < getNbY(); j++) {
+                if (getStaticObjects()[i][j]->getType() == 'E') {
+                    Edible *e = (Edible*) getStaticObjects()[i][j];
+                    switch (e->getTypeEdible()) {
+
+                        case Edible::Type::PAC_GOMME: file << 'G';
+                            break;
+                        case Edible::Type::SUPER_PAC_GOMME: file << 'S';
+                            break;
+                        case Edible::Type::FRUIT: file << e->getFruit();
+                            break;
+                    }
+                }
+                else file << getStaticObjects()[i][j]->getType();
             }
             file << std::endl;
         }
@@ -213,7 +235,6 @@ int Map::save() {
     file.close();
     return 1;
 }
-*/
 
 void Map::initDoors() {
 
