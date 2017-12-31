@@ -6,7 +6,7 @@
 
 namespace glimac {
 
-class Cube 
+class Cube
 {
     // Allocates and constructs the data (implementation in the .cpp)
     void build(GLfloat width, GLfloat height, GLfloat thickness);

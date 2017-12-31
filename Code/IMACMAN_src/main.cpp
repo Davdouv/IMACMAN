@@ -20,7 +20,7 @@ using namespace glimac;
 
 int main(int argc, char** argv) {
 
-    
+
     // Default window size
     glm::vec2 defaultWindowSize = glm::vec2(1280,720);
 
@@ -38,9 +38,11 @@ int main(int argc, char** argv) {
     FilePath applicationPath(argv[0]);
     NormalProgram normalProgram(applicationPath);
     TextureProgram textureProgram(applicationPath);
+    CubeMapProgram cubemapProgram(applicationPath);
     ProgramList programList;
     programList.normalProgram = &normalProgram;
     programList.textureProgram = &textureProgram;
+    programList.cubemapProgram = &cubemapProgram;
 
     // Enable GPU depth test for 3D rendering
     glEnable(GL_DEPTH_TEST);
@@ -59,8 +61,8 @@ int main(int argc, char** argv) {
     // Game Infos
     glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
 
-    TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,1.57f);    // CAMERA VUE 2D
-    //TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,1.f);
+    //TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,0.0f);    // CAMERA VUE 2D
+    TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,-0.4f);
     FreeflyCamera fpsCamera = FreeflyCamera();
     Camera* camera = &tpsCamera;
 
@@ -69,6 +71,9 @@ int main(int argc, char** argv) {
 
     // Load Textures
     renderManager.loadTextures();
+
+    // initialize Skybox
+    renderManager.initSkybox();
 
     // initialize the timers
     gameManager.setTimers();
@@ -159,6 +164,6 @@ int main(int argc, char** argv) {
     // See ~renderManager destructor
 
     return EXIT_SUCCESS;
-    
+
     return 0;
 }

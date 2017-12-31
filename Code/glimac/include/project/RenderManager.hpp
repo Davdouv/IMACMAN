@@ -35,6 +35,9 @@ private:
     GLuint m_cubeIBO;
     GLuint m_cubeVAO;
 
+    // Skybox
+    StaticObject* m_skybox;
+
     // Sphere
     Sphere m_sphere;
     GLuint m_sphereVBO;
@@ -53,7 +56,6 @@ private:
     Texture* m_GumTexture;
     Texture* m_SuperGumTexture;
     Texture* m_FruitTexture;
-    Texture* m_Skybox2DTexture;
     CubeMap* m_SkyboxTexture;
 
     // GLSL Programs
@@ -68,6 +70,11 @@ public:
     RenderManager(SDLWindowManager* windowManager, Camera* camera, ProgramList* programList, glm::vec2 gameSize);
     // Destructor
     ~RenderManager();
+
+    // Skybox
+    void initSkybox();
+    Cube* getCubeSkyboxPtr();
+    GLuint* getCubeSkyboxVAOPtr();
 
     // Cube getters
     Cube* getCubePtr();

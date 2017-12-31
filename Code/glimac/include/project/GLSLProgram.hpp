@@ -55,8 +55,8 @@ struct CubeMapProgram {
     GLint cubeTexture;
 
     CubeMapProgram(const FilePath& applicationPath):
-        m_Program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl",
-                              applicationPath.dirPath() + "shaders/CubeMap.fs.glsl")) {
+        m_Program(loadProgram(applicationPath.dirPath() + "shaders/cubeMap.vs.glsl",
+                              applicationPath.dirPath() + "shaders/cubeMap.fs.glsl")) {
         uMVPMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix");
         uMVMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVMatrix");
         uNormalMatrix = glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix");
@@ -153,7 +153,7 @@ struct ProgramList {
     MultiTextureProgram* multiTextureProgram;
     DirectionnalLightProgram* directionnalLightProgram;
     PointLightProgram* pointLightProgram;
-    CubeMapProgram* cubeMapProgram;
+    CubeMapProgram* cubemapProgram;
 };
 
 }
