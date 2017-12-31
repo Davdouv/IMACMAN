@@ -432,6 +432,7 @@ void RenderManager::drawWalls(std::vector<Wall*> wall, FS shader)
 
 void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
 {
+    /*
   if (shader == NORMAL) {
     useProgram(NORMAL);
     for (unsigned int i = 0; i < ghost.size(); ++i)
@@ -446,7 +447,21 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
     {
         drawGhostTexture(ghost[i]);
     }
-  }
+  }*/
+      for (unsigned int i = 0; i < ghost.size(); ++i)
+    {
+        if (ghost[i]->getSuper())
+        {
+            useProgram(NORMAL);
+            drawGhostNormal(ghost[i]);
+        }
+        else
+        {
+            useProgram(TEXTURE);
+            drawGhostTexture(ghost[i]);
+        }
+    }
+  
 }
 
 void RenderManager::drawPacGommes(std::vector<Edible*> edible, FS shader)
