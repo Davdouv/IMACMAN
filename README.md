@@ -48,6 +48,6 @@ All other files that you include in your main must be placed in :
 ## Authors
 
 We are 3 IMAC students (French Engineering School of Multimedia) in 2nd year (2017) :
-- Laure ISSA
-- David NASR
-- Daphné ROSE
+- Laure ISSA (https://github.com/laureis)
+- David NASR (https://github.com/Davdouv)
+- Daphné ROSE (https://github.com/Damagae)
