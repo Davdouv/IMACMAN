@@ -213,6 +213,10 @@ void Controller::setPlayerPreviousAction(Key key)
 {
 	previousPlayerAction = key;
 }
+void Controller::setPlayerAction(Key key)
+{
+	playerAction = key;
+}
 
 // If we are in FPS mode, we go forward but keys have other interpretations
 Controller::Key Controller::getFPSkey(Pacman* pacman)

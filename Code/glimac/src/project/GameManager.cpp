@@ -185,8 +185,11 @@ void GameManager::play(Controller* controller) {
         activateFruit();
         pacmanMove(controller);
         ghostMove();
-        pacmanGhostCollision();
         pacmanEdibleCollision();
+        if (pacmanGhostCollision())
+        {
+            controller->setPlayerAction(Controller::Key::Q);
+        }
         if(won())
         {
             newLevel(controller);
@@ -207,7 +210,7 @@ void GameManager::newLevel(Controller* controller)
     setTimers();
 }
 
-void GameManager::pacmanGhostCollision() {
+bool GameManager::pacmanGhostCollision() {
 
     for (int i = 0; i < m_map->getGhosts().size(); i++) {
         if (m_map->getPacman()->collision(m_map->getGhosts()[i])) {
@@ -225,10 +228,10 @@ void GameManager::pacmanGhostCollision() {
                         m_map->getGhosts()[i]->reset();
                     }
                     std::cout << "Life lost. Life : " << m_player.getLife() << std::endl;
+                    return true;
                     break;
                 case true :
                     m_map->getGhosts()[i]->reset();
-                    //m_map->getGhosts()[i]->reset();
                     eatGhost();
                     break;
                 default:
@@ -236,6 +239,7 @@ void GameManager::pacmanGhostCollision() {
             }
         }
     }
+    return false;
 }
 
 bool GameManager::ghostCollision() {
