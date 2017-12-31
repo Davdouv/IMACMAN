@@ -97,6 +97,8 @@ void GameManager::play() {
             pacmanGhostCollision();
             pacmanEdibleCollision();
             ghostMove();
+            std::cout << "Points : " << m_player.getPoints() << std::endl;
+            std::cout << "Lives : " << m_player.getLife() << std::endl;
         }
     }
 }
