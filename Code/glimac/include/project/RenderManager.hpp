@@ -24,11 +24,6 @@ private:
     // Window Manager
     SDLWindowManager* m_windowManager;
 
-    // Cameras
-    // TrackballCamera* m_tbCamera;    // TPS Cam
-    // FreeflyCamera* m_ffCamera;      // FPS Cam
-    // bool m_fps;                     // false = TPS | true = FPS
-
     // Cube
     Cube m_cube;
     GLuint m_cubeVBO;
@@ -100,6 +95,8 @@ public:
 
     // Texture functions
     void loadTextures() const;
+    void enableTexture(FS shader, Texture* texture);
+    void disableTexture(FS shader);
 
     // GLSL Programs functions
     void useProgram(FS shader);
@@ -110,8 +107,6 @@ public:
 
     // Specific Transformations & Programs
     void drawPacman(Pacman* pacman, FS shader = NORMAL);
-    void drawPacmanNormal(Pacman* pacman);
-    void drawPacmanTexture(Pacman* pacman);
     void drawWalls(std::vector<Wall*>, FS shader = NORMAL);
     void drawGhosts(std::vector<Ghost*>, FS shader = NORMAL);
     void drawPacGommes(std::vector<Edible*>, FS shader = NORMAL);
@@ -119,18 +114,4 @@ public:
     void drawFruits(std::vector<Edible*>, FS shader = NORMAL);
     void drawSkybox();
 
-private:
-    void drawWallNormal(Wall* wall);
-    void drawWallTexture(Wall* wall);
-    void drawGhostNormal(Ghost* ghost);
-    void drawGhostTexture(Ghost* ghost);
-    void drawPacGommeNormal(Edible* edible);
-    void drawPacGommeTexture(Edible* edible);
-    void drawSuperPacGommeNormal(Edible* edible);
-    void drawSuperPacGommeTexture(Edible* edible);
-    void drawFruitNormal(Edible* edible);
-    void drawFruitTexture(Edible* edible);
-
-    // Switch camera
-    // void switchCamera();
 };
