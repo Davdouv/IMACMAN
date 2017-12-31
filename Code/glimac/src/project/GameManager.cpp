@@ -547,8 +547,8 @@ void GameManager::switchSuperState() {
 void GameManager::stateManager() {
 
     if (this->getState() == GameManager::PacmanState::SUPER) {
-        std::cout << "Time : " << SDL_GetTicks() - this->getSuperTimer() << std::endl;
-        if (SDL_GetTicks() - this->getSuperTimer() > 6000) {
+        int timer = 7000; // 1 second * 1000
+        if (SDL_GetTicks() - this->getSuperTimer() > timer) {
             this->setState(GameManager::PacmanState::NORMAL);
             this->setEatenGhosts(0);
             for (int i = 0; i < m_map->getGhosts().size(); i++) { 
