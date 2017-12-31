@@ -209,9 +209,9 @@ void GameManager::pacmanGhostCollision() {
 
     for (int i = 0; i < m_map->getGhosts().size(); i++) {
         if (m_map->getPacman()->collision(m_map->getGhosts()[i])) {
-            switch(this->getState()) {
+            switch(m_map->getGhosts()[i]->getSuper()) {
 
-                case GameManager::PacmanState::NORMAL :
+                case false :
                     m_player.loseLife();
                     if (m_player.getLife() != 0)
                     {
@@ -224,9 +224,9 @@ void GameManager::pacmanGhostCollision() {
                     }
                     std::cout << "Life lost. Life : " << m_player.getLife() << std::endl;
                     break;
-                case GameManager::PacmanState::SUPER :
+                case true :
                     m_map->getGhosts()[i]->reset();
-                    m_map->getGhosts()[i]->reset();
+                    //m_map->getGhosts()[i]->reset();
                     eatGhost();
                     break;
                 default:
@@ -528,7 +528,8 @@ void GameManager::pacmanEdibleCollision() {
                 break;
             default:return;
         }
-        //std::cout << "Points : " << m_player.getPoints() << std::endl;
+        // std::cout << "Points : " << m_player.getPoints() << std::endl;
+        // std::cout << "Life : " << m_player.getLife() << std::endl;
     }
 }
 
@@ -539,7 +540,7 @@ void GameManager::switchSuperState() {
     this->setEatenGhosts(0);
     for (int i = 0; i < m_map->getGhosts().size(); i++) { 
         m_map->getGhosts()[i]->setSuper(true);
-        m_map->getGhosts()[i]->slowDown();
+        //m_map->getGhosts()[i]->slowDown();
     }
 }
 
@@ -876,14 +877,19 @@ void GameManager::updateSpeed(uint32_t deltaTime)
 
         for (unsigned int i = 0; i < m_map->getGhosts().size(); ++i)
         {
-            m_map->getGhosts()[i]->setSpeed(speed*deltaTime);
+            // If we can eat a ghost, slow down this ghost
+            if(m_map->getGhosts()[i]->getSuper())
+                m_map->getGhosts()[i]->setSpeed((speed*deltaTime)/1.5);
+            else
+                m_map->getGhosts()[i]->setSpeed(speed*deltaTime);
         }
     }
 }
 
 void GameManager::activateFruit() {
     // Every 30sec
-    if (SDL_GetTicks() - m_fruitTimer > 45000)  {
+    int timer = 5000;
+    if (SDL_GetTicks() - m_fruitTimer > timer)  {
         if (!m_map->getFruits().empty())
         {
             if (!m_map->getFruits()[0]->getAvailability() && m_map->getFruits()[0]->getFruit() != Edible::Fruit::NONE ) 
