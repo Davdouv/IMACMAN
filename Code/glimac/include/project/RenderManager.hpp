@@ -1,5 +1,6 @@
 #pragma once
 
+#include "glimac/Plane.hpp"
 #include "glimac/Cube.hpp"
 #include "glimac/Sphere.hpp"
 #include <glimac/SDLWindowManager.hpp>
@@ -24,14 +25,17 @@ private:
     // Window Manager
     SDLWindowManager* m_windowManager;
 
+    // Plane
+    Plane m_plane;
+    GLuint m_planeVBO;
+    GLuint m_planeIBO;
+    GLuint m_planeVAO;
+
     // Cube
     Cube m_cube;
     GLuint m_cubeVBO;
     GLuint m_cubeIBO;
     GLuint m_cubeVAO;
-
-    // Skybox
-    StaticObject* m_skybox;
 
     // Sphere
     Sphere m_sphere;
@@ -52,6 +56,7 @@ private:
     Texture* m_SuperGumTexture;
     Texture* m_FruitTexture;
     CubeMap* m_SkyboxTexture;
+    Texture* m_FloorTexture;
 
     // GLSL Programs
     ProgramList* m_programList;
@@ -59,6 +64,12 @@ private:
     // Game Size Infos
     glm::vec2 m_gameSize;
     glm::vec2 m_gameCorner;
+
+    // Skybox
+    StaticObject* m_skybox;
+
+    // Floor
+    StaticObject* m_floor;
 
 public:
     // Constructor - SDLWindowManager for Ratio - Camera for viewMatrix - FilePath for Shaders
@@ -82,6 +93,7 @@ public:
     // Rendering functions
     void bindCubeVAO();
     void bindSphereVAO();
+    void bindPlaneVAO();
     void debindVAO();
 
     // Matrix functions
@@ -113,5 +125,6 @@ public:
     void drawSuperPacGommes(std::vector<Edible*>, FS shader = NORMAL);
     void drawFruits(std::vector<Edible*>, FS shader = NORMAL);
     void drawSkybox();
+    void drawFloor(FS shader);
 
 };

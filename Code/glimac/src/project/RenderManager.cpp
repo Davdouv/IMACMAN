@@ -10,11 +10,11 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // Window Manager
     m_windowManager = windowManager;
 
-    // Camera
-    // m_ffCamera = camera;
-
-    // Skybox
-    m_skybox = new StaticObject('K', 15.f, 20.f, 300.f, 300.f);
+    // Plane
+    m_plane = Plane();
+    m_planeVBO = m_plane.getVBO();
+    m_planeIBO = m_plane.getIBO();
+    m_planeVAO = m_plane.getVAO(&m_planeIBO, &m_planeVBO);
 
     // Cube
     m_cube = Cube();
@@ -50,6 +50,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
                                   "../Code/assets/textures/darkness.jpg",
                                   "../Code/assets/textures/darkness.jpg"
                                 );
+    m_FloorTexture = new Texture("../Code/assets/textures/lava2.jpg");
 
     // GLSL Program
     m_programList = programList;
@@ -57,6 +58,12 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // Game Size Infos
     m_gameSize = gameSize;
     m_gameCorner = glm::vec2(-(gameSize.x / 2), -(gameSize.y / 2));
+
+    // Skybox
+    m_skybox = new StaticObject('K', gameSize.y/2, gameSize.x/2, 300.f, 300.f);
+
+    // Floor
+    m_floor = new StaticObject('F', gameSize.y/2, gameSize.x/2, gameSize.y, gameSize.x);
 }
 
 // Destructor
@@ -68,6 +75,9 @@ RenderManager::~RenderManager()
     glDeleteBuffers(1, &m_sphereVBO);
     glDeleteVertexArrays(1, &m_sphereVAO);
 
+    glDeleteBuffers(1, &m_planeVBO);
+    glDeleteVertexArrays(1, &m_planeVAO);
+
     delete(m_PacmanTexture);
     delete(m_GhostTexture);
     delete(m_WallTexture);
@@ -75,6 +85,10 @@ RenderManager::~RenderManager()
     delete(m_SuperGumTexture);
     delete(m_FruitTexture);
     delete(m_SkyboxTexture);
+    delete(m_FloorTexture);
+
+    delete(m_skybox);
+    delete(m_floor);
 }
 
 // ---------------
@@ -119,6 +133,10 @@ void RenderManager::bindSphereVAO()
 {
     glBindVertexArray(m_sphereVAO);
 }
+void RenderManager::bindPlaneVAO()
+{
+    glBindVertexArray(m_planeVAO);
+}
 void RenderManager::debindVAO()
 {
     glBindVertexArray(0);
@@ -149,7 +167,6 @@ void RenderManager::updateMVMatrix(Camera* camera)
 }
 void RenderManager::updateMVMatrix(Camera* camera, Character* character)
 {
-    //m_MVMatrix = camera->getViewMatrix(transformMatrix(character));
     m_MVMatrix = camera->getViewMatrix(character, m_gameCorner);
 }
 
@@ -159,14 +176,14 @@ void RenderManager::updateMVMatrix(Camera* camera, Character* character)
 
 void RenderManager::loadTextures() const
 {
-  m_PacmanTexture->loadTexture();
-  m_GhostTexture->loadTexture();
-  m_WallTexture->loadTexture();
-  m_GumTexture->loadTexture();
-  m_SuperGumTexture->loadTexture();
-  m_FruitTexture->loadTexture();
-  m_SkyboxTexture->loadCubeMap();
-
+    m_PacmanTexture->loadTexture();
+    m_GhostTexture->loadTexture();
+    m_WallTexture->loadTexture();
+    m_GumTexture->loadTexture();
+    m_SuperGumTexture->loadTexture();
+    m_FruitTexture->loadTexture();
+    m_SkyboxTexture->loadCubeMap();
+    m_FloorTexture->loadTexture();
 }
 
 
@@ -418,4 +435,22 @@ void RenderManager::drawSkybox()
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
   glDepthMask(GL_TRUE);
+}
+
+// ---- FLOOR ---- //
+void RenderManager::drawFloor(FS shader)
+{
+    useProgram(shader);
+
+    // Matrix Transformations
+    glm::mat4 matrix = m_MVMatrix;
+    matrix = glm::translate(matrix, glm::vec3(-3.5f, -0.5f, 2.5f));  // Some values set to adjust the plane
+    matrix = glm::rotate(matrix, (float)-90 * glm::pi<float>()/180, glm::vec3(1, 0, 0));
+    matrix = glm::scale(matrix, glm::vec3(m_floor->getWidth(), m_floor->getHeight(), 1.f));
+
+    applyTransformations(shader, matrix);
+
+    enableTexture(shader, m_FloorTexture);
+    m_plane.drawPlane();
+    disableTexture(shader);
 }

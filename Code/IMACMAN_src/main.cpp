@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
         // On update la ViewMatrix à chaque tour de boucle
         renderManager.updateMVMatrix(camera, map.getPacman());
 
-        // --- SPHERE --- //
+        // --- SPHERES OBJECTS --- //
         // Bind Sphere VAO
         renderManager.bindSphereVAO();
         // Draw Pacman only in TPS
@@ -143,13 +143,20 @@ int main(int argc, char** argv) {
         // De-bind Sphere VAO
         renderManager.debindVAO();
 
-        // --- CUBE --- //
+        // --- CUBES OBJECTS --- //
         renderManager.bindCubeVAO();
 
         renderManager.drawSkybox();
         renderManager.drawWalls(map.getWalls(), TEXTURE);
 
         renderManager.drawGhosts(map.getGhosts(), TEXTURE);
+
+        renderManager.debindVAO();
+
+        // --- PLANE OBJECTS --- //
+        renderManager.bindPlaneVAO();
+
+        renderManager.drawFloor(TEXTURE);
 
         renderManager.debindVAO();
 
