@@ -14,7 +14,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // m_ffCamera = camera;
 
     // Skybox
-    m_skybox = new StaticObject('K', 15.f, 20.f, 300.f, 300.f);
+    m_skybox = new StaticObject('K', 15.f, 20.f, 250.f, 250.f);
 
     // Cube
     m_cube = Cube();
