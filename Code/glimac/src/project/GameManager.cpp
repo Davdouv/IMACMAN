@@ -501,10 +501,9 @@ void GameManager::pacmanEdibleCollision() {
         switch (e->getTypeEdible()) {
 
             case Edible::Type::FRUIT : 
-                if (e->getAvailability()) {
-                    std::cout << "Fruit caught" << std::endl;
+                if (e->getAvailability() && e->getFruit()!=Edible::Fruit::NONE) {
                     m_player.gainPoints(e->gain());
-                    e->setAvailability(false);
+                    e->upgradeFruit();
                     setFruitTimer(SDL_GetTicks());
                     m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()] = e;
                 }
@@ -880,11 +879,11 @@ void GameManager::updateSpeed(uint32_t deltaTime)
 
 void GameManager::activateFruit() {
     // Every 30sec
-    if (SDL_GetTicks() - m_fruitTimer > 30000)  {
+    if (SDL_GetTicks() - m_fruitTimer > 5000)  {
         if (!m_map->getFruits().empty())
         {
-            std::cout << "Fruit available!" << m_map->getFruits().size() << std::endl;
-            if (!m_map->getFruits()[0]->getAvailability()) m_map->getFruits()[0]->setAvailability(true);
+            if (!m_map->getFruits()[0]->getAvailability() && m_map->getFruits()[0]->getFruit() != Edible::Fruit::NONE ) 
+                m_map->getFruits()[0]->setAvailability(true);
         }
     }
 }
