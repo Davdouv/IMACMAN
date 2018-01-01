@@ -1,16 +1,13 @@
 #pragma once
 
+#include "glimac/Plane.hpp"
 #include "glimac/Cube.hpp"
 #include "glimac/Sphere.hpp"
 #include <glimac/SDLWindowManager.hpp>
 #include "glimac/Camera.hpp"
 
-#include "project/Object.hpp"
-#include "project/Character.hpp"
-#include "project/Pacman.hpp"
-#include "project/Ghost.hpp"
-#include "project/Wall.hpp"
-#include "project/Edible.hpp"
+#include "project/Map.hpp"
+#include "project/Controller.hpp"
 #include "project/Texture.hpp"
 #include "project/CubeMap.hpp"
 
@@ -24,19 +21,17 @@ private:
     // Window Manager
     SDLWindowManager* m_windowManager;
 
-    // Cameras
-    // TrackballCamera* m_tbCamera;    // TPS Cam
-    // FreeflyCamera* m_ffCamera;      // FPS Cam
-    // bool m_fps;                     // false = TPS | true = FPS
+    // Plane
+    Plane m_plane;
+    GLuint m_planeVBO;
+    GLuint m_planeIBO;
+    GLuint m_planeVAO;
 
     // Cube
     Cube m_cube;
     GLuint m_cubeVBO;
     GLuint m_cubeIBO;
     GLuint m_cubeVAO;
-
-    // Skybox
-    StaticObject* m_skybox;
 
     // Sphere
     Sphere m_sphere;
@@ -57,6 +52,7 @@ private:
     Texture* m_SuperGumTexture;
     Texture* m_FruitTexture;
     CubeMap* m_SkyboxTexture;
+    Texture* m_FloorTexture;
 
     // GLSL Programs
     ProgramList* m_programList;
@@ -64,6 +60,12 @@ private:
     // Game Size Infos
     glm::vec2 m_gameSize;
     glm::vec2 m_gameCorner;
+
+    // Skybox
+    StaticObject* m_skybox;
+
+    // Floor
+    StaticObject* m_floor;
 
 public:
     // Constructor - SDLWindowManager for Ratio - Camera for viewMatrix - FilePath for Shaders
@@ -84,9 +86,14 @@ public:
     Sphere* getSpherePtr();
     GLuint* getSphereVAOPtr();
 
+    // Plane getters
+    Plane* getPlanePtr();
+    GLuint* getPlaneVAOPtr();
+
     // Rendering functions
     void bindCubeVAO();
     void bindSphereVAO();
+    void bindPlaneVAO();
     void debindVAO();
 
     // Matrix functions
@@ -100,6 +107,8 @@ public:
 
     // Texture functions
     void loadTextures() const;
+    void enableTexture(FS shader, Texture* texture);
+    void disableTexture(FS shader);
 
     // GLSL Programs functions
     void useProgram(FS shader);
@@ -108,29 +117,20 @@ public:
     glm::mat4 transformMatrix(Object* object);
     void applyTransformations(FS shader, glm::mat4 matrix);
 
+    // Material Transformations (for light shader)
+    void materialTransformations(FS shader, float Kd, float Ks, float shininess);
+
     // Specific Transformations & Programs
     void drawPacman(Pacman* pacman, FS shader = NORMAL);
-    void drawPacmanNormal(Pacman* pacman);
-    void drawPacmanTexture(Pacman* pacman);
     void drawWalls(std::vector<Wall*>, FS shader = NORMAL);
     void drawGhosts(std::vector<Ghost*>, FS shader = NORMAL);
     void drawPacGommes(std::vector<Edible*>, FS shader = NORMAL);
     void drawSuperPacGommes(std::vector<Edible*>, FS shader = NORMAL);
     void drawFruits(std::vector<Edible*>, FS shader = NORMAL);
     void drawSkybox();
+    void drawFloor(FS shader);
 
-private:
-    void drawWallNormal(Wall* wall);
-    void drawWallTexture(Wall* wall);
-    void drawGhostNormal(Ghost* ghost);
-    void drawGhostTexture(Ghost* ghost);
-    void drawPacGommeNormal(Edible* edible);
-    void drawPacGommeTexture(Edible* edible);
-    void drawSuperPacGommeNormal(Edible* edible);
-    void drawSuperPacGommeTexture(Edible* edible);
-    void drawFruitNormal(Edible* edible);
-    void drawFruitTexture(Edible* edible);
+    // Global
+    void drawMap(Map* map, Camera* camera, Controller* controller);
 
-    // Switch camera
-    // void switchCamera();
 };

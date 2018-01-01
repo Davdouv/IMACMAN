@@ -6,6 +6,8 @@ in vec2 vFragTexCoords;// Coordonées de texture
 
 out vec3 fFragColor;
 
+// INFOS TEXTURE
+uniform sampler2D uTexture;
 // INFOS MATERIAUX
 uniform vec3 uKd;               // coefficient de reflection diffuse de l'objet
 uniform vec3 uKs;               // coefficient de reflection glossy de l'objet
@@ -36,5 +38,7 @@ vec3 blinnPhong(vec3 Kd, vec3 Ks, float shininess, vec3 lightDirection, vec3 Li,
 
 
 void main() {
-    fFragColor = blinnPhong(uKd, uKs, uShininess, uLightDir_vs, uLightIntensity, normalize(vFragNormal));
+    vec4 textureColor = texture(uTexture, vFragTexCoords);
+    //fFragColor = blinnPhong(uKd, uKs, uShininess, uLightDir_vs, uLightIntensity, normalize(vFragNormal))*vec3(textureColor);
+    fFragColor = blinnPhong(uKd, uKs, uShininess, uLightDir_vs, uLightIntensity, normalize(vFragNormal)) * vec3(textureColor);
 }

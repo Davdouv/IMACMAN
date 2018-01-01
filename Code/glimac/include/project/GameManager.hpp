@@ -71,7 +71,7 @@ private:
     bool characterLeftDoorCollision(Character*);
     bool characterRightDoorCollision(Character*);
 
-    void pacmanGhostCollision();
+    bool pacmanGhostCollision();
     bool ghostCollision();
     void pacmanEdibleCollision();
 

@@ -185,8 +185,11 @@ void GameManager::play(Controller* controller) {
         activateFruit();
         pacmanMove(controller);
         ghostMove();
-        pacmanGhostCollision();
         pacmanEdibleCollision();
+        if (pacmanGhostCollision())
+        {
+            controller->setPlayerAction(Controller::Key::Q);
+        }
         if(won())
         {
             newLevel(controller);
@@ -207,7 +210,7 @@ void GameManager::newLevel(Controller* controller)
     setTimers();
 }
 
-void GameManager::pacmanGhostCollision() {
+bool GameManager::pacmanGhostCollision() {
 
     for (int i = 0; i < m_map->getGhosts().size(); i++) {
         if (m_map->getPacman()->collision(m_map->getGhosts()[i])) {
@@ -225,10 +228,10 @@ void GameManager::pacmanGhostCollision() {
                         m_map->getGhosts()[i]->reset();
                     }
                     std::cout << "Life lost. Life : " << m_player.getLife() << std::endl;
+                    return true;
                     break;
                 case true :
                     m_map->getGhosts()[i]->reset();
-                    //m_map->getGhosts()[i]->reset();
                     eatGhost();
                     break;
                 default:
@@ -236,6 +239,7 @@ void GameManager::pacmanGhostCollision() {
             }
         }
     }
+    return false;
 }
 
 bool GameManager::ghostCollision() {
@@ -391,7 +395,7 @@ bool GameManager::characterWallCollision(Character* character, char direction) {
     int iposX = (int)fposX;   // Matrix index X
     int iposY = (int)fposY;   // Matrix index Y
     float speed = character->getSpeed();
-    float seuil = 0.005;
+    float seuil = 0.021;
 
     switch(direction) {
         case 'Z':
@@ -400,12 +404,13 @@ bool GameManager::characterWallCollision(Character* character, char direction) {
             {
                 return wallCollisionUP(fposY, iposY, iposX, speed, character);
             }
+            /* Finally we want the player to go through each cells */
             // Check if we are close to the right edge
-            else if (iposX+1 - fposX <= seuil)
-            {
-                // Consider we're on the right edge
-                return wallCollisionUP(fposY, iposY, iposX+1, speed, character);
-            }
+            // else if (iposX+1 - fposX <= seuil)
+            // {
+            //     // Consider we're on the right edge
+            //     return wallCollisionUP(fposY, iposY, iposX+1, speed, character);
+            // }
             // We are between two cells
             else
             {
@@ -418,10 +423,11 @@ bool GameManager::characterWallCollision(Character* character, char direction) {
             {
                 return wallCollisionLEFT(fposX, iposY, iposX, speed, character);
             }
-            else if (iposY+1 - fposY <= seuil)
-            {
-                return wallCollisionLEFT(fposX, iposY+1, iposX, speed, character);
-            }
+            /* Finally we want the player to go through each cells */
+            // else if (iposY+1 - fposY <= seuil)
+            // {
+            //     return wallCollisionLEFT(fposX, iposY+1, iposX, speed, character);
+            // }
             else
             {
                 return true;
@@ -890,8 +896,8 @@ void GameManager::updateSpeed(uint32_t deltaTime)
 }
 
 void GameManager::activateFruit() {
-    // Every 30sec
-    int timer = 5000;
+
+    int timer = 30000;  // 1sec * 1000
     if (SDL_GetTicks() - m_fruitTimer > timer)  {
         if (!m_map->getFruits().empty())
         {

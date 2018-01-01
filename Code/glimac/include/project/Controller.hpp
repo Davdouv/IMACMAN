@@ -26,6 +26,7 @@ public:
     bool isFPSactive();
 
     // Setters
+    void setPlayerAction(Key);
     void setPlayerPreviousAction(Key);
     void setInterfaceAction(Key);
     void setFPS(bool);

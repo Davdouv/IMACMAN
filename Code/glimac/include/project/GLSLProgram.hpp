@@ -92,6 +92,7 @@ struct DirectionnalLightProgram {
     GLint uMVPMatrix;
     GLint uMVMatrix;
     GLint uNormalMatrix;
+    GLint uTexture;
 
     GLint uKd;
     GLint uKs;
@@ -101,18 +102,19 @@ struct DirectionnalLightProgram {
 
     DirectionnalLightProgram(const FilePath& applicationPath):
         m_Program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl",
-                              applicationPath.dirPath() + "shaders/directionallight.fs.glsl")) {
+                              applicationPath.dirPath() + "shaders/directionnalLightTex.fs.glsl")) {
         uMVPMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix");
         uMVMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVMatrix");
         uNormalMatrix = glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix");
 
+        uTexture = glGetUniformLocation(m_Program.getGLId(), "uTexture");
         // Variables uniformes materiaux
-        GLint uKd = glGetUniformLocation(m_Program.getGLId(), "uKd");
-        GLint uKs = glGetUniformLocation(m_Program.getGLId(), "uKs");
-        GLint uShininess = glGetUniformLocation(m_Program.getGLId(), "uShininess");
+        uKd = glGetUniformLocation(m_Program.getGLId(), "uKd");
+        uKs = glGetUniformLocation(m_Program.getGLId(), "uKs");
+        uShininess = glGetUniformLocation(m_Program.getGLId(), "uShininess");
         // Variables uniformes lumieres
-        GLint uLightDir_vs = glGetUniformLocation(m_Program.getGLId(), "uLightDir_vs");
-        GLint uLightIntensity = glGetUniformLocation(m_Program.getGLId(), "uLightIntensity");
+        uLightDir_vs = glGetUniformLocation(m_Program.getGLId(), "uLightDir_vs");
+        uLightIntensity = glGetUniformLocation(m_Program.getGLId(), "uLightIntensity");
     }
 };
 
@@ -138,12 +140,12 @@ struct PointLightProgram {
         uNormalMatrix = glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix");
 
         // Variables uniformes materiaux
-        GLint uKd = glGetUniformLocation(m_Program.getGLId(), "uKd");
-        GLint uKs = glGetUniformLocation(m_Program.getGLId(), "uKs");
-        GLint uShininess = glGetUniformLocation(m_Program.getGLId(), "uShininess");
+        uKd = glGetUniformLocation(m_Program.getGLId(), "uKd");
+        uKs = glGetUniformLocation(m_Program.getGLId(), "uKs");
+        uShininess = glGetUniformLocation(m_Program.getGLId(), "uShininess");
         // Variables uniformes lumieres
-        GLint uLightPos_vs = glGetUniformLocation(m_Program.getGLId(), "uLightPos_vs");
-        GLint uLightIntensity = glGetUniformLocation(m_Program.getGLId(), "uLightIntensity");
+        uLightPos_vs = glGetUniformLocation(m_Program.getGLId(), "uLightPos_vs");
+        uLightIntensity = glGetUniformLocation(m_Program.getGLId(), "uLightIntensity");
     }
 };
 
