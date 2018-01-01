@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
     CubeMapProgram cubemapProgram(applicationPath);
     DirectionnalLightProgram directionnalLightProgram(applicationPath);
     PointLightProgram pointLightProgram(applicationPath);
-
+    
     ProgramList programList;
     programList.normalProgram = &normalProgram;
     programList.textureProgram = &textureProgram;

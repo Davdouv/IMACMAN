@@ -34,6 +34,7 @@ struct TextureProgram {
     GLint uMVMatrix;
     GLint uNormalMatrix;
     GLint uTexture;
+    GLint uTime;
 
     TextureProgram(const FilePath& applicationPath):
         m_Program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl",
@@ -42,6 +43,7 @@ struct TextureProgram {
         uMVMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVMatrix");
         uNormalMatrix = glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix");
         uTexture = glGetUniformLocation(m_Program.getGLId(), "uTexture");
+        uTime = glGetUniformLocation(m_Program.getGLId(), "uTime");
     }
 };
 

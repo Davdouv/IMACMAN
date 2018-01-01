@@ -278,6 +278,8 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
         case TEXTURE :
             glUniform1i(m_programList->textureProgram->uTexture, 0);
 
+            glUniform1f(m_programList->textureProgram->uTime, 0);
+
             glUniformMatrix4fv(m_programList->textureProgram->uMVPMatrix, 1, GL_FALSE,
             glm::value_ptr(m_ProjMatrix * matrix));
 
@@ -527,6 +529,8 @@ void RenderManager::drawFloor(FS shader)
     matrix = glm::scale(matrix, glm::vec3(m_floor->getWidth(), m_floor->getHeight(), 1.f));
 
     applyTransformations(shader, matrix);
+    
+    glUniform1f(m_programList->textureProgram->uTime, 0.00001f*SDL_GetTicks());
 
     enableTexture(shader, m_FloorTexture);
     m_plane.drawPlane();
