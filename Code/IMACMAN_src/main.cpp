@@ -40,12 +40,14 @@ int main(int argc, char** argv) {
     TextureProgram textureProgram(applicationPath);
     CubeMapProgram cubemapProgram(applicationPath);
     DirectionnalLightProgram directionnalLightProgram(applicationPath);
+    PointLightProgram pointLightProgram(applicationPath);
 
     ProgramList programList;
     programList.normalProgram = &normalProgram;
     programList.textureProgram = &textureProgram;
     programList.cubemapProgram = &cubemapProgram;
     programList.directionnalLightProgram = &directionnalLightProgram;
+    programList.pointLightProgram = &pointLightProgram;
 
     // Enable GPU depth test for 3D rendering
     glEnable(GL_DEPTH_TEST);
@@ -130,41 +132,10 @@ int main(int argc, char** argv) {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        renderManager.drawMap(&map, camera, &controller);
 
-        // // On update la ViewMatrix à chaque tour de boucle
-        // renderManager.updateMVMatrix(camera, map.getPacman());
-
-        // // --- SPHERES OBJECTS --- //
-        // // Bind Sphere VAO
-        // renderManager.bindSphereVAO();
-        // // Draw Pacman only in TPS
-        // if(!controller.isFPSactive())
-        //     renderManager.drawPacman(map.getPacman(), TEXTURE);
-
-        // renderManager.drawPacGommes(map.getPacGommes(), TEXTURE);
-        // renderManager.drawSuperPacGommes(map.getSuperPacGommes(), TEXTURE);
-        // renderManager.drawFruits(map.getFruits(), TEXTURE);
-
-        // // De-bind Sphere VAO
-        // renderManager.debindVAO();
-
-        // // --- CUBES OBJECTS --- //
-        // renderManager.bindCubeVAO();
-
-        // renderManager.drawSkybox();
-        // renderManager.drawWalls(map.getWalls(), TEXTURE);
-
-        // renderManager.drawGhosts(map.getGhosts(), TEXTURE);
-
-        // renderManager.debindVAO();
-
-        // // --- PLANE OBJECTS --- //
-        // renderManager.bindPlaneVAO();
-
-        // renderManager.drawFloor(TEXTURE);
-
-        // renderManager.debindVAO();
+        // Update The View Matrix each time we enter the while loop
+        renderManager.updateMVMatrix(camera, map.getPacman());
+        renderManager.drawMap(&map, &controller);
 
         // Update the display
         windowManager.swapBuffers();

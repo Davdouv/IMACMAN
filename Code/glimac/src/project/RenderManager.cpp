@@ -228,6 +228,10 @@ void RenderManager::useProgram(FS shader)
             m_programList->directionnalLightProgram->m_Program.use();
             break;
 
+        case POINT_LIGHT :
+            m_programList->pointLightProgram->m_Program.use();
+            break;
+
         default :
             m_programList->normalProgram->m_Program.use();
             break;
@@ -313,6 +317,24 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
             glm::value_ptr(glm::transpose(glm::inverse(matrix))));
             break;
 
+        case POINT_LIGHT :
+            glUniform1i(m_programList->pointLightProgram->uTexture, 0);
+
+            lightMatrix = glm::scale(matrix, glm::vec3(1000.f, 1000.f, 1000.f));
+            lightVector = glm::normalize(glm::vec4(1,1,1,0)*matrix);
+            glUniform3f(m_programList->pointLightProgram->uLightPos_vs, lightVector.x, lightVector.y, lightVector.z);
+            glUniform3f(m_programList->pointLightProgram->uLightIntensity, 2.0,2.0,2.0);
+
+            glUniformMatrix4fv(m_programList->pointLightProgram->uMVPMatrix, 1, GL_FALSE,
+            glm::value_ptr(m_ProjMatrix * matrix));
+
+            glUniformMatrix4fv(m_programList->pointLightProgram->uMVMatrix, 1, GL_FALSE,
+            glm::value_ptr(matrix));
+
+            glUniformMatrix4fv(m_programList->pointLightProgram->uNormalMatrix, 1, GL_FALSE,
+            glm::value_ptr(glm::transpose(glm::inverse(matrix))));
+            break;
+
         default :
             break;
     }
@@ -321,7 +343,7 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
 // Material Transformations for light
 void RenderManager::materialTransformations(FS shader, float Kd, float Ks, float shininess)
 {
-    if (shader == DIRECTIONNAL_LIGHT)
+    if ((shader == DIRECTIONNAL_LIGHT) || (shader == POINT_LIGHT))
     {
         glUniform3f(m_programList->directionnalLightProgram->uKd, Kd, Kd, Kd);
         glUniform3f(m_programList->directionnalLightProgram->uKs,  Ks, Ks, Ks);
@@ -332,7 +354,7 @@ void RenderManager::materialTransformations(FS shader, float Kd, float Ks, float
 // Enable texture if we use shader texture
 void RenderManager::enableTexture(FS shader, Texture* texture)
 {
-    if ((shader == TEXTURE) || (shader == DIRECTIONNAL_LIGHT))
+    if ((shader == TEXTURE) || (shader == DIRECTIONNAL_LIGHT) || (shader == POINT_LIGHT))
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture->getID());
@@ -342,7 +364,7 @@ void RenderManager::enableTexture(FS shader, Texture* texture)
 // Disable texture if we use shader texture
 void RenderManager::disableTexture(FS shader)
 {
-    if ((shader == TEXTURE) || (shader == DIRECTIONNAL_LIGHT))
+    if ((shader == TEXTURE) || (shader == DIRECTIONNAL_LIGHT) || (shader == POINT_LIGHT))
     {
         glBindTexture(GL_TEXTURE_2D, 0);
         glActiveTexture(GL_TEXTURE0);
@@ -473,7 +495,6 @@ void RenderManager::drawFruits(std::vector<Edible*> edible, FS shader)
     }
 }
 
-
 // ---- SKYBOX ----- //
 void RenderManager::initSkybox()
 {
@@ -515,11 +536,8 @@ void RenderManager::drawFloor(FS shader)
 // ---- GLOBAL ---- //
 
 // Draw the map (Characters & Objects)
-void RenderManager::drawMap(Map* map, Camera* camera, Controller* controller)
+void RenderManager::drawMap(Map* map, Controller* controller)
 {
-    // Update The View Matrix each time we enter the while loop
-    updateMVMatrix(camera, map->getPacman());
-
     // --- SPHERES OBJECTS --- //
     // Bind Sphere VAO
     bindSphereVAO();

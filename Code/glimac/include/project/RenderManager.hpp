@@ -131,6 +131,6 @@ public:
     void drawFloor(FS shader);
 
     // Global
-    void drawMap(Map* map, Camera* camera, Controller* controller);
+    void drawMap(Map* map, Controller* controller);
 
 };

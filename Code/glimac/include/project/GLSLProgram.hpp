@@ -125,6 +125,7 @@ struct PointLightProgram {
     GLint uMVPMatrix;
     GLint uMVMatrix;
     GLint uNormalMatrix;
+    GLint uTexture;
 
     GLint uKd;
     GLint uKs;
@@ -139,6 +140,7 @@ struct PointLightProgram {
         uMVMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVMatrix");
         uNormalMatrix = glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix");
 
+        uTexture = glGetUniformLocation(m_Program.getGLId(), "uTexture");
         // Variables uniformes materiaux
         uKd = glGetUniformLocation(m_Program.getGLId(), "uKd");
         uKs = glGetUniformLocation(m_Program.getGLId(), "uKs");
