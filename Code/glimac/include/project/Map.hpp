@@ -62,7 +62,6 @@ public:
 
     // map initialization
     void initialization();
-
     int load();
     int save();
     

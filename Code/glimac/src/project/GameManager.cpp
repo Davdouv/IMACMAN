@@ -767,40 +767,37 @@ We calculate the shortest way to get to a goal from:
 
 */
 
-int GameManager::countShortestWay(float dx, float dy, float ax, float ay) {
+int GameManager::countShortestWay(int dx, int dy, int ax, int ay, std::vector<std::vector<int>> passage) {
     
-    return 0;
-    /*
-    if (dx == ax && dy == ay) return 0;
-    else {
+    std::cout << "( "<<dx<<", "<<dy<<" )" << std::endl;
+    if ((dx == ax) && (dy == ay)) {
+        std::cout << "On est arrivés." << std::endl;
+        return 0;
+    }
+    if (m_map->getStaticObjects()[dy][dx]->getType()=='W') {
+        std::cout << "C'est un mur." << std::endl;
+        return 1000;
+    }
+    if (dx < 0) return 1000;
+    if (dy < 0) return 1000;
+    if (dx > m_map->getNbX()) return 1000;
+    if (dy > m_map->getNbY()) return 1000;
+    if (!passage[dy][dx]) {
+        std::cout << "On peut passer" << std::endl;
+        passage[dy][dx] = 1;
         std::vector<int> moves;
-        if ((m_map->getStaticObjects()[dy][dx+1]->getType()!='W') && ((dx+1) >= 0 && (dx+1) < m_map->getNbX()) && (dx >= 0 && dx < m_map->getNbY())) {
-            std::cout << "Added right " << dy << " , " << dx+1 << std::endl;
-            moves.push_back(countShortestWay(dx+1, dy, ax, ay));
-        }
-        else moves.push_back(-1);
-        if ((m_map->getStaticObjects()[dy][dx-1]->getType()!='W') && ((dx-1) >= 0 && (dx-1) < m_map->getNbX()) && (dx >= 0 && dx < m_map->getNbY())) {
-            std::cout << "Added left" << std::endl;
-            moves.push_back(countShortestWay(dx-1, dy, ax, ay));
-        }
-        else moves.push_back(-1);
-        if ((m_map->getStaticObjects()[dy+1][dx]->getType()!='W') && ((dx) >= 0 && (dx) < m_map->getNbX()) && ((dy-1) >= 0 && (dy-1) < m_map->getNbY())) {
-            std::cout << "Added down" << std::endl;
-            moves.push_back(countShortestWay(dx, dy+1, ax, ay));
-        }
-        else moves.push_back(-1);
-        if ((m_map->getStaticObjects()[dy-1][dx]->getType()!='W') && ((dx) >= 0 && (dx) < m_map->getNbX()) && ((dy-1) >= 0 && (dy-1) < m_map->getNbY())) {
-            std::cout << "Added up" << std::endl;
-            moves.push_back(countShortestWay(dx, dy-1, ax, ay));
-        }
-        else moves.push_back(-1);
+        moves.push_back(countShortestWay(dx+1, dy, ax, ay, passage));
+        moves.push_back(countShortestWay(dx-1, dy, ax, ay, passage));
+        moves.push_back(countShortestWay(dx, dy-1, ax, ay, passage));
+        moves.push_back(countShortestWay(dx, dy+1, ax, ay, passage));
         return 1+min(moves);
     }
-    */
+    std::cout << "On est déjà passés!" << std::endl;
+    return 1000;
 }
 
 char GameManager::nextMove(float dx, float dy, float ax, float ay) {
-    
+ /*   
     if (countShortestWay(dx, dy, ax, ay)) {
         std::cout << "Started : " << std::endl;
         std::vector<int> moves;
@@ -827,7 +824,7 @@ char GameManager::nextMove(float dx, float dy, float ax, float ay) {
             case 2: return 'S';
             case 3: return 'Z';
         }
-    }
+    }*/
     return 'N';
 }
 
