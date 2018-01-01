@@ -39,10 +39,13 @@ int main(int argc, char** argv) {
     NormalProgram normalProgram(applicationPath);
     TextureProgram textureProgram(applicationPath);
     CubeMapProgram cubemapProgram(applicationPath);
+    DirectionnalLightProgram directionnalLightProgram(applicationPath);
+
     ProgramList programList;
     programList.normalProgram = &normalProgram;
     programList.textureProgram = &textureProgram;
     programList.cubemapProgram = &cubemapProgram;
+    programList.directionnalLightProgram = &directionnalLightProgram;
 
     // Enable GPU depth test for 3D rendering
     glEnable(GL_DEPTH_TEST);
@@ -79,6 +82,7 @@ int main(int argc, char** argv) {
     gameManager.setTimers();
 
     windowManager.updateDeltaTime();
+    gameManager.setStartTime(SDL_GetTicks());
 
     // Application loop:a
     bool done = false;
@@ -126,39 +130,41 @@ int main(int argc, char** argv) {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // On update la ViewMatrix à chaque tour de boucle
-        renderManager.updateMVMatrix(camera, map.getPacman());
+        renderManager.drawMap(&map, camera, &controller);
 
-        // --- SPHERES OBJECTS --- //
-        // Bind Sphere VAO
-        renderManager.bindSphereVAO();
-        // Draw Pacman only in TPS
-        if(!controller.isFPSactive())
-            renderManager.drawPacman(map.getPacman(), TEXTURE);
+        // // On update la ViewMatrix à chaque tour de boucle
+        // renderManager.updateMVMatrix(camera, map.getPacman());
 
-        renderManager.drawPacGommes(map.getPacGommes(), TEXTURE);
-        renderManager.drawSuperPacGommes(map.getSuperPacGommes(), TEXTURE);
-        renderManager.drawFruits(map.getFruits(), TEXTURE);
+        // // --- SPHERES OBJECTS --- //
+        // // Bind Sphere VAO
+        // renderManager.bindSphereVAO();
+        // // Draw Pacman only in TPS
+        // if(!controller.isFPSactive())
+        //     renderManager.drawPacman(map.getPacman(), TEXTURE);
 
-        // De-bind Sphere VAO
-        renderManager.debindVAO();
+        // renderManager.drawPacGommes(map.getPacGommes(), TEXTURE);
+        // renderManager.drawSuperPacGommes(map.getSuperPacGommes(), TEXTURE);
+        // renderManager.drawFruits(map.getFruits(), TEXTURE);
 
-        // --- CUBES OBJECTS --- //
-        renderManager.bindCubeVAO();
+        // // De-bind Sphere VAO
+        // renderManager.debindVAO();
 
-        renderManager.drawSkybox();
-        renderManager.drawWalls(map.getWalls(), TEXTURE);
+        // // --- CUBES OBJECTS --- //
+        // renderManager.bindCubeVAO();
 
-        renderManager.drawGhosts(map.getGhosts(), TEXTURE);
+        // renderManager.drawSkybox();
+        // renderManager.drawWalls(map.getWalls(), TEXTURE);
 
-        renderManager.debindVAO();
+        // renderManager.drawGhosts(map.getGhosts(), TEXTURE);
 
-        // --- PLANE OBJECTS --- //
-        renderManager.bindPlaneVAO();
+        // renderManager.debindVAO();
 
-        renderManager.drawFloor(TEXTURE);
+        // // --- PLANE OBJECTS --- //
+        // renderManager.bindPlaneVAO();
 
-        renderManager.debindVAO();
+        // renderManager.drawFloor(TEXTURE);
+
+        // renderManager.debindVAO();
 
         // Update the display
         windowManager.swapBuffers();

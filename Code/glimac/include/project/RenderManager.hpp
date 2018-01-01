@@ -6,12 +6,8 @@
 #include <glimac/SDLWindowManager.hpp>
 #include "glimac/Camera.hpp"
 
-#include "project/Object.hpp"
-#include "project/Character.hpp"
-#include "project/Pacman.hpp"
-#include "project/Ghost.hpp"
-#include "project/Wall.hpp"
-#include "project/Edible.hpp"
+#include "project/Map.hpp"
+#include "project/Controller.hpp"
 #include "project/Texture.hpp"
 #include "project/CubeMap.hpp"
 
@@ -90,6 +86,10 @@ public:
     Sphere* getSpherePtr();
     GLuint* getSphereVAOPtr();
 
+    // Plane getters
+    Plane* getPlanePtr();
+    GLuint* getPlaneVAOPtr();
+
     // Rendering functions
     void bindCubeVAO();
     void bindSphereVAO();
@@ -117,6 +117,9 @@ public:
     glm::mat4 transformMatrix(Object* object);
     void applyTransformations(FS shader, glm::mat4 matrix);
 
+    // Material Transformations (for light shader)
+    void materialTransformations(FS shader, float Kd, float Ks, float shininess);
+
     // Specific Transformations & Programs
     void drawPacman(Pacman* pacman, FS shader = NORMAL);
     void drawWalls(std::vector<Wall*>, FS shader = NORMAL);
@@ -126,5 +129,8 @@ public:
     void drawFruits(std::vector<Edible*>, FS shader = NORMAL);
     void drawSkybox();
     void drawFloor(FS shader);
+
+    // Global
+    void drawMap(Map* map, Camera* camera, Controller* controller);
 
 };

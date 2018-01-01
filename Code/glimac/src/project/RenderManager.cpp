@@ -28,7 +28,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_sphereIBO = m_sphere.getIBO();
     m_sphereVAO = m_sphere.getVAO(&m_sphereIBO, &m_sphereVBO);
 
-    // Matrix
+    // Matrices
     // Projection Matrix (world) : vertical view angle, window ratio, near, far
     m_ProjMatrix = glm::perspective(glm::radians(70.f), windowManager->getRatio(), 0.1f, 200.f);
     // ModelView Matrix (camera)
@@ -122,6 +122,22 @@ GLuint* RenderManager::getSphereVAOPtr()
 }
 
 // ---------------
+// PLANE FUNCTIONS
+// ---------------
+
+// Returns pointer of plane object
+Plane* RenderManager::getPlanePtr()
+{
+    return &m_plane;
+}
+// Returns pointer of plane VAO
+GLuint* RenderManager::getPlaneVAOPtr()
+{
+    return &m_planeVAO;
+}
+
+
+// ---------------
 // RENDERING FUNCTIONS
 // ---------------
 
@@ -208,6 +224,10 @@ void RenderManager::useProgram(FS shader)
             m_programList->cubemapProgram->m_Program.use();
             break;
 
+        case DIRECTIONNAL_LIGHT :
+            m_programList->directionnalLightProgram->m_Program.use();
+            break;
+
         default :
             m_programList->normalProgram->m_Program.use();
             break;
@@ -236,6 +256,8 @@ glm::mat4 RenderManager::transformMatrix(Object* object)
 // Apply Transformations, Update Uniforms
 void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
 {
+    glm::mat4 lightMatrix;
+    glm::vec4 lightVector;
     switch (shader)
     {
         case NORMAL :
@@ -273,15 +295,44 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
             glm::value_ptr(glm::transpose(glm::inverse(matrix))));
             break;
 
+        case DIRECTIONNAL_LIGHT :
+            glUniform1i(m_programList->directionnalLightProgram->uTexture, 0);
+
+            lightMatrix = glm::rotate(m_MVMatrix, 180.f, glm::vec3(1,1,1));
+            lightVector = glm::normalize(glm::vec4(1,1,1,0)*lightMatrix);
+            glUniform3f(m_programList->directionnalLightProgram->uLightDir_vs, lightVector.x, lightVector.y, lightVector.z);
+            glUniform3f(m_programList->directionnalLightProgram->uLightIntensity, 2.0,2.0,2.0);
+
+            glUniformMatrix4fv(m_programList->directionnalLightProgram->uMVPMatrix, 1, GL_FALSE,
+            glm::value_ptr(m_ProjMatrix * matrix));
+
+            glUniformMatrix4fv(m_programList->directionnalLightProgram->uMVMatrix, 1, GL_FALSE,
+            glm::value_ptr(matrix));
+
+            glUniformMatrix4fv(m_programList->directionnalLightProgram->uNormalMatrix, 1, GL_FALSE,
+            glm::value_ptr(glm::transpose(glm::inverse(matrix))));
+            break;
+
         default :
             break;
+    }
+}
+
+// Material Transformations for light
+void RenderManager::materialTransformations(FS shader, float Kd, float Ks, float shininess)
+{
+    if (shader == DIRECTIONNAL_LIGHT)
+    {
+        glUniform3f(m_programList->directionnalLightProgram->uKd, Kd, Kd, Kd);
+        glUniform3f(m_programList->directionnalLightProgram->uKs,  Ks, Ks, Ks);
+        glUniform1f(m_programList->directionnalLightProgram->uShininess, shininess);
     }
 }
 
 // Enable texture if we use shader texture
 void RenderManager::enableTexture(FS shader, Texture* texture)
 {
-    if (shader == TEXTURE)
+    if ((shader == TEXTURE) || (shader == DIRECTIONNAL_LIGHT))
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture->getID());
@@ -291,7 +342,7 @@ void RenderManager::enableTexture(FS shader, Texture* texture)
 // Disable texture if we use shader texture
 void RenderManager::disableTexture(FS shader)
 {
-    if (shader == TEXTURE)
+    if ((shader == TEXTURE) || (shader == DIRECTIONNAL_LIGHT))
     {
         glBindTexture(GL_TEXTURE_2D, 0);
         glActiveTexture(GL_TEXTURE0);
@@ -311,6 +362,8 @@ void RenderManager::drawPacman(Pacman* pacman, FS shader)
 
     glm::mat4 transformationMatrix = transformMatrix(pacman);
     applyTransformations(shader, transformationMatrix);
+
+    materialTransformations(shader, 0.7, 0.3, 100);
 
     enableTexture(shader, m_PacmanTexture);
 
@@ -340,6 +393,7 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
 
             glm::mat4 transformationMatrix = transformMatrix(ghost[i]);
             applyTransformations(shader, transformationMatrix);
+            materialTransformations(shader, 0.8, 0.2, 100);
             m_cube.drawCube();
 
             disableTexture(shader);
@@ -348,7 +402,6 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
 }
 
 // ---- ALL OBJECTS ----- //
-
 
 // WALLS
 void RenderManager::drawWalls(std::vector<Wall*> wall, FS shader)
@@ -360,6 +413,7 @@ void RenderManager::drawWalls(std::vector<Wall*> wall, FS shader)
     {
         glm::mat4 transformationMatrix = transformMatrix(wall[i]);
         applyTransformations(shader, transformationMatrix);
+        materialTransformations(shader, 0.9, 0.1, 20);
         m_cube.drawCube();
     }
 
@@ -376,6 +430,7 @@ void RenderManager::drawPacGommes(std::vector<Edible*> edible, FS shader)
     {
         glm::mat4 transformationMatrix = transformMatrix(edible[i]);
         applyTransformations(shader, transformationMatrix);
+        materialTransformations(shader, 0.9, 0.1, 50);
         m_sphere.drawSphere();
     }
 
@@ -392,6 +447,7 @@ void RenderManager::drawSuperPacGommes(std::vector<Edible*> edible, FS shader)
     {
         glm::mat4 transformationMatrix = transformMatrix(edible[i]);
         applyTransformations(shader, transformationMatrix);
+        materialTransformations(shader, 0.8, 0.2, 50);
         m_sphere.drawSphere();
     }
 
@@ -410,6 +466,7 @@ void RenderManager::drawFruits(std::vector<Edible*> edible, FS shader)
             enableTexture(shader, m_FruitTexture);
             glm::mat4 transformationMatrix = transformMatrix(edible[i]);
             applyTransformations(shader, transformationMatrix);
+            materialTransformations(shader, 0.9, 0.3, 50);
             m_sphere.drawSphere();
             disableTexture(shader);
         }
@@ -453,4 +510,43 @@ void RenderManager::drawFloor(FS shader)
     enableTexture(shader, m_FloorTexture);
     m_plane.drawPlane();
     disableTexture(shader);
+}
+
+// ---- GLOBAL ---- //
+
+// Draw the map (Characters & Objects)
+void RenderManager::drawMap(Map* map, Camera* camera, Controller* controller)
+{
+    // Update The View Matrix each time we enter the while loop
+    updateMVMatrix(camera, map->getPacman());
+
+    // --- SPHERES OBJECTS --- //
+    // Bind Sphere VAO
+    bindSphereVAO();
+
+    // Draw Pacman only in TPS
+    if(!controller->isFPSactive())
+        drawPacman(map->getPacman(), DIRECTIONNAL_LIGHT);
+    drawPacGommes(map->getPacGommes(), DIRECTIONNAL_LIGHT);
+    drawSuperPacGommes(map->getSuperPacGommes(), DIRECTIONNAL_LIGHT);
+    drawFruits(map->getFruits(), DIRECTIONNAL_LIGHT);
+
+    //De-bind Sphere VAO
+    debindVAO();
+
+    //--- CUBES OBJECTS --- //
+    bindCubeVAO();
+
+    drawSkybox();
+    drawWalls(map->getWalls(), DIRECTIONNAL_LIGHT);
+    drawGhosts(map->getGhosts(), DIRECTIONNAL_LIGHT);
+
+    debindVAO();
+
+    // --- PLANE OBJECTS --- //
+    bindPlaneVAO();
+
+    drawFloor(TEXTURE);
+
+    debindVAO();
 }
