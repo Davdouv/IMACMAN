@@ -59,29 +59,43 @@ int main(int argc, char** argv) {
     programList.directionnalLightProgram = &directionnalLightProgram;
     programList.pointLightProgram = &pointLightProgram;
 
-    /* --------------------------------------------
-    *   INIT GAME | CAMERAS | CONTROLLER | RENDERER
-    *  -------------------------------------------- */
+    /* --------------------------
+    *   INIT GAME and CONTROLLER
+    *  -------------------------- */
 
     Map map;
     map.setFileMap("classicMap.txt");
     map.initialization();
-    GameManager gameManager = GameManager(&map);
-    // Game Infos
     glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
 
-    //TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,0.0f);    // CAMERA VUE 2D
+    GameManager gameManager = GameManager(&map);
+
+    Controller controller = Controller(&windowManager);
+
+    /* --------------
+    *   INIT CAMERAS
+    *  -------------- */
+
+    //TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,0.0f);    // CAMERA VIEW "2D"
     TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,-0.4f);
     FreeflyCamera fpsCamera = FreeflyCamera();
     Camera* camera = &tpsCamera;
 
+    /* ---------------------
+    *   INIT RENDER MANAGER
+    *  --------------------- */
+
     RenderManager renderManager = RenderManager(&windowManager, camera, &programList, gameSize);
-    Controller controller = Controller(&windowManager);
 
     // Load Textures
     renderManager.loadTextures();
     // initialize Skybox
     renderManager.initSkybox();
+
+    /* -------------
+    *   INIT TIME
+    *  ------------- */
+
     // initialize the timers
     gameManager.setTimers();
     // Time & Delta Time
@@ -96,7 +110,7 @@ int main(int argc, char** argv) {
     while(!done) {
 
         /* ------------------
-        *   UPDATE DELA TIME
+        *   UPDATE DELTA TIME
         *  ------------------ */
         
         windowManager.updateDeltaTime();
