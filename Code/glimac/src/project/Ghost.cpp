@@ -43,7 +43,7 @@ void Ghost::move() {
 
 }
 
-
+// We don't use this function with speed = speed * deltaTime
 void Ghost::slowDown() {
     setSpeed(getSpeed()/1.5);
 }

@@ -6,26 +6,26 @@
 
 #include "project/RenderManager.hpp"
 #include "project/GameManager.hpp"
-
+#include "project/AudioManager.hpp"
+#include "project/Controller.hpp"
 #include "glimac/TrackballCamera.hpp"
 #include "glimac/FreeflyCamera.hpp"
-#include "project/Controller.hpp"
 
-#include "project/Wall.hpp"
 #include "project/GLSLProgram.hpp"
-
-#include "project/Map.hpp"
 
 using namespace glimac;
 
 int main(int argc, char** argv) {
 
+    /* -------------
+    *   INIT WINDOW
+    *  ------------- */
 
     // Default window size
     glm::vec2 defaultWindowSize = glm::vec2(1280,720);
 
     // Initialize SDL and open a window
-    SDLWindowManager windowManager(defaultWindowSize.x, defaultWindowSize.y, "GLImac");
+    SDLWindowManager windowManager(defaultWindowSize.x, defaultWindowSize.y, "IMACMAN");
 
     // Initialize glew for OpenGL3+ support
     GLenum glewInitError = glewInit();
@@ -34,62 +34,95 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
+    // Enable GPU depth test for 3D rendering
+    glEnable(GL_DEPTH_TEST);
+
+    /* -------------
+    *   INIT PROGRAMS
+    *  ------------- */
+
     // Create Programs (1 fragment shader = 1 program)
     FilePath applicationPath(argv[0]);
     NormalProgram normalProgram(applicationPath);
     TextureProgram textureProgram(applicationPath);
     CubeMapProgram cubemapProgram(applicationPath);
-    TextProgram textProgram(applicationPath);
+    DirectionnalLightProgram directionnalLightProgram(applicationPath);
+    PointLightProgram pointLightProgram(applicationPath);
+
     ProgramList programList;
     programList.normalProgram = &normalProgram;
     programList.textureProgram = &textureProgram;
     programList.cubemapProgram = &cubemapProgram;
-    programList.textProgram = &textProgram;
+    programList.directionnalLightProgram = &directionnalLightProgram;
+    programList.pointLightProgram = &pointLightProgram;
 
-    // Enable GPU depth test for 3D rendering
-    glEnable(GL_DEPTH_TEST);
-
-    /*********************************
-     * HERE SHOULD COME THE INITIALIZATION CODE
-     *********************************/
+    /* --------------------------
+    *   INIT GAME and CONTROLLER
+    *  -------------------------- */
 
     Map map;
     map.setFileMap("classicMap.txt");
-    //map.setFileMap("mapTest.txt");
     map.initialization();
+    glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
 
     GameManager gameManager = GameManager(&map);
 
-    // Game Infos
-    glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
+    Controller controller = Controller(&windowManager);
 
-    //TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,0.0f);    // CAMERA VUE 2D
+    /* --------------
+    *   INIT CAMERAS
+    *  -------------- */
+
+    //TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,0.0f);    // CAMERA VIEW "2D"
     TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,-0.4f);
     FreeflyCamera fpsCamera = FreeflyCamera();
     Camera* camera = &tpsCamera;
 
+    /* ---------------------
+    *   INIT RENDER MANAGER
+    *  --------------------- */
+
     RenderManager renderManager = RenderManager(&windowManager, camera, &programList, gameSize);
-    Controller controller = Controller(&windowManager);
 
     // Load Textures
     renderManager.loadTextures();
-
     // initialize Skybox
     renderManager.initSkybox();
 
+    /* ---------------------
+    *   INIT AUDIO | NOT WORKING YET. NEED TO LINK THE LIBRARY
+    *  --------------------- */
+
+    //AudioManager audioManager = AudioManager();
+
+    /* -------------
+    *   INIT TIME
+    *  ------------- */
+
     // initialize the timers
     gameManager.setTimers();
-
+    // Time & Delta Time
     windowManager.updateDeltaTime();
+    gameManager.setStartTime(SDL_GetTicks());
 
-    // Application loop:a
+    /* ------------------------------------------------------------
+    *   APPLICATION LOOP | 1.EVENTS | 2.GAME ENGINE | 3. RENDERING
+    *  ------------------------------------------------------------ */
+
     bool done = false;
     while(!done) {
+
+        /* ------------------
+        *   UPDATE DELTA TIME
+        *  ------------------ */
 
         windowManager.updateDeltaTime();
         gameManager.updateSpeed(windowManager.getDeltaTime());
 
-        // Event loop:
+        /* ------------------
+        *   EVENT LOOP
+        *  ------------------ */
+
         SDL_Event e;
         while(windowManager.pollEvent(e)) {
             if(e.type == SDL_QUIT)
@@ -101,12 +134,15 @@ int main(int argc, char** argv) {
             controller.updateController(map.getPacman());
         }
 
+        /* ------------------
+        *   MANAGE CAMERAS
+        *  ------------------ */
+
         // Send the keys to the camera and the map
         tpsCamera.cameraController(&controller);
-        fpsCamera.setCameraOnCharacter(map.getPacman(), gameSize);     // NEED TO FIX HERE !!
-        gameManager.play(&controller);
-
-        // Switch Camera mini-function
+        // Ask the camera to track pacman
+        fpsCamera.setCameraOnCharacter(map.getPacman(), gameSize);
+        // Switch Camera FPS / TPS if C button is pressed
         if (controller.getInterfaceAction() == Controller::C)
         {
             if(camera == &fpsCamera)
@@ -122,48 +158,26 @@ int main(int argc, char** argv) {
             controller.setInterfaceAction(Controller::NONE);
         }
 
-        /*********************************
-         * HERE SHOULD COME THE RENDERING CODE
-         *********************************/
+        /* --------------------------------------------------------------------------
+        *   PLAY FUNCTION : Move characters, Check for collision, Update Player infos
+        *  -------------------------------------------------------------------------- */
+
+        gameManager.play(&controller);
+
+        /* ------------------
+        *   RENDERING CODE
+        *  ------------------ */
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // On update la ViewMatrix à chaque tour de boucle
+        // Update The View Matrix each time we enter the while loop
         renderManager.updateMVMatrix(camera, map.getPacman());
-
-        // --- SPHERE --- //
-        // Bind Sphere VAO
-        renderManager.bindSphereVAO();
-        // Draw Pacman only in TPS
-        if(!controller.isFPSactive())
-            renderManager.drawPacman(map.getPacman(), TEXTURE);
-
-        renderManager.drawPacGommes(map.getPacGommes(), TEXTURE);
-        renderManager.drawSuperPacGommes(map.getSuperPacGommes(), TEXTURE);
-        renderManager.drawFruits(map.getFruits(), TEXTURE);
-
-        // De-bind Sphere VAO
-        renderManager.debindVAO();
-
-        // --- CUBE --- //
-        renderManager.bindCubeVAO();
-
-        renderManager.drawSkybox();
-        renderManager.drawWalls(map.getWalls(), TEXTURE);
-
-        // Change Ghost Shader if we eat a Super Pac Gomme
-        //if (gameManager.getState() == GameManager::NORMAL)
-            renderManager.drawGhosts(map.getGhosts(), TEXTURE);
-        //else renderManager.drawGhosts(map.getGhosts(), NORMAL);
-
-        renderManager.debindVAO();
+        // Render the map (objects, skybox and ground)
+        renderManager.drawMap(&map, &controller);
 
         // Update the display
         windowManager.swapBuffers();
     }
-
-    // FREE RESSOURCES
-    // See ~renderManager destructor
 
     return EXIT_SUCCESS;
 

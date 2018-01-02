@@ -14,6 +14,7 @@ private:
 public:
 
     // constructor
+    Texture();
     Texture(std::string ImgFile);
 
     //getter

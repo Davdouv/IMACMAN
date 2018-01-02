@@ -1,5 +1,6 @@
 #include "../include/project/Player.hpp"
-
+#include <iostream>
+#include <cmath>
 
 Player::Player() { }
 
@@ -17,8 +18,8 @@ void Player::initialization() {
 }
 
 void Player::gainPoints(unsigned int points) {
+    if (m_points + points >= 10000*(ceil(m_points/10000)+1)) gainLife();
     m_points += points;
-    if (m_points >= 10000) gainLife();
 }
 
 void Player::losePoints(int points) {

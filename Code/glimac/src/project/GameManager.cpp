@@ -97,6 +97,8 @@ void GameManager::play() {
             pacmanGhostCollision();
             pacmanEdibleCollision();
             ghostMove();
+            std::cout << "Points : " << m_player.getPoints() << std::endl;
+            std::cout << "Lives : " << m_player.getLife() << std::endl;
         }
     }
 }
@@ -183,8 +185,11 @@ void GameManager::play(Controller* controller) {
         activateFruit();
         pacmanMove(controller);
         ghostMove();
-        pacmanGhostCollision();
         pacmanEdibleCollision();
+        if (pacmanGhostCollision())
+        {
+            controller->setPlayerAction(Controller::Key::Q);
+        }
         if(won())
         {
             newLevel(controller);
@@ -205,35 +210,31 @@ void GameManager::newLevel(Controller* controller)
     setTimers();
 }
 
-void GameManager::pacmanGhostCollision() {
+bool GameManager::pacmanGhostCollision() {
 
     for (int i = 0; i < m_map->getGhosts().size(); i++) {
         if (m_map->getPacman()->collision(m_map->getGhosts()[i])) {
-            switch(this->getState()) {
-
-                case GameManager::PacmanState::NORMAL :
-                    m_player.loseLife();
-                    if (m_player.getLife() != 0)
-                    {
-                        std::cout << m_player.getLife() << std::endl;
-                        m_map->getPacman()->reset();
-                        setStartTime(SDL_GetTicks());
-                    }
-                    for (int i = 0; i < m_map->getGhosts().size(); i++) {
-                        m_map->getGhosts()[i]->reset();
-                    }
-                    std::cout << "Life lost. Life : " << m_player.getLife() << std::endl;
-                    break;
-                case GameManager::PacmanState::SUPER :
+            if(!(m_map->getGhosts()[i]->getSuper())) {
+                m_player.loseLife();
+                if (m_player.getLife() != 0)
+                {
+                    std::cout << m_player.getLife() << std::endl;
+                    m_map->getPacman()->reset();
+                    setStartTime(SDL_GetTicks());
+                }
+                for (int i = 0; i < m_map->getGhosts().size(); i++) {
                     m_map->getGhosts()[i]->reset();
-                    m_map->getGhosts()[i]->reset();
-                    eatGhost();
-                    break;
-                default:
-                    break;
+                }
+                std::cout << "Life lost. Life : " << m_player.getLife() << std::endl;
+                return true;
+            }
+            else {
+                m_map->getGhosts()[i]->reset();
+                eatGhost();
             }
         }
     }
+    return false;
 }
 
 bool GameManager::ghostCollision() {
@@ -389,7 +390,7 @@ bool GameManager::characterWallCollision(Character* character, char direction) {
     int iposX = (int)fposX;   // Matrix index X
     int iposY = (int)fposY;   // Matrix index Y
     float speed = character->getSpeed();
-    float seuil = 0.005;
+    float seuil = 0.021;
 
     switch(direction) {
         case 'Z':
@@ -398,12 +399,13 @@ bool GameManager::characterWallCollision(Character* character, char direction) {
             {
                 return wallCollisionUP(fposY, iposY, iposX, speed, character);
             }
+            /* Finally we want the player to go through each cells */
             // Check if we are close to the right edge
-            else if (iposX+1 - fposX <= seuil)
-            {
-                // Consider we're on the right edge
-                return wallCollisionUP(fposY, iposY, iposX+1, speed, character);
-            }
+            // else if (iposX+1 - fposX <= seuil)
+            // {
+            //     // Consider we're on the right edge
+            //     return wallCollisionUP(fposY, iposY, iposX+1, speed, character);
+            // }
             // We are between two cells
             else
             {
@@ -416,10 +418,11 @@ bool GameManager::characterWallCollision(Character* character, char direction) {
             {
                 return wallCollisionLEFT(fposX, iposY, iposX, speed, character);
             }
-            else if (iposY+1 - fposY <= seuil)
-            {
-                return wallCollisionLEFT(fposX, iposY+1, iposX, speed, character);
-            }
+            /* Finally we want the player to go through each cells */
+            // else if (iposY+1 - fposY <= seuil)
+            // {
+            //     return wallCollisionLEFT(fposX, iposY+1, iposX, speed, character);
+            // }
             else
             {
                 return true;
@@ -528,7 +531,8 @@ void GameManager::pacmanEdibleCollision() {
                 break;
             default:return;
         }
-        //std::cout << "Points : " << m_player.getPoints() << std::endl;
+        // std::cout << "Points : " << m_player.getPoints() << std::endl;
+        // std::cout << "Life : " << m_player.getLife() << std::endl;
     }
 }
 
@@ -539,16 +543,20 @@ void GameManager::switchSuperState() {
     this->setEatenGhosts(0);
     for (int i = 0; i < m_map->getGhosts().size(); i++) { 
         m_map->getGhosts()[i]->setSuper(true);
-        m_map->getGhosts()[i]->slowDown();
+        //m_map->getGhosts()[i]->slowDown();
     }
 }
 
 void GameManager::stateManager() {
 
     if (this->getState() == GameManager::PacmanState::SUPER) {
-        if (SDL_GetTicks() - this->getSuperTimer() > 60000) {
+        int timer = 7000; // 1 second * 1000
+        if (SDL_GetTicks() - this->getSuperTimer() > timer) {
             this->setState(GameManager::PacmanState::NORMAL);
             this->setEatenGhosts(0);
+            for (int i = 0; i < m_map->getGhosts().size(); i++) { 
+                m_map->getGhosts()[i]->setSuper(false);
+            } 
         }
     }
 }
@@ -760,40 +768,37 @@ We calculate the shortest way to get to a goal from:
 
 */
 
-int GameManager::countShortestWay(float dx, float dy, float ax, float ay) {
+int GameManager::countShortestWay(int dx, int dy, int ax, int ay, std::vector<std::vector<int>> passage) {
     
-    return 0;
-    /*
-    if (dx == ax && dy == ay) return 0;
-    else {
+    std::cout << "( "<<dx<<", "<<dy<<" )" << std::endl;
+    if ((dx == ax) && (dy == ay)) {
+        std::cout << "On est arrivés." << std::endl;
+        return 0;
+    }
+    if (m_map->getStaticObjects()[dy][dx]->getType()=='W') {
+        std::cout << "C'est un mur." << std::endl;
+        return 1000;
+    }
+    if (dx < 0) return 1000;
+    if (dy < 0) return 1000;
+    if (dx > m_map->getNbX()) return 1000;
+    if (dy > m_map->getNbY()) return 1000;
+    if (!passage[dy][dx]) {
+        std::cout << "On peut passer" << std::endl;
+        passage[dy][dx] = 1;
         std::vector<int> moves;
-        if ((m_map->getStaticObjects()[dy][dx+1]->getType()!='W') && ((dx+1) >= 0 && (dx+1) < m_map->getNbX()) && (dx >= 0 && dx < m_map->getNbY())) {
-            std::cout << "Added right " << dy << " , " << dx+1 << std::endl;
-            moves.push_back(countShortestWay(dx+1, dy, ax, ay));
-        }
-        else moves.push_back(-1);
-        if ((m_map->getStaticObjects()[dy][dx-1]->getType()!='W') && ((dx-1) >= 0 && (dx-1) < m_map->getNbX()) && (dx >= 0 && dx < m_map->getNbY())) {
-            std::cout << "Added left" << std::endl;
-            moves.push_back(countShortestWay(dx-1, dy, ax, ay));
-        }
-        else moves.push_back(-1);
-        if ((m_map->getStaticObjects()[dy+1][dx]->getType()!='W') && ((dx) >= 0 && (dx) < m_map->getNbX()) && ((dy-1) >= 0 && (dy-1) < m_map->getNbY())) {
-            std::cout << "Added down" << std::endl;
-            moves.push_back(countShortestWay(dx, dy+1, ax, ay));
-        }
-        else moves.push_back(-1);
-        if ((m_map->getStaticObjects()[dy-1][dx]->getType()!='W') && ((dx) >= 0 && (dx) < m_map->getNbX()) && ((dy-1) >= 0 && (dy-1) < m_map->getNbY())) {
-            std::cout << "Added up" << std::endl;
-            moves.push_back(countShortestWay(dx, dy-1, ax, ay));
-        }
-        else moves.push_back(-1);
+        moves.push_back(countShortestWay(dx+1, dy, ax, ay, passage));
+        moves.push_back(countShortestWay(dx-1, dy, ax, ay, passage));
+        moves.push_back(countShortestWay(dx, dy-1, ax, ay, passage));
+        moves.push_back(countShortestWay(dx, dy+1, ax, ay, passage));
         return 1+min(moves);
     }
-    */
+    std::cout << "On est déjà passés!" << std::endl;
+    return 1000;
 }
 
 char GameManager::nextMove(float dx, float dy, float ax, float ay) {
-    
+ /*   
     if (countShortestWay(dx, dy, ax, ay)) {
         std::cout << "Started : " << std::endl;
         std::vector<int> moves;
@@ -820,7 +825,7 @@ char GameManager::nextMove(float dx, float dy, float ax, float ay) {
             case 2: return 'S';
             case 3: return 'Z';
         }
-    }
+    }*/
     return 'N';
 }
 
@@ -876,14 +881,19 @@ void GameManager::updateSpeed(uint32_t deltaTime)
 
         for (unsigned int i = 0; i < m_map->getGhosts().size(); ++i)
         {
-            m_map->getGhosts()[i]->setSpeed(speed*deltaTime);
+            // If we can eat a ghost, slow down this ghost
+            if(m_map->getGhosts()[i]->getSuper())
+                m_map->getGhosts()[i]->setSpeed((speed*deltaTime)/1.5);
+            else
+                m_map->getGhosts()[i]->setSpeed(speed*deltaTime);
         }
     }
 }
 
 void GameManager::activateFruit() {
-    // Every 30sec
-    if (SDL_GetTicks() - m_fruitTimer > 45000)  {
+
+    int timer = 30000;  // 1sec * 1000
+    if (SDL_GetTicks() - m_fruitTimer > timer)  {
         if (!m_map->getFruits().empty())
         {
             if (!m_map->getFruits()[0]->getAvailability() && m_map->getFruits()[0]->getFruit() != Edible::Fruit::NONE ) 

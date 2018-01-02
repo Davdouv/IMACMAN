@@ -47,6 +47,7 @@ public:
 
     // Use of Delta Time
     void updateSpeed(uint32_t deltaTime);
+    int countShortestWay(int, int, int, int, std::vector<std::vector<int>>);
 
 private:
 
@@ -70,7 +71,7 @@ private:
     bool characterLeftDoorCollision(Character*);
     bool characterRightDoorCollision(Character*);
 
-    void pacmanGhostCollision();
+    bool pacmanGhostCollision();
     bool ghostCollision();
     void pacmanEdibleCollision();
 
@@ -81,7 +82,6 @@ private:
     void bashfulAI();
     void pokeyAI();    
     char nextMove(float, float, float, float);
-    int countShortestWay(float, float, float, float);
 
     // New game
     void newLevel(Controller*);

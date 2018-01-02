@@ -37,5 +37,4 @@ vec3 blinnPhong(vec3 Kd, vec3 Ks, float shininess, vec3 lightDirection, vec3 Li,
 
 void main() {
     fFragColor = blinnPhong(uKd, uKs, uShininess, uLightDir_vs, uLightIntensity, normalize(vFragNormal));
-    //fFragColor = vec3(1,0,0);
 }
