@@ -54,6 +54,12 @@ private:
     GLuint m_sphereIBO;
     GLuint m_sphereVAO;
 
+    // Model3D
+    Geometry m_ghostModel;
+    GLuint m_ghostModelVBO;
+    GLuint m_ghostModelIBO;
+    GLuint m_ghostModelVAO;
+
     // Matrix
     glm::mat4 m_ProjMatrix;
     glm::mat4 m_MVMatrix;
@@ -162,4 +168,6 @@ public:
     // Global
     void drawMap(Map* map, Controller* controller);
 
+    // Build 3D Model
+    void buildModel(Geometry*, GLuint* VBO, GLuint* IBO, GLuint* VAO, std::string, std::string);
 };

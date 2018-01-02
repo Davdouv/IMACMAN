@@ -10,19 +10,11 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // Window Manager
     m_windowManager = windowManager;
 
-<<<<<<< HEAD
-    // Camera
-    // m_ffCamera = camera;
-
-    // Skybox
-    m_skybox = new StaticObject('K', 15.f, 20.f, 250.f, 250.f);
-=======
     // Plane
     m_plane = Plane();
     m_planeVBO = m_plane.getVBO();
     m_planeIBO = m_plane.getIBO();
     m_planeVAO = m_plane.getVAO(&m_planeIBO, &m_planeVBO);
->>>>>>> 316b78aa06d985d9aa217cc91f28c6ce105b6266
 
     // Cube
     m_cube = Cube();
@@ -35,6 +27,9 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_sphereVBO = m_sphere.getVBO();
     m_sphereIBO = m_sphere.getIBO();
     m_sphereVAO = m_sphere.getVAO(&m_sphereIBO, &m_sphereVBO);
+
+    // Model3D
+    buildModel(&m_ghostModel, &m_ghostModelVBO, &m_ghostModelIBO, &m_ghostModelVAO, "snapchat.obj", "snapchat.mtl");
 
     // Matrices
     // Projection Matrix (world) : vertical view angle, window ratio, near, far
@@ -119,7 +114,7 @@ RenderManager::~RenderManager()
  * The pixel coordinates that the FreeType2 library uses are scaled by (sx, sy).
  */
 void RenderManager::renderText(const char *text, float x, float y, float sx, float sy) {
-  useProgram(TEXT);
+  //useProgram(TEXT);
 	const char *p;
   FT_Face face = m_text.getFace();
 	FT_GlyphSlot g = face->glyph;
@@ -191,8 +186,8 @@ void RenderManager::drawText() {
   useProgram(TEXT);
 
   /* White background */
-	glClearColor(1, 1, 1, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
+	//glClearColor(1, 1, 1, 1);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	/* Enable blending, necessary for our alpha texture */
 	glEnable(GL_BLEND);
@@ -277,6 +272,61 @@ GLuint* RenderManager::getPlaneVAOPtr()
     return &m_planeVAO;
 }
 
+// ---------------
+// 3D MODEL FUNCTIONS
+// ---------------
+
+// Build 3D Model
+void RenderManager::buildModel(Geometry* objModel, GLuint* VBO, GLuint* IBO, GLuint* VAO, std::string objFile, std::string mtlFile)
+{
+    objFile = "../Code/assets/models/"+objFile;
+    mtlFile = "../Code/assets/models/"+mtlFile;
+
+    objModel->loadOBJ(objFile, mtlFile, false);
+
+    glGenBuffers(1, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, *VBO);
+     
+    // Nombre de vertex * taille des données du vertex
+    glBufferData(GL_ARRAY_BUFFER, objModel->getVertexCount() * sizeof(Geometry::Vertex), objModel->getVertexBuffer(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // => Creation du IBO
+    glGenBuffers(1, IBO);
+
+    // => On bind sur GL_ELEMENT_ARRAY_BUFFER, cible reservée pour les IBOs
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *IBO);
+
+
+    // => On remplit l'IBO avec les indices:
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, objModel->getIndexCount() * sizeof(uint32_t), objModel->getIndexBuffer(), GL_STATIC_DRAW);
+
+    // => Comme d'habitude on debind avant de passer à autre chose
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    // VAO
+    glGenVertexArrays(1, VAO);
+    glBindVertexArray(*VAO);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *IBO);
+
+    const GLuint VERTEX_ATTR_POSITION = 0;
+    const GLuint VERTEX_ATTR_NORMAL = 1;
+    const GLuint VERTEX_ATTR_TEXCOORD = 2;
+    glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
+    glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
+    glEnableVertexAttribArray(VERTEX_ATTR_TEXCOORD);
+
+    glBindBuffer(GL_ARRAY_BUFFER, *VBO);
+    
+    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*) 0);
+    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*) offsetof(Geometry::Vertex, m_Normal));
+    glVertexAttribPointer(VERTEX_ATTR_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*) offsetof(Geometry::Vertex, m_TexCoords));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
 
 // ---------------
 // RENDERING FUNCTIONS
@@ -445,6 +495,8 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
 
         case DIRECTIONNAL_LIGHT :
             glUniform1i(m_programList->directionnalLightProgram->uTexture, 0);
+            // White Color to keep the correct color
+            glUniform3f(m_programList->directionnalLightProgram->uColor, 1.0,1.0,1.0);
 
             lightMatrix = glm::rotate(m_MVMatrix, 180.f, glm::vec3(1,1,1));
             lightVector = glm::normalize(glm::vec4(1,1,1,0)*lightMatrix);
@@ -543,27 +595,29 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
 {
     for (unsigned int i = 0; i < ghost.size(); ++i)
     {
+        //useProgram(shader);
+
+        enableTexture(shader, m_GumTexture/*m_GhostTexture*/);
+
+        glm::mat4 transformationMatrix = transformMatrix(ghost[i]);
+        transformationMatrix = glm::rotate(transformationMatrix, -1.57f, glm::vec3(0,1,0));
+        applyTransformations(shader, transformationMatrix);
+        materialTransformations(shader, 1.0, 0.0, 100);
         if (ghost[i]->getSuper())
         {
-            useProgram(NORMAL);
-
-            glm::mat4 transformationMatrix = transformMatrix(ghost[i]);
-            applyTransformations(NORMAL, transformationMatrix);
-            m_cube.drawCube();
+            glUniform3f(m_programList->directionnalLightProgram->uColor, 0.0,0.0,1.0);
         }
         else
         {
-            useProgram(shader);
-
-            enableTexture(shader, m_GhostTexture);
-
-            glm::mat4 transformationMatrix = transformMatrix(ghost[i]);
-            applyTransformations(shader, transformationMatrix);
-            materialTransformations(shader, 0.8, 0.2, 100);
-            m_cube.drawCube();
-
-            disableTexture(shader);
+            glm::vec3 color = ghost[i]->getColor();
+            std::cout << "Ghost : " << i << " : " << color << std::endl;
+            glUniform3f(m_programList->directionnalLightProgram->uColor, color.r,color.g,color.b);
         }
+        //m_cube.drawCube();
+        glDrawElements(GL_TRIANGLES, m_ghostModel.getIndexCount(), GL_UNSIGNED_INT, 0);
+
+        disableTexture(shader);
+        
     }
 }
 
@@ -727,8 +781,6 @@ void RenderManager::drawMap(Map* map, Controller* controller)
     useProgram(CUBEMAP);
     drawSkybox();
 
-    drawGhosts(map->getGhosts(), DIRECTIONNAL_LIGHT);
-
     useProgram(DIRECTIONNAL_LIGHT);
     drawWalls(map->getWalls(), DIRECTIONNAL_LIGHT);
 
@@ -746,5 +798,10 @@ void RenderManager::drawMap(Map* map, Controller* controller)
     drawFruits(map->getFruits(), DIRECTIONNAL_LIGHT);
 
     //De-bind Sphere VAO
+    debindVAO();
+
+    glBindVertexArray(m_ghostModelVAO);
+    // m_ghostModel.bindVAO();
+    drawGhosts(map->getGhosts(), DIRECTIONNAL_LIGHT);
     debindVAO();
 }

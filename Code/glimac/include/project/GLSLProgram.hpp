@@ -119,6 +119,8 @@ struct DirectionnalLightProgram {
     GLint uLightDir_vs;
     GLint uLightIntensity;
 
+    GLint uColor;
+
     DirectionnalLightProgram(const FilePath& applicationPath):
         m_Program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl",
                               applicationPath.dirPath() + "shaders/directionnalLightTex.fs.glsl")) {
@@ -134,6 +136,7 @@ struct DirectionnalLightProgram {
         // Variables uniformes lumieres
         uLightDir_vs = glGetUniformLocation(m_Program.getGLId(), "uLightDir_vs");
         uLightIntensity = glGetUniformLocation(m_Program.getGLId(), "uLightIntensity");
+        uColor = glGetUniformLocation(m_Program.getGLId(), "uColor");
     }
 };
 
