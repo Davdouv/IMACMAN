@@ -43,7 +43,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // Textures
     m_PacmanTexture = new Texture("../Code/assets/textures/pacman.jpg");
     m_GhostTexture = new Texture("../Code/assets/textures/ghost.jpg");
-    m_WallTexture = new Texture("../Code/assets/textures/rock.jpg");
+    m_WallTexture = new Texture("../Code/assets/textures/dungeon.png");
     m_GumTexture = new Texture("../Code/assets/textures/gum.jpg");
     m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.jpg");
     m_FruitTexture = new Texture("../Code/assets/textures/fruit.jpg");
