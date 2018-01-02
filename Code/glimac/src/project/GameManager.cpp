@@ -214,28 +214,23 @@ bool GameManager::pacmanGhostCollision() {
 
     for (int i = 0; i < m_map->getGhosts().size(); i++) {
         if (m_map->getPacman()->collision(m_map->getGhosts()[i])) {
-            switch(m_map->getGhosts()[i]->getSuper()) {
-
-                case false :
-                    m_player.loseLife();
-                    if (m_player.getLife() != 0)
-                    {
-                        std::cout << m_player.getLife() << std::endl;
-                        m_map->getPacman()->reset();
-                        setStartTime(SDL_GetTicks());
-                    }
-                    for (int i = 0; i < m_map->getGhosts().size(); i++) {
-                        m_map->getGhosts()[i]->reset();
-                    }
-                    std::cout << "Life lost. Life : " << m_player.getLife() << std::endl;
-                    return true;
-                    break;
-                case true :
+            if(!(m_map->getGhosts()[i]->getSuper())) {
+                m_player.loseLife();
+                if (m_player.getLife() != 0)
+                {
+                    std::cout << m_player.getLife() << std::endl;
+                    m_map->getPacman()->reset();
+                    setStartTime(SDL_GetTicks());
+                }
+                for (int i = 0; i < m_map->getGhosts().size(); i++) {
                     m_map->getGhosts()[i]->reset();
-                    eatGhost();
-                    break;
-                default:
-                    break;
+                }
+                std::cout << "Life lost. Life : " << m_player.getLife() << std::endl;
+                return true;
+            }
+            else {
+                m_map->getGhosts()[i]->reset();
+                eatGhost();
             }
         }
     }
