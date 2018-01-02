@@ -610,7 +610,6 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
         else
         {
             glm::vec3 color = ghost[i]->getColor();
-            std::cout << "Ghost : " << i << " : " << color << std::endl;
             glUniform3f(m_programList->directionnalLightProgram->uColor, color.r,color.g,color.b);
         }
         //m_cube.drawCube();
