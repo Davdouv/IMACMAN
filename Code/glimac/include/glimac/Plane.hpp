@@ -22,7 +22,7 @@ public:
 
     // Returns the number of vertices
     size_t getVertexCount() const {
-        return 8;
+        return 4;
     }
 
     // Returns the address of the IBO
@@ -32,7 +32,7 @@ public:
 
     // Returns the number of Index (of Triangles)
     size_t getIndexCount() const {
-        return 36;
+        return 6;
     }
 
     // Draw the Cube
