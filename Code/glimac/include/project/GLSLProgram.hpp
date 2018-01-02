@@ -6,7 +6,7 @@
 namespace glimac {
 
 // Every key player can use
-enum FS {NORMAL, TEXTURE, TEXT, CUBEMAP, MULTITEXTURE, DIRECTIONNAL_LIGHT, POINT_LIGHT};
+enum FS {NORMAL, TEXTURE, TEXT, CUBEMAP, MULTITEXTURE, DIRECTIONNAL_LIGHT, POINT_LIGHT, BLACK_AND_WHITE};
 
 // GLSL Program with the normal fragment shader
 struct NormalProgram {
@@ -173,6 +173,39 @@ struct PointLightProgram {
     }
 };
 
+// Black & White
+struct BlackAndWhiteProgram {
+    Program m_Program;
+
+    GLint uMVPMatrix;
+    GLint uMVMatrix;
+    GLint uNormalMatrix;
+    GLint uTexture;
+
+    GLint uKd;
+    GLint uKs;
+    GLint uShininess;
+    GLint uLightDir_vs;
+    GLint uLightIntensity;
+
+    BlackAndWhiteProgram(const FilePath& applicationPath):
+        m_Program(loadProgram(applicationPath.dirPath() + "shaders/3D.vs.glsl",
+                              applicationPath.dirPath() + "shaders/blackAndWhite.fs.glsl")) {
+        uMVPMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVPMatrix");
+        uMVMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVMatrix");
+        uNormalMatrix = glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix");
+
+        uTexture = glGetUniformLocation(m_Program.getGLId(), "uTexture");
+        // Variables uniformes materiaux
+        uKd = glGetUniformLocation(m_Program.getGLId(), "uKd");
+        uKs = glGetUniformLocation(m_Program.getGLId(), "uKs");
+        uShininess = glGetUniformLocation(m_Program.getGLId(), "uShininess");
+        // Variables uniformes lumieres
+        uLightDir_vs = glGetUniformLocation(m_Program.getGLId(), "uLightDir_vs");
+        uLightIntensity = glGetUniformLocation(m_Program.getGLId(), "uLightIntensity");
+    }
+};
+
 struct ProgramList {
     NormalProgram* normalProgram;
     TextureProgram* textureProgram;
@@ -181,6 +214,7 @@ struct ProgramList {
     PointLightProgram* pointLightProgram;
     CubeMapProgram* cubemapProgram;
     TextProgram* textProgram;
+    BlackAndWhiteProgram* bwProgram;
 };
 
 }

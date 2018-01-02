@@ -30,6 +30,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
 
     // Model3D
     buildModel(&m_ghostModel, &m_ghostModelVBO, &m_ghostModelIBO, &m_ghostModelVAO, "snapchat.obj", "snapchat.mtl");
+    //buildModel(&m_rock, &m_rockVBO, &m_rockIBO, &m_rockVAO, "rock/rock.obj", "snapchat.mtl");
 
     // Matrices
     // Projection Matrix (world) : vertical view angle, window ratio, near, far
@@ -42,7 +43,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // Textures
     m_PacmanTexture = new Texture("../Code/assets/textures/pacman.jpg");
     m_GhostTexture = new Texture("../Code/assets/textures/ghost.jpg");
-    m_WallTexture = new Texture("../Code/assets/textures/dungeon.png");
+    m_WallTexture = new Texture("../Code/assets/textures/rock.jpg");
     m_GumTexture = new Texture("../Code/assets/textures/gum.jpg");
     m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.jpg");
     m_FruitTexture = new Texture("../Code/assets/textures/fruit.jpg");
@@ -78,6 +79,9 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
 
     // Mini Map
     m_miniMap = new StaticObject('F', gameSize.y/2, gameSize.x/2, gameSize.y, gameSize.x);
+
+    // State
+    m_state = GameManager::PacmanState::NORMAL;
 }
 
 // Destructor
@@ -282,7 +286,7 @@ void RenderManager::buildModel(Geometry* objModel, GLuint* VBO, GLuint* IBO, GLu
     objFile = "../Code/assets/models/"+objFile;
     mtlFile = "../Code/assets/models/"+mtlFile;
 
-    objModel->loadOBJ(objFile, mtlFile, false);
+    objModel->loadOBJ(objFile, mtlFile, true);
 
     glGenBuffers(1, VBO);
     glBindBuffer(GL_ARRAY_BUFFER, *VBO);
@@ -424,6 +428,10 @@ void RenderManager::useProgram(FS shader)
             m_programList->pointLightProgram->m_Program.use();
             break;
 
+        case BLACK_AND_WHITE :
+            m_programList->bwProgram->m_Program.use();
+            break;
+
         default :
             m_programList->normalProgram->m_Program.use();
             break;
@@ -501,7 +509,11 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
             lightMatrix = glm::rotate(m_MVMatrix, 180.f, glm::vec3(1,1,1));
             lightVector = glm::normalize(glm::vec4(1,1,1,0)*lightMatrix);
             glUniform3f(m_programList->directionnalLightProgram->uLightDir_vs, lightVector.x, lightVector.y, lightVector.z);
-            glUniform3f(m_programList->directionnalLightProgram->uLightIntensity, 2.0,2.0,2.0);
+
+            if (m_state == GameManager::PacmanState::NORMAL)
+                glUniform3f(m_programList->directionnalLightProgram->uLightIntensity, 2.0,2.0,2.0);
+            else
+                glUniform3f(m_programList->directionnalLightProgram->uLightIntensity, 2.0,1.0,1.0);
 
             glUniformMatrix4fv(m_programList->directionnalLightProgram->uMVPMatrix, 1, GL_FALSE,
             glm::value_ptr(m_ProjMatrix * matrix));
@@ -531,6 +543,25 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
             glm::value_ptr(glm::transpose(glm::inverse(matrix))));
             break;
 
+        case BLACK_AND_WHITE :
+            glUniform1i(m_programList->bwProgram->uTexture, 0);
+
+            lightMatrix = glm::rotate(m_MVMatrix, 180.f, glm::vec3(1,1,1));
+            lightVector = glm::normalize(glm::vec4(1,1,1,0)*lightMatrix);
+            glUniform3f(m_programList->bwProgram->uLightDir_vs, lightVector.x, lightVector.y, lightVector.z);
+            glUniform3f(m_programList->bwProgram->uLightIntensity, 2.0,2.0,2.0);
+
+            glUniformMatrix4fv(m_programList->bwProgram->uMVPMatrix, 1, GL_FALSE,
+            glm::value_ptr(m_ProjMatrix * matrix));
+
+            glUniformMatrix4fv(m_programList->bwProgram->uMVMatrix, 1, GL_FALSE,
+            glm::value_ptr(matrix));
+
+            glUniformMatrix4fv(m_programList->bwProgram->uNormalMatrix, 1, GL_FALSE,
+            glm::value_ptr(glm::transpose(glm::inverse(matrix))));
+            break;
+
+
         default :
             break;
     }
@@ -539,7 +570,7 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
 // Material Transformations for light
 void RenderManager::materialTransformations(FS shader, float Kd, float Ks, float shininess)
 {
-    if ((shader == DIRECTIONNAL_LIGHT) || (shader == POINT_LIGHT))
+    if ((shader == DIRECTIONNAL_LIGHT) || (shader == POINT_LIGHT) || (shader == BLACK_AND_WHITE))
     {
         glUniform3f(m_programList->directionnalLightProgram->uKd, Kd, Kd, Kd);
         glUniform3f(m_programList->directionnalLightProgram->uKs,  Ks, Ks, Ks);
@@ -550,7 +581,7 @@ void RenderManager::materialTransformations(FS shader, float Kd, float Ks, float
 // Enable texture if we use shader texture
 void RenderManager::enableTexture(FS shader, Texture* texture)
 {
-    if ((shader == TEXTURE) || (shader == DIRECTIONNAL_LIGHT) || (shader == POINT_LIGHT))
+    if (shader != NORMAL)
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture->getID());
@@ -560,7 +591,7 @@ void RenderManager::enableTexture(FS shader, Texture* texture)
 // Disable texture if we use shader texture
 void RenderManager::disableTexture(FS shader)
 {
-    if ((shader == TEXTURE) || (shader == DIRECTIONNAL_LIGHT) || (shader == POINT_LIGHT))
+    if (shader != NORMAL)
     {
         glBindTexture(GL_TEXTURE_2D, 0);
         glActiveTexture(GL_TEXTURE0);
@@ -634,6 +665,7 @@ void RenderManager::drawWalls(std::vector<Wall*> wall, FS shader)
         applyTransformations(shader, transformationMatrix);
         materialTransformations(shader, 0.9, 0.1, 20);
         m_cube.drawCube();
+        //glDrawElements(GL_TRIANGLES, m_rock.getIndexCount(), GL_UNSIGNED_INT, 0);
     }
 
     disableTexture(shader);
@@ -765,6 +797,7 @@ void RenderManager::drawMiniMap(FS shader)
 // Draw the map (Characters & Objects)
 void RenderManager::drawMap(Map* map, Controller* controller)
 {
+    //FS shader;
     // --- PLANE OBJECTS --- //
     bindPlaneVAO();
 
@@ -780,7 +813,13 @@ void RenderManager::drawMap(Map* map, Controller* controller)
     useProgram(CUBEMAP);
     drawSkybox();
 
+    // if (m_state == GameManager::PacmanState::NORMAL)
+    //     shader = DIRECTIONNAL_LIGHT;
+    // else
+    //     shader = BLACK_AND_WHITE;
+
     useProgram(DIRECTIONNAL_LIGHT);
+
     drawWalls(map->getWalls(), DIRECTIONNAL_LIGHT);
 
     debindVAO();
@@ -799,8 +838,16 @@ void RenderManager::drawMap(Map* map, Controller* controller)
     //De-bind Sphere VAO
     debindVAO();
 
+    //useProgram(DIRECTIONNAL_LIGHT);
     glBindVertexArray(m_ghostModelVAO);
     // m_ghostModel.bindVAO();
     drawGhosts(map->getGhosts(), DIRECTIONNAL_LIGHT);
     debindVAO();
+}
+
+// Update State
+
+void RenderManager::updateState(GameManager::PacmanState state)
+{
+    m_state = state;
 }

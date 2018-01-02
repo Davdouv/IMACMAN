@@ -50,6 +50,7 @@ int main(int argc, char** argv) {
     CubeMapProgram cubemapProgram(applicationPath);
     DirectionnalLightProgram directionnalLightProgram(applicationPath);
     PointLightProgram pointLightProgram(applicationPath);
+    BlackAndWhiteProgram bwProgram(applicationPath);
 
     ProgramList programList;
     programList.normalProgram = &normalProgram;
@@ -57,6 +58,7 @@ int main(int argc, char** argv) {
     programList.cubemapProgram = &cubemapProgram;
     programList.directionnalLightProgram = &directionnalLightProgram;
     programList.pointLightProgram = &pointLightProgram;
+    programList.bwProgram = &bwProgram;
 
     /* --------------------------
     *   INIT GAME and CONTROLLER
@@ -107,65 +109,6 @@ int main(int argc, char** argv) {
     windowManager.updateDeltaTime();
     gameManager.setStartTime(SDL_GetTicks());
 
-    /* ------------------------------------------------------------
-    *   OBJECT MODEL TEST
-    *  ------------------------------------------------------------ */
-  /*  Model3D m_ghostModel;
-
-    m_ghostModel = Model3D("snapchat.obj", "snapchat.mtl");
-
-    std::string objFile = "../Code/assets/models/snapchat.obj";
-    std::string mtlFile = "../Code/assets/models/snapchat.mtl";
-
-    Geometry m_objModel;
-    m_objModel.loadOBJ(objFile, mtlFile, true);
-
-    GLuint VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-     
-    // Nombre de vertex * taille des données du vertex
-    glBufferData(GL_ARRAY_BUFFER, m_objModel.getVertexCount() * sizeof(Geometry::Vertex), m_objModel.getVertexBuffer(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    GLuint IBO;
- // => Creation du IBO
-    glGenBuffers(1, &IBO);
-
-    // => On bind sur GL_ELEMENT_ARRAY_BUFFER, cible reservée pour les IBOs
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-
-
-    // => On remplit l'IBO avec les indices:
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_objModel.getIndexCount() * sizeof(uint32_t), m_objModel.getIndexBuffer(), GL_STATIC_DRAW);
-
-    // => Comme d'habitude on debind avant de passer à autre chose
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    GLuint VAO;
-    // VAO
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-
-    const GLuint VERTEX_ATTR_POSITION = 0;
-    const GLuint VERTEX_ATTR_NORMAL = 1;
-    const GLuint VERTEX_ATTR_TEXCOORD = 2;
-    glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
-    glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
-    glEnableVertexAttribArray(VERTEX_ATTR_TEXCOORD);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    
-    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*) 0);
-    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*) offsetof(Geometry::Vertex, m_Normal));
-    glVertexAttribPointer(VERTEX_ATTR_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*) offsetof(Geometry::Vertex, m_TexCoords));
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-*/
 
     /* ------------------------------------------------------------
     *   APPLICATION LOOP | 1.EVENTS | 2.GAME ENGINE | 3. RENDERING
@@ -225,6 +168,7 @@ int main(int argc, char** argv) {
         *  -------------------------------------------------------------------------- */
 
         gameManager.play(&controller);
+        renderManager.updateState(gameManager.getState());
 
         /* ------------------
         *   RENDERING CODE
