@@ -6,15 +6,12 @@
 
 #include "project/RenderManager.hpp"
 #include "project/GameManager.hpp"
-
+#include "project/AudioManager.hpp"
+#include "project/Controller.hpp"
 #include "glimac/TrackballCamera.hpp"
 #include "glimac/FreeflyCamera.hpp"
-#include "project/Controller.hpp"
 
-#include "project/Wall.hpp"
 #include "project/GLSLProgram.hpp"
-
-#include "project/Map.hpp"
 
 using namespace glimac;
 
@@ -28,7 +25,7 @@ int main(int argc, char** argv) {
     glm::vec2 defaultWindowSize = glm::vec2(1280,720);
 
     // Initialize SDL and open a window
-    SDLWindowManager windowManager(defaultWindowSize.x, defaultWindowSize.y, "GLImac");
+    SDLWindowManager windowManager(defaultWindowSize.x, defaultWindowSize.y, "IMACMAN");
 
     // Initialize glew for OpenGL3+ support
     GLenum glewInitError = glewInit();
@@ -91,6 +88,12 @@ int main(int argc, char** argv) {
     renderManager.loadTextures();
     // initialize Skybox
     renderManager.initSkybox();
+
+    /* ---------------------
+    *   INIT AUDIO | NOT WORKING YET. NEED TO LINK THE LIBRARY
+    *  --------------------- */
+
+    //AudioManager audioManager = AudioManager();
 
     /* -------------
     *   INIT TIME
