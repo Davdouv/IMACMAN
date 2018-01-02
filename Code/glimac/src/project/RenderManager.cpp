@@ -39,7 +39,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // Textures
     m_PacmanTexture = new Texture("../Code/assets/textures/pacman.jpg");
     m_GhostTexture = new Texture("../Code/assets/textures/ghost.jpg");
-    m_WallTexture = new Texture("../Code/assets/textures/wall.jpg");
+    m_WallTexture = new Texture("../Code/assets/textures/dungeon.png");
     m_GumTexture = new Texture("../Code/assets/textures/gum.jpg");
     m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.jpg");
     m_FruitTexture = new Texture("../Code/assets/textures/fruit.jpg");
@@ -382,7 +382,7 @@ void RenderManager::disableTexture(FS shader)
 // PACMAN
 void RenderManager::drawPacman(Pacman* pacman, FS shader)
 {
-    useProgram(shader);
+    //useProgram(shader);
 
     glm::mat4 transformationMatrix = transformMatrix(pacman);
     applyTransformations(shader, transformationMatrix);
@@ -411,7 +411,7 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
         }
         else
         {
-            useProgram(shader);
+            //useProgram(shader);
 
             enableTexture(shader, m_GhostTexture);
 
@@ -430,7 +430,7 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
 // WALLS
 void RenderManager::drawWalls(std::vector<Wall*> wall, FS shader)
 {
-    useProgram(shader);
+    //useProgram(shader);
     enableTexture(shader, m_WallTexture);
 
     for (unsigned int i = 0; i < wall.size(); ++i)
@@ -447,7 +447,7 @@ void RenderManager::drawWalls(std::vector<Wall*> wall, FS shader)
 // GOMMES
 void RenderManager::drawPacGommes(std::vector<Edible*> edible, FS shader)
 {
-    useProgram(shader);
+    //useProgram(shader);
     enableTexture(shader, m_GumTexture);
 
     for (unsigned int i = 0; i < edible.size(); ++i)
@@ -464,7 +464,7 @@ void RenderManager::drawPacGommes(std::vector<Edible*> edible, FS shader)
 // SUPER GOMMES
 void RenderManager::drawSuperPacGommes(std::vector<Edible*> edible, FS shader)
 {
-    useProgram(shader);
+    //useProgram(shader);
     enableTexture(shader, m_SuperGumTexture);
 
     for (unsigned int i = 0; i < edible.size(); ++i)
@@ -481,7 +481,7 @@ void RenderManager::drawSuperPacGommes(std::vector<Edible*> edible, FS shader)
 // FRUITS
 void RenderManager::drawFruits(std::vector<Edible*> edible, FS shader)
 {
-    useProgram(shader);
+    //useProgram(shader);
 
     for (unsigned int i = 0; i < edible.size(); ++i)
     {
@@ -508,7 +508,7 @@ void RenderManager::initSkybox()
 void RenderManager::drawSkybox()
 {
   glDepthMask(GL_FALSE);
-  useProgram(CUBEMAP);
+  //useProgram(CUBEMAP);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_CUBE_MAP, m_SkyboxTexture->getID());
   m_cube.drawCube();
@@ -520,7 +520,7 @@ void RenderManager::drawSkybox()
 // ---- FLOOR ---- //
 void RenderManager::drawFloor(FS shader)
 {
-    useProgram(shader);
+    //useProgram(shader);
 
     // Matrix Transformations
     glm::mat4 matrix = m_MVMatrix;
@@ -546,6 +546,8 @@ void RenderManager::drawMap(Map* map, Controller* controller)
     // Bind Sphere VAO
     bindSphereVAO();
 
+    useProgram(DIRECTIONNAL_LIGHT);
+
     // Draw Pacman only in TPS
     if(!controller->isFPSactive())
         drawPacman(map->getPacman(), DIRECTIONNAL_LIGHT);
@@ -559,15 +561,18 @@ void RenderManager::drawMap(Map* map, Controller* controller)
     //--- CUBES OBJECTS --- //
     bindCubeVAO();
 
-    drawSkybox();
     drawWalls(map->getWalls(), DIRECTIONNAL_LIGHT);
     drawGhosts(map->getGhosts(), DIRECTIONNAL_LIGHT);
+
+    useProgram(CUBEMAP);
+    drawSkybox();
 
     debindVAO();
 
     // --- PLANE OBJECTS --- //
     bindPlaneVAO();
 
+    useProgram(TEXTURE);
     drawFloor(TEXTURE);
 
     debindVAO();
