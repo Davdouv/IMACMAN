@@ -411,7 +411,7 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
         }
         else
         {
-            //useProgram(shader);
+            useProgram(shader);
 
             enableTexture(shader, m_GhostTexture);
 
@@ -542,11 +542,30 @@ void RenderManager::drawFloor(FS shader)
 // Draw the map (Characters & Objects)
 void RenderManager::drawMap(Map* map, Controller* controller)
 {
+    // --- PLANE OBJECTS --- //
+    bindPlaneVAO();
+
+    useProgram(TEXTURE);
+    drawFloor(TEXTURE);
+
+    debindVAO();
+
+    //--- CUBES OBJECTS --- //
+    bindCubeVAO();
+
+    useProgram(CUBEMAP);
+    drawSkybox();
+
+    drawGhosts(map->getGhosts(), DIRECTIONNAL_LIGHT);
+
+    useProgram(DIRECTIONNAL_LIGHT);
+    drawWalls(map->getWalls(), DIRECTIONNAL_LIGHT);
+
+    debindVAO();
+
     // --- SPHERES OBJECTS --- //
     // Bind Sphere VAO
     bindSphereVAO();
-
-    useProgram(DIRECTIONNAL_LIGHT);
 
     // Draw Pacman only in TPS
     if(!controller->isFPSactive())
@@ -556,24 +575,5 @@ void RenderManager::drawMap(Map* map, Controller* controller)
     drawFruits(map->getFruits(), DIRECTIONNAL_LIGHT);
 
     //De-bind Sphere VAO
-    debindVAO();
-
-    //--- CUBES OBJECTS --- //
-    bindCubeVAO();
-
-    drawWalls(map->getWalls(), DIRECTIONNAL_LIGHT);
-    drawGhosts(map->getGhosts(), DIRECTIONNAL_LIGHT);
-
-    useProgram(CUBEMAP);
-    drawSkybox();
-
-    debindVAO();
-
-    // --- PLANE OBJECTS --- //
-    bindPlaneVAO();
-
-    useProgram(TEXTURE);
-    drawFloor(TEXTURE);
-
     debindVAO();
 }
