@@ -53,6 +53,7 @@ private:
     Texture* m_FruitTexture;
     CubeMap* m_SkyboxTexture;
     Texture* m_FloorTexture;
+    Texture* m_RenderTargetTexture;
 
     // GLSL Programs
     ProgramList* m_programList;
@@ -66,6 +67,9 @@ private:
 
     // Floor
     StaticObject* m_floor;
+
+    // Mini-Map
+    StaticObject* m_miniMap;
 
 public:
     // Constructor - SDLWindowManager for Ratio - Camera for viewMatrix - FilePath for Shaders
@@ -129,6 +133,9 @@ public:
     void drawFruits(std::vector<Edible*>, FS shader = NORMAL);
     void drawSkybox();
     void drawFloor(FS shader);
+
+    // Mini-map
+    void drawMiniMap(FS shader);    // NOT WORKING ACTUALLY
 
     // Global
     void drawMap(Map* map, Controller* controller);

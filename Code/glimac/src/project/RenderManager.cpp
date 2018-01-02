@@ -52,6 +52,8 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
                                 );
     m_FloorTexture = new Texture("../Code/assets/textures/lava2.jpg");
 
+    m_RenderTargetTexture = new Texture();
+
     // GLSL Program
     m_programList = programList;
 
@@ -64,6 +66,9 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
 
     // Floor
     m_floor = new StaticObject('F', gameSize.y/2, gameSize.x/2, gameSize.y, gameSize.x);
+
+    // Mini Map
+    m_miniMap = new StaticObject('F', gameSize.y/2, gameSize.x/2, gameSize.y, gameSize.x);
 }
 
 // Destructor
@@ -200,6 +205,7 @@ void RenderManager::loadTextures() const
     m_FruitTexture->loadTexture();
     m_SkyboxTexture->loadCubeMap();
     m_FloorTexture->loadTexture();
+    m_RenderTargetTexture->loadTexture();
 }
 
 
@@ -537,6 +543,34 @@ void RenderManager::drawFloor(FS shader)
     disableTexture(shader);
 }
 
+// ---- MINI MAP ---- //
+void RenderManager::drawMiniMap(FS shader)
+{
+    // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
+    GLuint FramebufferName = 0;
+    glGenFramebuffers(1, &FramebufferName);
+    glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+
+    // Render to our framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+    glViewport(0,0,1024,768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+
+    // Matrix Transformations
+    glm::mat4 matrix = m_MVMatrix;
+    matrix = glm::translate(matrix, glm::vec3(-3.5f, -0.5f, 2.5f));  // Some values set to adjust the plane
+    //matrix = glm::rotate(matrix, (float)-90 * glm::pi<float>()/180, glm::vec3(1, 0, 0));
+    matrix = glm::scale(matrix, glm::vec3(m_floor->getWidth(), m_floor->getHeight(), 1.f));
+
+    applyTransformations(shader, matrix);
+
+    enableTexture(shader, m_RenderTargetTexture);
+    m_plane.drawPlane();
+    disableTexture(shader);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0,0,1024,768); // Render on the whole framebuffer, complete from the lower left corner to the 
+}
+
 // ---- GLOBAL ---- //
 
 // Draw the map (Characters & Objects)
@@ -547,6 +581,7 @@ void RenderManager::drawMap(Map* map, Controller* controller)
 
     useProgram(TEXTURE);
     drawFloor(TEXTURE);
+    //drawMiniMap(TEXTURE);
 
     debindVAO();
 
