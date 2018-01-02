@@ -1,5 +1,8 @@
 #pragma once
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include "glimac/Cube.hpp"
 #include "glimac/Sphere.hpp"
 #include <glimac/SDLWindowManager.hpp>
@@ -13,10 +16,19 @@
 #include "project/Edible.hpp"
 #include "project/Texture.hpp"
 #include "project/CubeMap.hpp"
+#include "project/Text.hpp"
 
 #include "project/GLSLProgram.hpp"
 
 using namespace glimac;
+
+struct point {
+	GLfloat x;
+	GLfloat y;
+	GLfloat s;
+	GLfloat t;
+};
+
 
 class RenderManager {
 
@@ -28,6 +40,9 @@ private:
     // TrackballCamera* m_tbCamera;    // TPS Cam
     // FreeflyCamera* m_ffCamera;      // FPS Cam
     // bool m_fps;                     // false = TPS | true = FPS
+
+    // Text
+    Text m_text;
 
     // Cube
     Cube m_cube;
@@ -61,6 +76,9 @@ private:
     // GLSL Programs
     ProgramList* m_programList;
 
+    // Freetype library
+    FT_Library* m_ft;
+
     // Game Size Infos
     glm::vec2 m_gameSize;
     glm::vec2 m_gameCorner;
@@ -70,6 +88,10 @@ public:
     RenderManager(SDLWindowManager* windowManager, Camera* camera, ProgramList* programList, glm::vec2 gameSize);
     // Destructor
     ~RenderManager();
+
+    // Text
+    void renderText(const char *text, float x, float y, float sx, float sy);
+    void drawText();
 
     // Skybox
     void initSkybox();

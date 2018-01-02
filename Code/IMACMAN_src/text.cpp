@@ -3,8 +3,13 @@
 #include <iostream>
 #include <glimac/Program.hpp>
 #include <glimac/FilePath.hpp>
+#include <ft2build.h>
+#include <glimac/SDLWindowManager.hpp>
+#include <GL/gl.h>
+#include FT_FREETYPE_H
 
 #include "project/RenderManager.hpp"
+#include "project/GameManager.hpp"
 
 #include "glimac/TrackballCamera.hpp"
 #include "glimac/FreeflyCamera.hpp"
@@ -14,11 +19,15 @@
 #include "project/GLSLProgram.hpp"
 
 #include "project/Map.hpp"
-#include "project/GameManager.hpp"
+#include "project/Texture.hpp"
+
+#include "../../Code/glimac/include/glimac/glm.hpp"
 
 using namespace glimac;
 
 int main(int argc, char** argv) {
+
+
     // Default window size
     glm::vec2 defaultWindowSize = glm::vec2(1280,720);
 
@@ -34,12 +43,15 @@ int main(int argc, char** argv) {
 
     // Create Programs (1 fragment shader = 1 program)
     FilePath applicationPath(argv[0]);
-    ProgramList programList;
-    TextureProgram textureProgram(applicationPath);
-    programList.textureProgram = &textureProgram;
     NormalProgram normalProgram(applicationPath);
+    TextureProgram textureProgram(applicationPath);
+    CubeMapProgram cubemapProgram(applicationPath);
+    TextProgram textProgram(applicationPath);
+    ProgramList programList;
     programList.normalProgram = &normalProgram;
-
+    programList.textureProgram = &textureProgram;
+    programList.cubemapProgram = &cubemapProgram;
+    programList.textProgram = &textProgram;
 
     // Enable GPU depth test for 3D rendering
     glEnable(GL_DEPTH_TEST);
@@ -48,43 +60,44 @@ int main(int argc, char** argv) {
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
 
-     // Background color
-     
-     glClearColor(0.11f, 0.1f, 0.24f, 0.0f);
-
     Map map;
-    //map.setFileMap("classicMap.txt");
     map.setFileMap("classicMap.txt");
-    map.load();
-    //m.display();
-    //m.play();
+    //map.setFileMap("mapTest.txt");
+    map.initialization();
+
     GameManager gameManager = GameManager(&map);
+
     // Game Infos
     glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
 
-    //TrackballCamera tbCamera = TrackballCamera(gameSize.y,0,0.0f,1.57f);    // CAMERA VUE 2D
-    TrackballCamera tbCamera = TrackballCamera(gameSize.x,0,0.0f,1.0f);
-    FreeflyCamera ffCamera = FreeflyCamera();
-    Camera* camera = &tbCamera;
-
+    //TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,0.0f);    // CAMERA VUE 2D
+    TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,-0.4f);
+    FreeflyCamera fpsCamera = FreeflyCamera();
+    Camera* camera = &tpsCamera;
 
     RenderManager renderManager = RenderManager(&windowManager, camera, &programList, gameSize);
     Controller controller = Controller(&windowManager);
 
-    Wall wall1(0,0,1,1);
-    Wall wall2(30,0,1,1);
-    Wall wall3(0,30,1,1);
-    Wall wall4(30,30,1,1);
-
     // Load Textures
     renderManager.loadTextures();
 
-    //std::vector<Wall*> walls = map.getWalls();
-    //std::cout << map.getWalls() << std::endl;
+    // initialize Skybox
+    renderManager.initSkybox();
 
-    // Application loop:
+    // initialize the timers
+    gameManager.setTimers();
+
+    Text text;
+
+    windowManager.updateDeltaTime();
+
+    // Application loop:a
     bool done = false;
     while(!done) {
+
+        windowManager.updateDeltaTime();
+        gameManager.updateSpeed(windowManager.getDeltaTime());
+
         // Event loop:
         SDL_Event e;
         while(windowManager.pollEvent(e)) {
@@ -98,22 +111,21 @@ int main(int argc, char** argv) {
         }
 
         // Send the keys to the camera and the map
-        tbCamera.cameraController(&controller);
-        ffCamera.setCameraOnCharacter(map.getPacman(), gameSize);     // NEED TO FIX HERE !!
+        tpsCamera.cameraController(&controller);
+        fpsCamera.setCameraOnCharacter(map.getPacman(), gameSize);     // NEED TO FIX HERE !!
         gameManager.play(&controller);
 
         // Switch Camera mini-function
         if (controller.getInterfaceAction() == Controller::C)
         {
-            //std::cout << ffCamera.getViewMatrix() << std::endl;
-            if(camera == &ffCamera)
+            if(camera == &fpsCamera)
             {
-                camera = &tbCamera;
+                camera = &tpsCamera;
                 controller.setFPS(false);
             }
             else
             {
-                camera = &ffCamera;
+                camera = &fpsCamera;
                 controller.setFPS(true);
             }
             controller.setInterfaceAction(Controller::NONE);
@@ -126,33 +138,38 @@ int main(int argc, char** argv) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // On update la ViewMatrix à chaque tour de boucle
-        renderManager.updateMVMatrix(camera);
+        renderManager.updateMVMatrix(camera, map.getPacman());
 
-        // --- SPHERE --- //
-        // Bind Sphere VAO
-        renderManager.bindSphereVAO();
-        // Draw Pacman only in TPS
-        if(!controller.isFPSactive()) {
-          renderManager.drawPacman(map.getPacman(), TEXTURE);
-        }
+        // // --- SPHERE --- //
+        // // Bind Sphere VAO
+        // renderManager.bindSphereVAO();
+        // // Draw Pacman only in TPS
+        // if(!controller.isFPSactive())
+        //     renderManager.drawPacman(map.getPacman(), TEXTURE);
+        //
+        // renderManager.drawPacGommes(map.getPacGommes(), TEXTURE);
+        // renderManager.drawSuperPacGommes(map.getSuperPacGommes(), TEXTURE);
+        // renderManager.drawFruits(map.getFruits(), TEXTURE);
+        //
+        // // De-bind Sphere VAO
+        // renderManager.debindVAO();
+        //
+        // // --- CUBE --- //
+         renderManager.bindCubeVAO();
+         renderManager.drawSkybox();
+         renderManager.debindVAO();
 
-        renderManager.drawPacGommes(map.getPacGommes(), TEXTURE);
-        renderManager.drawSuperPacGommes(map.getSuperPacGommes());
+         // TEXT
+         renderManager.drawText();
 
-        // De-bind Sphere VAO
-        renderManager.debindVAO();
-
-        // --- CUBE --- //
-        renderManager.bindCubeVAO();
-        renderManager.drawWalls(map.getWalls(), TEXTURE);
-        renderManager.debindVAO();
         // Update the display
         windowManager.swapBuffers();
     }
 
     // FREE RESSOURCES
-    //See ~renderManager destructor
+    // See ~renderManager destructor
 
     return EXIT_SUCCESS;
+
     return 0;
 }

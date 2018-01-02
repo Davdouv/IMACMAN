@@ -1,16 +1,20 @@
-#include <ft2build.h>
-#include <iostream>
-#include FT_FREETYPE_H
+#include "project/Text.hpp"
 
+void Text::init_resources() {
+  m_fontfilename = "../Code/assets/fonts/DejaVuSans.ttf";
 
-void initFreetype2()
-{
-  FT_Library  library;
+	/* Initialize the FreeType2 library */
+	if (FT_Init_FreeType(&m_ft)) {
+		std::cout << "Could not init freetype library" << std::endl;
+		exit(EXIT_FAILURE);
+	}
 
-  int error = FT_Init_FreeType( &library );
+	/* Load a font */
+	if (FT_New_Face(m_ft, m_fontfilename.data(), 0, &m_face)) {
+		std::cout << "Could not open font" << std::endl;
+		exit(EXIT_FAILURE);
+	}
 
-  if (error == 0)
-  {
-    std::cout << "erreur" << std::endl;
-  }
+	// Create the vertex buffer object
+	glGenBuffers(1, &m_vbo);
 }

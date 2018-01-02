@@ -39,10 +39,12 @@ int main(int argc, char** argv) {
     NormalProgram normalProgram(applicationPath);
     TextureProgram textureProgram(applicationPath);
     CubeMapProgram cubemapProgram(applicationPath);
+    TextProgram textProgram(applicationPath);
     ProgramList programList;
     programList.normalProgram = &normalProgram;
     programList.textureProgram = &textureProgram;
     programList.cubemapProgram = &cubemapProgram;
+    programList.textProgram = &textProgram;
 
     // Enable GPU depth test for 3D rendering
     glEnable(GL_DEPTH_TEST);

@@ -6,7 +6,7 @@
 namespace glimac {
 
 // Every key player can use
-enum FS {NORMAL, TEXTURE, CUBEMAP, MULTITEXTURE, DIRECTIONNAL_LIGHT, POINT_LIGHT};
+enum FS {NORMAL, TEXTURE, TEXT, CUBEMAP, MULTITEXTURE, DIRECTIONNAL_LIGHT, POINT_LIGHT};
 
 // GLSL Program with the normal fragment shader
 struct NormalProgram {
@@ -42,6 +42,23 @@ struct TextureProgram {
         uMVMatrix = glGetUniformLocation(m_Program.getGLId(), "uMVMatrix");
         uNormalMatrix = glGetUniformLocation(m_Program.getGLId(), "uNormalMatrix");
         uTexture = glGetUniformLocation(m_Program.getGLId(), "uTexture");
+    }
+};
+
+// GLSL Program with the 3D texture fragment shader
+struct TextProgram {
+    Program m_Program;
+
+    GLint attribute_coord;
+    GLint uniform_tex;
+    GLint uniform_color;
+
+    TextProgram(const FilePath& applicationPath):
+        m_Program(loadProgram(applicationPath.dirPath() + "shaders/text.vs.glsl",
+                              applicationPath.dirPath() + "shaders/text.fs.glsl")) {
+        attribute_coord = glGetUniformLocation(m_Program.getGLId(), "coord");
+        uniform_tex = glGetUniformLocation(m_Program.getGLId(), "tex");
+        uniform_color = glGetUniformLocation(m_Program.getGLId(), "color");
     }
 };
 
@@ -154,6 +171,7 @@ struct ProgramList {
     DirectionnalLightProgram* directionnalLightProgram;
     PointLightProgram* pointLightProgram;
     CubeMapProgram* cubemapProgram;
+    TextProgram* textProgram;
 };
 
 }

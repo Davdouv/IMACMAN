@@ -1,0 +1,17 @@
+#pragma once
+#include <ft2build.h>
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <GL/glew.h>
+#include FT_FREETYPE_H
+
+class Text {
+private:
+  unsigned char image[1280][720];
+
+public:
+  void draw_bitmap( FT_Bitmap* bitmap, FT_Int x, FT_Int y);
+  void show_image();
+  int drawText();
+};
