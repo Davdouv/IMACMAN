@@ -10,24 +10,18 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // Window Manager
     m_windowManager = windowManager;
 
-<<<<<<< HEAD
     // Camera
     // m_ffCamera = camera;
 
     // Skybox
     m_skybox = new StaticObject('K', 15.f, 20.f, 250.f, 250.f);
 
-=======
->>>>>>> 9a5e319d1efadf37262b7a383708a656e4df7890
     // Plane
     m_plane = Plane();
     m_planeVBO = m_plane.getVBO();
     m_planeIBO = m_plane.getIBO();
     m_planeVAO = m_plane.getVAO(&m_planeIBO, &m_planeVBO);
-<<<<<<< HEAD
-=======
 
->>>>>>> 9a5e319d1efadf37262b7a383708a656e4df7890
     // Cube
     m_cube = Cube();
     m_cubeVBO = m_cube.getVBO();

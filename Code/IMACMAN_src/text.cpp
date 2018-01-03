@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
          renderManager.debindVAO();
 
          // TEXT
-         renderManager.drawText("Bonjour", {64,0,0,1});
+         renderManager.drawText("Bonjour", {255,0,0});
 
         // Update the display
         windowManager.swapBuffers();
