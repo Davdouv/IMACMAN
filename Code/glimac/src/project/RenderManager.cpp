@@ -168,7 +168,7 @@ void RenderManager::drawText()
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, m_textTexture);
   m_plane.drawPlane();
-  disableTexture(TEXTURE);
+  disableTexture(TEXTURE, false);
   debindVAO();
 }
 
@@ -520,22 +520,33 @@ void RenderManager::materialTransformations(FS shader, float Kd, float Ks, float
 }
 
 // Enable texture if we use shader texture
-void RenderManager::enableTexture(FS shader, Texture* texture)
+void RenderManager::enableTexture(FS shader, Texture* texture, bool alpha)
 {
     if (shader != NORMAL)
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture->getID());
+        if (alpha)
+        {
+            // For alpha
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+            //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
     }
 }
 
 // Disable texture if we use shader texture
-void RenderManager::disableTexture(FS shader)
+void RenderManager::disableTexture(FS shader, bool alpha)
 {
     if (shader != NORMAL)
     {
         glBindTexture(GL_TEXTURE_2D, 0);
         glActiveTexture(GL_TEXTURE0);
+        if (alpha)
+        {
+            glDisable(GL_BLEND);
+        }
     }
 }
 
@@ -555,11 +566,11 @@ void RenderManager::drawPacman(Pacman* pacman, FS shader)
 
     materialTransformations(shader, 0.7, 0.3, 100);
 
-    enableTexture(shader, m_PacmanTexture);
+    enableTexture(shader, m_PacmanTexture, false);
 
     m_sphere.drawSphere();
 
-    disableTexture(shader);
+    disableTexture(shader, false);
 }
 
 // GHOSTS
@@ -569,7 +580,7 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
     {
         //useProgram(shader);
 
-        enableTexture(shader, m_GumTexture/*m_GhostTexture*/);
+        enableTexture(shader, m_GumTexture/*m_GhostTexture*/, true);
 
         glm::mat4 transformationMatrix = transformMatrix(ghost[i]);
         transformationMatrix = glm::rotate(transformationMatrix, -1.57f, glm::vec3(0,1,0));
@@ -587,7 +598,7 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
         //m_cube.drawCube();
         glDrawElements(GL_TRIANGLES, m_ghostModel.getIndexCount(), GL_UNSIGNED_INT, 0);
 
-        disableTexture(shader);
+        disableTexture(shader, true);
 
     }
 }
@@ -598,7 +609,7 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
 void RenderManager::drawWalls(std::vector<Wall*> wall, FS shader)
 {
     //useProgram(shader);
-    enableTexture(shader, m_WallTexture);
+    enableTexture(shader, m_WallTexture, false);
 
     for (unsigned int i = 0; i < wall.size(); ++i)
     {
@@ -609,14 +620,14 @@ void RenderManager::drawWalls(std::vector<Wall*> wall, FS shader)
         //glDrawElements(GL_TRIANGLES, m_rock.getIndexCount(), GL_UNSIGNED_INT, 0);
     }
 
-    disableTexture(shader);
+    disableTexture(shader, false);
 }
 
 // GOMMES
 void RenderManager::drawPacGommes(std::vector<Edible*> edible, FS shader)
 {
     //useProgram(shader);
-    enableTexture(shader, m_GumTexture);
+    enableTexture(shader, m_GumTexture,false);
 
     for (unsigned int i = 0; i < edible.size(); ++i)
     {
@@ -626,14 +637,14 @@ void RenderManager::drawPacGommes(std::vector<Edible*> edible, FS shader)
         m_sphere.drawSphere();
     }
 
-    disableTexture(shader);
+    disableTexture(shader, false);
 }
 
 // SUPER GOMMES
 void RenderManager::drawSuperPacGommes(std::vector<Edible*> edible, FS shader)
 {
     //useProgram(shader);
-    enableTexture(shader, m_SuperGumTexture);
+    enableTexture(shader, m_SuperGumTexture, false);
 
     for (unsigned int i = 0; i < edible.size(); ++i)
     {
@@ -643,7 +654,7 @@ void RenderManager::drawSuperPacGommes(std::vector<Edible*> edible, FS shader)
         m_sphere.drawSphere();
     }
 
-    disableTexture(shader);
+    disableTexture(shader, false);
 }
 
 // FRUITS
@@ -655,12 +666,12 @@ void RenderManager::drawFruits(std::vector<Edible*> edible, FS shader)
     {
         if (edible[i]->getAvailability())
         {
-            enableTexture(shader, m_FruitTexture);
+            enableTexture(shader, m_FruitTexture, false);
             glm::mat4 transformationMatrix = transformMatrix(edible[i]);
             applyTransformations(shader, transformationMatrix);
             materialTransformations(shader, 0.9, 0.3, 50);
             m_sphere.drawSphere();
-            disableTexture(shader);
+            disableTexture(shader, false);
         }
     }
 }
@@ -700,9 +711,9 @@ void RenderManager::drawFloor(FS shader)
 
     glUniform1f(m_programList->textureProgram->uTime, 0.00001f*SDL_GetTicks());
 
-    enableTexture(shader, m_FloorTexture);
+    enableTexture(shader, m_FloorTexture, false);
     m_plane.drawPlane();
-    disableTexture(shader);
+    disableTexture(shader, false);
 }
 
 // ---- MINI MAP ---- //
@@ -725,9 +736,9 @@ void RenderManager::drawMiniMap(FS shader)
 
     applyTransformations(shader, matrix);
 
-    enableTexture(shader, m_RenderTargetTexture);
+    enableTexture(shader, m_RenderTargetTexture, false);
     m_plane.drawPlane();
-    disableTexture(shader);
+    disableTexture(shader, false);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0,0,1024,768); // Render on the whole framebuffer, complete from the lower left corner to the
@@ -797,6 +808,7 @@ void RenderManager::updateState(GameManager::PacmanState state)
 
 void RenderManager::drawMenu(Menu* menu)
 {
+    bool alpha = false;
     FS shader = TEXTURE;
     bindPlaneVAO();
 
@@ -810,9 +822,11 @@ void RenderManager::drawMenu(Menu* menu)
         // Background
         matrix = glm::scale(matrix, glm::vec3(12.8f, 7.2f, 1.f));
         applyTransformations(shader, matrix);
-        enableTexture(shader, menu->getTextures()[4]);
+        enableTexture(shader, menu->getTextures()[4], false);
         m_plane.drawPlane();
-        disableTexture(shader);
+        disableTexture(shader, false);
+
+        alpha = true;
     }
 
     // Play | Restart
@@ -820,36 +834,36 @@ void RenderManager::drawMenu(Menu* menu)
     matrix = glm::translate(matrix, glm::vec3(0.0f, 1.5f, 0.2f));
     matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
     applyTransformations(shader, matrix);
-    enableTexture(shader, menu->getTextures()[Menu::PLAY]);
+    enableTexture(shader, menu->getTextures()[Menu::PLAY], alpha);
     m_plane.drawPlane();
-    disableTexture(shader);
+    disableTexture(shader, alpha);
 
     // Continue | Save
     matrix = originMatrix;
     matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 0.2f));
     matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
     applyTransformations(shader, matrix);
-    enableTexture(shader, menu->getTextures()[Menu::CONTINUE]);
+    enableTexture(shader, menu->getTextures()[Menu::CONTINUE], alpha);
     m_plane.drawPlane();
-    disableTexture(shader);
+    disableTexture(shader, alpha);
 
     // Exit
     matrix = originMatrix;
     matrix = glm::translate(matrix, glm::vec3(0.0f, -1.5f, 0.2f));
     matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
     applyTransformations(shader, matrix);
-    enableTexture(shader, menu->getTextures()[Menu::EXIT]);
+    enableTexture(shader, menu->getTextures()[Menu::EXIT], alpha);
     m_plane.drawPlane();
-    disableTexture(shader);
+    disableTexture(shader, alpha);
 
     // Select
     matrix = originMatrix;
     matrix = glm::translate(matrix, glm::vec3(0.0f, -1.5*(menu->getButton())+1.5f, 0.2f));
     matrix = glm::scale(matrix, glm::vec3(2.2f, 1.2f, 1.f));
     applyTransformations(shader, matrix);
-    enableTexture(shader, menu->getTextures()[3]);
+    enableTexture(shader, menu->getTextures()[3], false);
     m_plane.drawPlane();
-    disableTexture(shader);
+    disableTexture(shader, false);
 
     debindVAO();
 }
@@ -872,9 +886,9 @@ void RenderManager::drawUI(UI* ui)
         matrix = glm::translate(matrix, glm::vec3(5.5f-(0.5*i), 3.0f, 0.2f));
         matrix = glm::scale(matrix, glm::vec3(0.5f, 0.5f, 1.f));
         applyTransformations(shader, matrix);
-        enableTexture(shader, ui->getTextures()[0]);
+        enableTexture(shader, ui->getTextures()[0], true);
         m_plane.drawPlane();
-        disableTexture(shader);
+        disableTexture(shader, true);
     }
 
     debindVAO();

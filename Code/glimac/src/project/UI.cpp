@@ -5,7 +5,7 @@ using namespace glimac;
 UI::UI(Player* player)
 {
     m_player = player;
-    m_texture[0] = new Texture("../Code/assets/textures/life.jpg");
+    m_texture[0] = new Texture("../Code/assets/textures/life.png");
 
     for (unsigned int i = 0; i < 1; ++i)
         m_texture[i]->loadTexture();
