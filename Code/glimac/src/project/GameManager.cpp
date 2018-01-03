@@ -231,10 +231,8 @@ void GameManager::start(AudioManager* audioManager) {
 void GameManager::play(AudioManager* audioManager) {
 
     Controller * c;
-    Pacman *p = m_map->getPacman();
-    p->setSpeed(1);
-    m_map->setPacman(*p);
-
+    m_map->getPacman()->setSpeed(1);
+    for (int i = 0; i < m_map->getGhosts().size(); i++) m_map->getGhosts()[i]->setSpeed(1);
     std::string line;
     this->setStartTime(SDL_GetTicks());
     setTimers();
@@ -242,10 +240,9 @@ void GameManager::play(AudioManager* audioManager) {
         if (ready()) {
             stateManager();
             activateFruit();
-            //m_map->display();
-            ghostMove();
-            //std::cout << "Your move : " << std::endl;
-            //getline(std::cin, line);
+            m_map->display();
+            std::cout << "Your move : " << std::endl;
+            getline(std::cin, line);
             if (line == "Z") {
                 if (!characterWallCollision(m_map->getPacman(), 'Z')) m_map->getPacman()->moveUp();
             }
@@ -264,8 +261,9 @@ void GameManager::play(AudioManager* audioManager) {
             }
             pacmanGhostCollision(audioManager);
             pacmanEdibleCollision(audioManager);
-            //std::cout << "Points : " << m_player.getPoints() << std::endl;
-            //std::cout << "Lives : " << m_player.getLife() << std::endl;
+            ghostMove();
+            std::cout << "Points : " << m_player.getPoints() << std::endl;
+            std::cout << "Lives : " << m_player.getLife() << std::endl;
         }
     }
 }
@@ -373,7 +371,10 @@ void GameManager::newLevel(Controller* controller)
 {
     controller->setPlayerPreviousAction(Controller::Key::Q);
     setState(NORMAL);
+    Player save_player = m_player;
     m_map->initialization();
+    load(true);
+    m_player = save_player;
     setTimers();
 }
 
@@ -1020,31 +1021,38 @@ void GameManager::ghostMove() {
     for (int i = 0; i < m_map->getGhosts().size(); i++) {
         if (m_map->getGhosts()[i]->ready()) {
 
-            std::cout << "Ghost " << i+1 << " is ready !!" << std::endl << std::endl;
-            switch (m_map->getGhosts()[i]->getOrientation()) {
-
-                case Object::Orientation::UP : action = Controller::Z;
-                    break;
-                case Object::Orientation::DOWN: action = Controller::S;
-                    break;
-                case Object::Orientation::RIGHT: action = Controller::D;
-                    break;
-                case Object::Orientation::LEFT :action = Controller::Q;
-                    break;
+            if ( (m_map->getGhosts()[i]->getPosY() == m_map->getGhosts()[i]->getInitY()) && (m_map->getGhosts()[i]->getPosX() == m_map->getGhosts()[i]->getInitX()) ) {
+                m_map->getGhosts()[i]->setOrientation(Object::Orientation::UP);
+                m_map->getGhosts()[i]->setPosX(m_map->getSpawnPoint()[0]->getPosX());
+                m_map->getGhosts()[i]->setPosY(m_map->getSpawnPoint()[0]->getPosY());
             }
-            while (!moveCharacter(m_map->getGhosts()[i], action)) {
+            else {
                 
-                int r =  (rand() % 4);
-                switch (r) {
+                switch (m_map->getGhosts()[i]->getOrientation()) {
 
-                    case 0: action = Controller::Z;
+                    case Object::Orientation::UP : action = Controller::Z;
                         break;
-                    case 1: action = Controller::Q;
+                    case Object::Orientation::DOWN: action = Controller::S;
                         break;
-                    case 2: action = Controller::D;
+                    case Object::Orientation::RIGHT: action = Controller::D;
                         break;
-                    case 3:action = Controller::S;
+                    case Object::Orientation::LEFT :action = Controller::Q;
                         break;
+                }
+                while (!moveCharacter(m_map->getGhosts()[i], action)) {
+                    
+                    int r =  (rand() % 4);
+                    switch (r) {
+
+                        case 0: action = Controller::Z;
+                            break;
+                        case 1: action = Controller::Q;
+                            break;
+                        case 2: action = Controller::D;
+                            break;
+                        case 3:action = Controller::S;
+                            break;
+                    }
                 }
             }
         }
