@@ -157,8 +157,8 @@ public:
 
     // Texture functions
     void loadTextures() const;
-    void enableTexture(FS shader, Texture* texture);
-    void disableTexture(FS shader);
+    void enableTexture(FS shader, Texture* texture, bool alpha);
+    void disableTexture(FS shader, bool alpha);
 
     // GLSL Programs functions
     void useProgram(FS shader);
