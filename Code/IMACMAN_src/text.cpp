@@ -96,7 +96,6 @@ int main(int argc, char** argv) {
     renderManager.loadTextures();
 
     // Load font
-    //renderManager.loadFont();
     renderManager.loadFont();
 
     // initialize Skybox
@@ -177,9 +176,7 @@ int main(int argc, char** argv) {
          renderManager.debindVAO();
 
          // TEXT
-         renderManager.bindPlaneVAO();
          renderManager.drawText();
-         renderManager.debindVAO();
 
         // Update the display
         windowManager.swapBuffers();

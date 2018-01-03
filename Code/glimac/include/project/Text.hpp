@@ -16,9 +16,7 @@ namespace Text {
 
   void initText();
 
-  TTF_Font* loadFont(const char* fontfile, int ptsize);
-
-  GLuint renderFont(TTF_Font *font, const char *text, SDL_Color fg);
+  TTF_Font* loadFont(const char* fontfile);
 
   void clean();
 

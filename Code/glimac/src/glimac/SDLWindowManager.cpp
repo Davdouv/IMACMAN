@@ -8,8 +8,7 @@ SDLWindowManager::SDLWindowManager(uint32_t width, uint32_t height, const char* 
         std::cerr << SDL_GetError() << std::endl;
         return;
     }
-    m_screen = SDL_SetVideoMode(width, height, 32, SDL_OPENGL);
-    if(!m_screen) {
+    if(!SDL_SetVideoMode(width, height, 32, SDL_OPENGL)) {
         std::cerr << SDL_GetError() << std::endl;
         return;
     }
@@ -83,10 +82,6 @@ void SDLWindowManager::setWidth(uint32_t width)
 void SDLWindowManager::setHeight(uint32_t height)
 {
     m_height = height;
-}
-SDL_Surface* SDLWindowManager::getScreen()
-{
-  return m_screen;
 }
 
 }

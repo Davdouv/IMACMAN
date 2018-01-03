@@ -38,16 +38,12 @@ public:
     void setWidth(uint32_t width);
     void setHeight(uint32_t height);
 
-    SDL_Surface* getScreen();
-
 private:
     uint32_t m_width;
     uint32_t m_height;
 
     uint32_t lastTickTime;
     uint32_t deltaTime;
-
-    SDL_Surface* m_screen;
 };
 
 }

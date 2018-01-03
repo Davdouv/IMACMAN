@@ -9,7 +9,6 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
 {
     // Window Manager
     m_windowManager = windowManager;
-    m_screen = windowManager->getScreen();
 
     // Camera
     // m_ffCamera = camera;
@@ -121,26 +120,23 @@ RenderManager::~RenderManager()
 
 void RenderManager::loadFont()
 {
-  m_font = Text::loadFont("../Code/assets/fonts/DejaVuSans.ttf", 48);
+  m_font = Text::loadFont("../Code/assets/fonts/DejaVuSans.ttf");
 }
 
-void RenderManager::renderText()
+void RenderManager::createTextTexture()
 {
-  m_text = TTF_RenderUTF8_Blended(m_font, "Hello", {255, 0, 0});
+  m_text = SDL_DisplayFormatAlpha(TTF_RenderUTF8_Blended( m_font, "J'ai réussi !", {255, 255, 255} ));
   int colors = m_text->format->BytesPerPixel;
-  GLenum texture_format;
-  if (colors == 4) {   // alpha
-      if (m_text->format->Rmask == 0x000000ff)
-          texture_format = GL_RGBA;
-      else
-          texture_format = GL_BGRA_EXT;
-  } else {             // no alpha
-      if (m_text->format->Rmask == 0x000000ff)
-          texture_format = GL_RGB;
-      else
-          texture_format = GL_BGR_EXT;
-  }
+  SDL_Rect area;
+  area.x = 0; area.y = 0; area.w = m_text->w; area.h = m_text->h;
+  SDL_Surface* temp = SDL_CreateRGBSurface(SDL_HWSURFACE | SDL_SRCALPHA, m_text->w, m_text->h, 32,0x000000ff, 0x0000ff00, 0x00ff0000, 0x000000ff);
+  SDL_BlitSurface(m_text, &area, temp, NULL);
+  GLenum texture_format = GL_RGBA;
 
+  glDisable(GL_TEXTURE);
+  glDisable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  //glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_ALPHA);
   glGenTextures(1, &m_textTexture);
   glBindTexture(GL_TEXTURE_2D, m_textTexture);
   glTexImage2D( GL_TEXTURE_2D,
@@ -151,23 +147,29 @@ void RenderManager::renderText()
                 0,
                 texture_format,
                 GL_UNSIGNED_BYTE,
-                m_text->pixels
+                temp->pixels
               );
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void RenderManager::drawText()
 {
+  createTextTexture();
   useProgram(TEXTURE);
   bindPlaneVAO();
-  renderText();
-  glm::mat4 matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.f));
-  matrix = glm::translate(matrix, glm::vec3(0.0f, 1.5f, 0.2f));
-  matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
+  glm::mat4 matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
+  float size = 1.0;
+  float ratio = m_text->w / m_text->h;
+  matrix = glm::scale(matrix, glm::vec3(size * ratio, size, 1.f));
   applyTransformations(TEXTURE, matrix);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, m_textTexture);
+  glEnable(GL_TEXTURE_2D);
   m_plane.drawPlane();
   disableTexture(TEXTURE, false);
+  glDisable(GL_TEXTURE_2D);
   debindVAO();
 }
 

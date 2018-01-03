@@ -119,7 +119,7 @@ public:
 
     // Text
 		void loadFont();
-		void renderText();
+		void createTextTexture();
 		void drawText();
 
     // Skybox
