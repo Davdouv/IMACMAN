@@ -123,7 +123,6 @@ RenderManager::~RenderManager()
 // ---------------
 // TEXT FUNCTIONS
 // ---------------
-<<<<<<< HEAD
 
 void RenderManager::loadFont()
 {
