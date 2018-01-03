@@ -75,23 +75,21 @@ int GameManager::load(bool newGame) {
         m_map->setPacman(*p);
         
         std::vector<Ghost> tabGhost;
-        int death = 20;
         for (int i = 0; i < 4; i++) {
             getline(file,tmp);
             std::string delimiter = ",";
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 0.004, i+1, Object::Orientation::LEFT, death);
+            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 0.004, i+1, Object::Orientation::LEFT, 0);
             if (!newGame) {
                 getline(file,tmp);
                 std::string delimiter = ",";
                 std::string init_x = tmp.substr(1, tmp.find(delimiter)-1);
                 std::string init_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-                p->setInitX(atoi(init_x.c_str()));
-                p->setInitY(atoi(init_y.c_str()));   
+                g->setInitX(atoi(init_x.c_str()));
+                g->setInitY(atoi(init_y.c_str()));   
             }
             tabGhost.push_back(*g);
-            death+=10;
             delete(g);
         }
         m_map->setGhosts(tabGhost);
@@ -243,9 +241,10 @@ void GameManager::play(AudioManager* audioManager) {
         if (ready()) {
             stateManager();
             activateFruit();
-            m_map->display();
-            std::cout << "Your move : " << std::endl;
-            getline(std::cin, line);
+            //m_map->display();
+            ghostMove();
+            //std::cout << "Your move : " << std::endl;
+            //getline(std::cin, line);
             if (line == "Z") {
                 if (!characterWallCollision(m_map->getPacman(), 'Z')) m_map->getPacman()->moveUp();
             }
@@ -264,9 +263,8 @@ void GameManager::play(AudioManager* audioManager) {
             }
             pacmanGhostCollision(audioManager);
             pacmanEdibleCollision(audioManager);
-            ghostMove();
-            std::cout << "Points : " << m_player.getPoints() << std::endl;
-            std::cout << "Lives : " << m_player.getLife() << std::endl;
+            //std::cout << "Points : " << m_player.getPoints() << std::endl;
+            //std::cout << "Lives : " << m_player.getLife() << std::endl;
         }
     }
 }
