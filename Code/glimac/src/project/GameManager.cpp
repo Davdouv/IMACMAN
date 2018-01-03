@@ -29,6 +29,170 @@ void GameManager::setSuperTimer(uint32_t t) { m_superTimer = t;}
 void GameManager::setFruitTimer(uint32_t t) { m_fruitTimer = t; }
 void GameManager::switchPause() { m_pause=!isPause();}
 void GameManager::setEatenGhosts(int eatenGhosts) { m_eatenGhosts = eatenGhosts;}
+
+// FILE MANAGER
+
+int GameManager::load(bool newGame) {
+
+    std::fstream file;
+    if (!newGame) 
+        file.open("../Code/data/save_"+m_map->getFileMap(), std::ios::binary | std::ios::out | std::ios::in);
+    else file.open("../Code/data/"+m_map->getFileMap(), std::ios::binary | std::ios::out | std::ios::in);
+    if (!file.is_open()) {
+        std::cout << " error loading the file " << std::endl;
+        return 0;
+    }
+    else {
+        std::vector<std::vector<StaticObject*>> vec;
+        int i = 0;
+        std::string tmp;
+        file.seekg(0);
+
+        // if saved game, load lives and points 
+        if (!newGame) {
+            getline(file,tmp);
+            m_player.setLife(atoi(tmp.c_str()));
+            getline(file,tmp);
+            m_player.setPoints(atoi(tmp.c_str()));
+        }
+        getline(file,tmp);
+        std::string delimiter = ",";
+        std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
+        std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
+        Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.004, Object::Orientation::LEFT);
+
+        
+        // if saved game get pacman initial positions
+        if (!newGame) {
+        getline(file,tmp);
+            std::string delimiter = ",";
+            std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
+            std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
+            p->setInitX(atoi(pos_x.c_str()));
+            p->setInitY(atoi(pos_y.c_str()));    
+        }
+        
+        m_map->setPacman(*p);
+        
+        std::vector<Ghost> tabGhost;
+        int death = 20;
+        for (int i = 0; i < 4; i++) {
+            getline(file,tmp);
+            std::string delimiter = ",";
+            std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
+            std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
+            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 0.004, i+1, Object::Orientation::LEFT, death);
+            if (!newGame) {
+                getline(file,tmp);
+                std::string delimiter = ",";
+                std::string init_x = tmp.substr(1, tmp.find(delimiter)-1);
+                std::string init_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
+                p->setInitX(atoi(init_x.c_str()));
+                p->setInitY(atoi(init_y.c_str()));   
+            }
+            tabGhost.push_back(*g);
+            death+=10;
+            delete(g);
+        }
+        m_map->setGhosts(tabGhost);
+        bool once = true;
+        while (!file.eof()) {
+            getline(file, tmp);
+            std::vector<StaticObject*> row;
+            if(once)
+            {
+                m_map->setNbY(tmp.size());
+                once = false;
+            }
+            for (int j = 0; j < tmp.size(); j++) {
+                StaticObject *o;
+                if (!isStaticElement(tmp[j])) tmp[j] = 'V';
+                switch(tmp[j]) {
+
+                    case 'W' : o = new Wall(j, i, 1, 1,  Object::Orientation::LEFT);
+                        break;
+                    case 'G' : o = new Edible(j, i, 0.20, 0.20, Edible::Type::PAC_GOMME, true, Edible::Fruit::NONE,  Object::Orientation::LEFT);
+                        break;
+                    case 'S' : o = new Edible(j, i, 0.30, 0.30, Edible::Type::SUPER_PAC_GOMME, true, Edible::Fruit::NONE, Object::Orientation::LEFT);
+                        break;
+                    case 'B' : o = new Edible(j, i, 0.3, 0.3, Edible::Type::FRUIT, false, Edible::Fruit::APPLE, Object::Orientation::LEFT);
+                        break;
+                    case 'D' : o = new Door(j, i, 1, 1, Object::Orientation::LEFT);
+                        break;
+                    case 'V' : o = new StaticObject('V', j, i, 1, 1, Object::Orientation::LEFT);
+                        break;
+                    case 'X' : o = new StaticObject('X', j, i, 1, 1, Object::Orientation::LEFT);
+                    default : break;
+                }
+                row.push_back(o);
+            }
+            vec.push_back(row);
+            i++;
+        }
+        m_map->setStaticObjects(vec);
+        delete(p);
+
+        m_map->setNbX(i-1);
+    }
+    file.close();
+    return 1;
+}
+
+
+int GameManager::save() {
+
+    std::fstream file;
+    file.open("../Code/data/save_"+m_map->getFileMap(), std::ios::binary | std::ios::out | std::ios::in);
+    if (!file.is_open()) {
+        std::ofstream outfile("../Code/data/save_"+m_map->getFileMap());
+        outfile.close();
+        save();
+    }
+    else {
+        file.seekg(0);
+        // save player lives
+        file << m_player.getLife() << std::endl;
+        // save player points
+        file << m_player.getPoints() << std::endl;
+        
+        // current pacman position
+        file << "P" << m_map->getPacman()->getPosX() << "," << m_map->getPacman()->getPosY() << std::endl;
+        // initial pacman position
+        file << "P" << m_map->getPacman()->getInitX() << "," << m_map->getPacman()->getInitY() << std::endl;
+
+        // ghosts positions
+        file << "G" << m_map->getGhosts()[Ghost::Type::SHADOW]->getPosX() << "," << m_map->getGhosts()[Ghost::Type::SHADOW]->getPosY() << std::endl;
+        file << "G" << m_map->getGhosts()[Ghost::Type::SHADOW]->getInitX() << "," << m_map->getGhosts()[Ghost::Type::SHADOW]->getInitY() << std::endl;
+        file << "G" << m_map->getGhosts()[Ghost::Type::SPEEDY]->getPosX() << "," << m_map->getGhosts()[Ghost::Type::SPEEDY]->getPosY() << std::endl;
+        file << "G" << m_map->getGhosts()[Ghost::Type::SPEEDY]->getInitX() << "," << m_map->getGhosts()[Ghost::Type::SPEEDY]->getInitY() << std::endl;
+        file << "G" << m_map->getGhosts()[Ghost::Type::BASHFUL]->getPosX() << "," << m_map->getGhosts()[Ghost::Type::BASHFUL]->getPosY() << std::endl;
+        file << "G" << m_map->getGhosts()[Ghost::Type::BASHFUL]->getInitX() << "," << m_map->getGhosts()[Ghost::Type::BASHFUL]->getInitY() << std::endl;
+        file << "G" << m_map->getGhosts()[Ghost::Type::POKEY]->getPosX() << "," << m_map->getGhosts()[Ghost::Type::POKEY]->getPosY() << std::endl;
+        file << "G" << m_map->getGhosts()[Ghost::Type::POKEY]->getInitX() << "," << m_map->getGhosts()[Ghost::Type::POKEY]->getInitY() << std::endl;
+
+        for (int i = 0; i < m_map->getNbX(); i++) {
+            for (int j = 0; j < m_map->getNbY(); j++) {
+                if (m_map->getStaticObjects()[i][j]->getType() == 'E') {
+                    Edible *e = (Edible*) m_map->getStaticObjects()[i][j];
+                    switch (e->getTypeEdible()) {
+
+                        case Edible::Type::PAC_GOMME: file << 'G';
+                            break;
+                        case Edible::Type::SUPER_PAC_GOMME: file << 'S';
+                            break;
+                        case Edible::Type::FRUIT: file << e->getFruit();
+                            break;
+                    }
+                }
+                else file << m_map->getStaticObjects()[i][j]->getType();
+            }
+            file << std::endl;
+        }
+    }
+    file.close();
+    return 1;
+}
+
 // returns true if no edible on the map
 bool GameManager::won() {
     
@@ -95,7 +259,7 @@ void GameManager::play(AudioManager* audioManager) {
                 if (!characterWallCollision(m_map->getPacman(), 'D')) m_map->getPacman()->moveRight();
             }
             if (line == "C") {
-                m_map->save(); 
+                save(); 
                 return;
             }
             pacmanGhostCollision(audioManager);
