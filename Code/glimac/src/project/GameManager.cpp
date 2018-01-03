@@ -1081,3 +1081,20 @@ void GameManager::activateFruit() {
         }
     }
 }
+
+/*
+bool GameManager::inSpawnPoint() {
+    
+    float s_upX;
+    float s_upY;
+    float s_downX;
+    float s_downY;
+}
+
+void GameManager::gostMoveOut(int ghostType) {
+
+    if (m_map->getGhosts()[ghostType]->ready()) {
+
+    }
+}
+*/
