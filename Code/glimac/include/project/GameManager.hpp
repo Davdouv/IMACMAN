@@ -50,6 +50,9 @@ public:
     void updateSpeed(uint32_t deltaTime);
     int countShortestWay(int, int, int, int, std::vector<std::vector<int>>);
 
+    // file manager
+    int load(bool);
+    int save();
 private:
 
     // game state

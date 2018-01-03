@@ -55,6 +55,8 @@ public:
     // Doors
     void initDoors();
     // setters
+    void setNbX(int);
+    void setNbY(int);
     void setFileMap(std::string);
     void setPacman(Pacman);
     void setGhosts(std::vector<Ghost>);
@@ -62,8 +64,7 @@ public:
 
     // map initialization
     void initialization();
-    int load();
-    int save();
+
     
     // displays the map
     void display();
