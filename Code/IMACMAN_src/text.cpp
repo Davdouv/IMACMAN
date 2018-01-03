@@ -81,13 +81,14 @@ int main(int argc, char** argv) {
     // Load Textures
     renderManager.loadTextures();
 
+    // Load font
+    renderManager.loadFont();
+
     // initialize Skybox
     renderManager.initSkybox();
 
     // initialize the timers
     gameManager.setTimers();
-
-    Text text;
 
     windowManager.updateDeltaTime();
 
@@ -160,7 +161,7 @@ int main(int argc, char** argv) {
          renderManager.debindVAO();
 
          // TEXT
-         renderManager.drawText();
+         renderManager.drawText("Bonjour", {64,0,0,1});
 
         // Update the display
         windowManager.swapBuffers();

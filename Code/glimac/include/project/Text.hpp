@@ -4,20 +4,24 @@
 #include <string>
 #include <cmath>
 #include <GL/glew.h>
+#include <SDL/SDL_ttf.h>
+#include "glimac/common.hpp"
 #include "../glimac/glm.hpp"
 
 #include FT_FREETYPE_H
 
-class Text {
-private:
-  GLuint m_vbo;
-  FT_Library m_ft;
-  FT_Face m_face;
-  std::string m_fontfilename;
+using namespace glimac;
 
-public:
-  FT_Face getFace() { return m_face; }
-  GLuint getVBO() { return m_vbo; }
-  void init_resources();
-  void render_text(const char *text, float x, float y, float sx, float sy);
-};
+namespace Text {
+
+  void initText();
+
+  TTF_Font* loadFont(const char* fontfile, int ptsize);
+
+  SDL_Surface* renderFont(TTF_Font *font, const char *text, SDL_Color fg);
+
+  void drawFont(SDL_Surface * surface, SDL_Surface * display);
+
+  void clean();
+
+}

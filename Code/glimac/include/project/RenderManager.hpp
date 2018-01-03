@@ -39,9 +39,6 @@ private:
     GLuint m_planeIBO;
     GLuint m_planeVAO;
 
-    // Text
-    Text m_text;
-
     // Cube
     Cube m_cube;
     GLuint m_cubeVBO;
@@ -73,8 +70,9 @@ private:
     // GLSL Programs
     ProgramList* m_programList;
 
-    // Freetype library
-    FT_Library* m_ft;
+    // Text
+		TTF_Font* m_font;
+		SDL_Surface* m_text;
 
     // Game Size Infos
     glm::vec2 m_gameSize;
@@ -96,8 +94,8 @@ public:
     ~RenderManager();
 
     // Text
-    void renderText(const char *text, float x, float y, float sx, float sy);
-    void drawText();
+		void loadFont();
+		void drawText(const char *text, SDL_Color fg);
 
     // Skybox
     void initSkybox();
@@ -118,6 +116,7 @@ public:
 
     // Rendering functions
     void bindCubeVAO();
+    void bindTextVAO();
     void bindSphereVAO();
     void bindPlaneVAO();
     void debindVAO();

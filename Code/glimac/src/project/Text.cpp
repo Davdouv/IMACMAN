@@ -1,20 +1,39 @@
-#include "project/Text.hpp"
+#include "../include/project/Text.hpp"
 
-void Text::init_resources() {
-  m_fontfilename = "../Code/assets/fonts/DejaVuSans.ttf";
+namespace Text {
 
-	/* Initialize the FreeType2 library */
-	if (FT_Init_FreeType(&m_ft)) {
-		std::cout << "Could not init freetype library" << std::endl;
-		exit(EXIT_FAILURE);
-	}
+  void initText()
+  {
+    if (TTF_Init() < 0) {
+        std::cout << "SDL_TTF library could not be load" << std::endl;
+    }
+  }
 
-	/* Load a font */
-	if (FT_New_Face(m_ft, m_fontfilename.data(), 0, &m_face)) {
-		std::cout << "Could not open font" << std::endl;
-		exit(EXIT_FAILURE);
-	}
+  TTF_Font* loadFont(const char* fontfile, int ptsize)
+  {
+    TTF_Font* font = TTF_OpenFont(fontfile, ptsize);
+    if (font == NULL)
+    {
+      TTF_SetError("Loading failed :( (code: %d)", 142);
+      std::cout << "Error: " << TTF_GetError() << std::endl;
+      return NULL;
+    }
+    return font;
+  }
 
-	// Create the vertex buffer object
-	glGenBuffers(1, &m_vbo);
+  SDL_Surface* renderFont(TTF_Font *font, const char *text, SDL_Color fg)
+  {
+    SDL_Surface * surface = TTF_RenderText_Blended(font, text, fg);
+  }
+
+  void drawFont(SDL_Surface * surface, SDL_Surface * display)
+  {
+    SDL_BlitSurface(surface, NULL, display, NULL);
+  }
+
+  void clean()
+  {
+    TTF_Quit();
+  }
+
 }

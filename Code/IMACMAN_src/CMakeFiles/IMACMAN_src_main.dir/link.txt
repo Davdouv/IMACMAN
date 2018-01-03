@@ -1,0 +1,1 @@
+/usr/bin/c++   -O2 -std=c++11   CMakeFiles/IMACMAN_src_main.dir/main.cpp.o  -o IMACMAN_src_main -rdynamic ../glimac/libglimac.a -Wl,-Bstatic -lSDLmain -Wl,-Bdynamic -lSDL -lpthread -lSDL_image -lSDL_ttf -lSDL_mixer -lGLU -lGL -lGLEW -lfreetype 
