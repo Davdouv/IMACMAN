@@ -157,6 +157,8 @@ void RenderManager::renderText()
 
 void RenderManager::drawText()
 {
+    useProgram(TEXTURE);
+    bindPlaneVAO();
   renderText();
 
   glm::mat4 matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.f));
@@ -167,6 +169,7 @@ void RenderManager::drawText()
   glBindTexture(GL_TEXTURE_2D, m_textTexture);
   m_plane.drawPlane();
   disableTexture(TEXTURE);
+  debindVAO();
 }
 
 // ---------------

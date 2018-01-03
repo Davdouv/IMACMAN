@@ -20,6 +20,7 @@
 
 #include "project/Map.hpp"
 #include "project/Texture.hpp"
+#include "project/AudioManager.hpp"
 
 #include "../../Code/glimac/include/glimac/glm.hpp"
 
@@ -78,6 +79,17 @@ int main(int argc, char** argv) {
     RenderManager renderManager = RenderManager(&windowManager, camera, &programList, gameSize);
     Controller controller = Controller(&windowManager);
 
+
+    /* ---------------------
+    *   INIT AUDIO | START MUSIC
+    *  --------------------- */
+
+    AudioManager audioManager = AudioManager();
+    audioManager.addMusic(audioManager.createMusic("../Code/assets/audio/mainTheme.mp3"));
+    audioManager.addMusic(audioManager.createMusic("../Code/assets/audio/mainThemeFast.mp3"));
+    audioManager.fillSounds();
+    audioManager.playMusic(0);
+
     // Load Textures
     renderManager.loadTextures();
 
@@ -115,7 +127,7 @@ int main(int argc, char** argv) {
         // Send the keys to the camera and the map
         tpsCamera.cameraController(&controller);
         fpsCamera.setCameraOnCharacter(map.getPacman(), gameSize);     // NEED TO FIX HERE !!
-        gameManager.play(&controller);
+        gameManager.play(&controller, &audioManager);
 
         // Switch Camera mini-function
         if (controller.getInterfaceAction() == Controller::C)
