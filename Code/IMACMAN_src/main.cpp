@@ -66,10 +66,11 @@ int main(int argc, char** argv) {
 
     Map map;
     map.setFileMap("classicMap.txt");
-    map.initialization();
-    glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
 
     GameManager gameManager = GameManager(&map);
+    gameManager.load(true);
+    map.initialization();
+    glm::vec2 gameSize = glm::vec2(gameManager.getMap()->getNbX(),gameManager.getMap()->getNbY());
 
     Controller controller = Controller(&windowManager);
 
@@ -144,6 +145,11 @@ int main(int argc, char** argv) {
                 game = false;
 
                 audioManager.playMusic(1);  // Change Music
+
+                // if (menu.getButton() == Menu::Button::PLAY)
+                //     gameManager.load(true);
+                // else
+                //     gameManager.load(false);
                 
                 /* -------------
                 *   INIT TIME
@@ -191,7 +197,7 @@ int main(int argc, char** argv) {
                 }
 
                 // Update controller with key & mouse events each frame
-                controller.updateController(map.getPacman());
+                controller.updateController(gameManager.getMap()->getPacman());
             }
 
             // If game paused, use menuPause
@@ -223,7 +229,7 @@ int main(int argc, char** argv) {
             // Send the keys to the camera and the map
             tpsCamera.cameraController(&controller);
             // Ask the camera to track pacman
-            fpsCamera.setCameraOnCharacter(map.getPacman(), gameSize);
+            fpsCamera.setCameraOnCharacter(gameManager.getMap()->getPacman(), gameSize);
             // Switch Camera FPS / TPS if C button is pressed
             if (controller.getInterfaceAction() == Controller::C)
             {
@@ -254,10 +260,10 @@ int main(int argc, char** argv) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             // Update The View Matrix each time we enter the while loop
-            renderManager.updateMVMatrix(camera, map.getPacman());
+            renderManager.updateMVMatrix(camera, gameManager.getMap()->getPacman());
 
             // Render the map (objects, skybox and ground)
-            renderManager.drawMap(&map, &controller);
+            renderManager.drawMap(gameManager.getMap(), &controller);
 
             // Render UI (life, score?)
             renderManager.drawUI(&ui);
