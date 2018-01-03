@@ -10,6 +10,7 @@
 #include "project/Controller.hpp"
 #include "glimac/TrackballCamera.hpp"
 #include "glimac/FreeflyCamera.hpp"
+#include "project/Menu.hpp"
 
 #include "project/GLSLProgram.hpp"
 
@@ -48,6 +49,7 @@ int main(int argc, char** argv) {
     CubeMapProgram cubemapProgram(applicationPath);
     DirectionnalLightProgram directionnalLightProgram(applicationPath);
     PointLightProgram pointLightProgram(applicationPath);
+    BlackAndWhiteProgram bwProgram(applicationPath);
 
     ProgramList programList;
     programList.normalProgram = &normalProgram;
@@ -55,6 +57,7 @@ int main(int argc, char** argv) {
     programList.cubemapProgram = &cubemapProgram;
     programList.directionnalLightProgram = &directionnalLightProgram;
     programList.pointLightProgram = &pointLightProgram;
+    programList.bwProgram = &bwProgram;
 
     /* --------------------------
     *   INIT GAME and CONTROLLER
@@ -96,87 +99,134 @@ int main(int argc, char** argv) {
     //AudioManager audioManager = AudioManager();
 
     /* -------------
-    *   INIT TIME
+    *   MENU
     *  ------------- */
 
-    // initialize the timers
-    gameManager.setTimers();
-    // Time & Delta Time
-    windowManager.updateDeltaTime();
-    gameManager.setStartTime(SDL_GetTicks());
+    Menu menu = Menu();
 
     /* ------------------------------------------------------------
-    *   APPLICATION LOOP | 1.EVENTS | 2.GAME ENGINE | 3. RENDERING
+    *   APPLICATION LOOP | 1.EVENTS | 2.MENU | 3. RENDERING
     *  ------------------------------------------------------------ */
 
-    bool done = false;
-    while(!done) {
-
-        /* ------------------
-        *   UPDATE DELTA TIME
-        *  ------------------ */
-
-        windowManager.updateDeltaTime();
-        gameManager.updateSpeed(windowManager.getDeltaTime());
-
-        /* ------------------
-        *   EVENT LOOP
-        *  ------------------ */
-
-        SDL_Event e;
-        while(windowManager.pollEvent(e)) {
-            if(e.type == SDL_QUIT)
+    bool game = true;
+    bool play = false;
+    while(game)
+    {
+        // --- EVENTS --- //
+        SDL_Event e_m;
+        while(windowManager.pollEvent(e_m)) {
+            if(e_m.type == SDL_QUIT)
             {
-                done = true; // Leave the loop after this iteration
+                game = false; // Leave the loop after this iteration
             }
 
-            // Update controller with key & mouse events each frame
-            controller.updateController(map.getPacman());
+            // Update controller with key events each frame
+            controller.updateInterfaceAction();
         }
+        menu.selectButton(&controller);
 
-        /* ------------------
-        *   MANAGE CAMERAS
-        *  ------------------ */
-
-        // Send the keys to the camera and the map
-        tpsCamera.cameraController(&controller);
-        // Ask the camera to track pacman
-        fpsCamera.setCameraOnCharacter(map.getPacman(), gameSize);
-        // Switch Camera FPS / TPS if C button is pressed
-        if (controller.getInterfaceAction() == Controller::C)
+        if (controller.getInterfaceAction() == Controller::Key::ENTER)
         {
-            if(camera == &fpsCamera)
+            if (menu.getButton() == Menu::Button::PLAY)
             {
-                camera = &tpsCamera;
-                controller.setFPS(false);
+                play = true;
+                game = false;
+                
+                /* -------------
+                *   INIT TIME
+                *  ------------- */
+
+                // initialize the timers
+                gameManager.setTimers();
+                // Time & Delta Time
+                windowManager.updateDeltaTime();
+                gameManager.setStartTime(SDL_GetTicks());
             }
-            else
-            {
-                camera = &fpsCamera;
-                controller.setFPS(true);
-            }
-            controller.setInterfaceAction(Controller::NONE);
+            else if (menu.getButton() == Menu::Button::EXIT)
+                game = false;
         }
 
-        /* --------------------------------------------------------------------------
-        *   PLAY FUNCTION : Move characters, Check for collision, Update Player infos
-        *  -------------------------------------------------------------------------- */
-
-        gameManager.play(&controller);
-
-        /* ------------------
-        *   RENDERING CODE
-        *  ------------------ */
-
+        // --- RENDERING --- //
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // Update The View Matrix each time we enter the while loop
-        renderManager.updateMVMatrix(camera, map.getPacman());
-        // Render the map (objects, skybox and ground)
-        renderManager.drawMap(&map, &controller);
-
+        // Render the menu
+        renderManager.drawMenu(&menu);
         // Update the display
         windowManager.swapBuffers();
+
+        /* ------------------------------------------------------------
+        *   APPLICATION LOOP | 1.EVENTS | 2.GAME ENGINE | 3. RENDERING
+        *  ------------------------------------------------------------ */
+        
+        while(play) {
+            renderManager.drawMenu(&menu);
+            /* ------------------
+            *   UPDATE DELTA TIME
+            *  ------------------ */
+
+            windowManager.updateDeltaTime();
+            gameManager.updateSpeed(windowManager.getDeltaTime());
+
+            /* ------------------
+            *   EVENT LOOP
+            *  ------------------ */
+
+            SDL_Event e;
+            while(windowManager.pollEvent(e)) {
+                if(e.type == SDL_QUIT)
+                {
+                    play = false; // Leave the loop after this iteration
+                }
+
+                // Update controller with key & mouse events each frame
+                controller.updateController(map.getPacman());
+            }
+
+            /* ------------------
+            *   MANAGE CAMERAS
+            *  ------------------ */
+
+            // Send the keys to the camera and the map
+            tpsCamera.cameraController(&controller);
+            // Ask the camera to track pacman
+            fpsCamera.setCameraOnCharacter(map.getPacman(), gameSize);
+            // Switch Camera FPS / TPS if C button is pressed
+            if (controller.getInterfaceAction() == Controller::C)
+            {
+                if(camera == &fpsCamera)
+                {
+                    camera = &tpsCamera;
+                    controller.setFPS(false);
+                }
+                else
+                {
+                    camera = &fpsCamera;
+                    controller.setFPS(true);
+                }
+                controller.setInterfaceAction(Controller::NONE);
+            }
+
+            /* --------------------------------------------------------------------------
+            *   PLAY FUNCTION : Move characters, Check for collision, Update Player infos
+            *  -------------------------------------------------------------------------- */
+
+            gameManager.play(&controller);
+            renderManager.updateState(gameManager.getState());
+
+            /* ------------------
+            *   RENDERING CODE
+            *  ------------------ */
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            // Update The View Matrix each time we enter the while loop
+            renderManager.updateMVMatrix(camera, map.getPacman());
+
+            // Render the map (objects, skybox and ground)
+            renderManager.drawMap(&map, &controller);
+
+            // Update the display
+            windowManager.swapBuffers();
+        }
     }
 
     return EXIT_SUCCESS;

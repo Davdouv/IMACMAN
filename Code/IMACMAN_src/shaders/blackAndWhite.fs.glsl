@@ -7,7 +7,6 @@ in vec2 vFragTexCoords;// Coordonées de texture
 out vec3 fFragColor;
 
 // COLOR
-uniform vec3 uColor;
 // INFOS TEXTURE
 uniform sampler2D uTexture;
 // INFOS MATERIAUX
@@ -42,5 +41,6 @@ vec3 blinnPhong(vec3 Kd, vec3 Ks, float shininess, vec3 lightDirection, vec3 Li,
 void main() {
     vec4 textureColor = texture(uTexture, vFragTexCoords);
     //fFragColor = blinnPhong(uKd, uKs, uShininess, uLightDir_vs, uLightIntensity, normalize(vFragNormal))*vec3(textureColor);
-    fFragColor = blinnPhong(uKd, uKs, uShininess, uLightDir_vs, uLightIntensity, normalize(vFragNormal)) * vec3(textureColor) * uColor;
+    fFragColor = blinnPhong(uKd, uKs, uShininess, uLightDir_vs, uLightIntensity, normalize(vFragNormal)) * vec3(textureColor);
+    fFragColor = vec3((fFragColor.r+fFragColor.g+fFragColor.b)/3);
 }

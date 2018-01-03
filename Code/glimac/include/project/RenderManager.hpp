@@ -16,6 +16,8 @@
 #include "project/Text.hpp"
 
 #include "project/GLSLProgram.hpp"
+#include "project/GameManager.hpp"
+#include "project/Menu.hpp"
 
 using namespace glimac;
 
@@ -50,6 +52,18 @@ private:
     GLuint m_sphereVBO;
     GLuint m_sphereIBO;
     GLuint m_sphereVAO;
+
+    // Model3D
+    Geometry m_ghostModel;
+    GLuint m_ghostModelVBO;
+    GLuint m_ghostModelIBO;
+    GLuint m_ghostModelVAO;
+
+    // Model3D
+    // Geometry m_rock;
+    // GLuint m_rockVBO;
+    // GLuint m_rockIBO;
+    // GLuint m_rockVAO;
 
     // Matrix
     glm::mat4 m_ProjMatrix;
@@ -86,6 +100,9 @@ private:
 
     // Mini-Map
     StaticObject* m_miniMap;
+
+    // State (normal or super)
+    GameManager::PacmanState m_state;
 
 public:
     // Constructor - SDLWindowManager for Ratio - Camera for viewMatrix - FilePath for Shaders
@@ -161,4 +178,12 @@ public:
     // Global
     void drawMap(Map* map, Controller* controller);
 
+    // Build 3D Model
+    void buildModel(Geometry*, GLuint* VBO, GLuint* IBO, GLuint* VAO, std::string, std::string);
+
+    // Update state
+    void updateState(GameManager::PacmanState);
+
+    // MENU
+    void drawMenu(Menu*);
 };

@@ -10,17 +10,24 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // Window Manager
     m_windowManager = windowManager;
 
+<<<<<<< HEAD
     // Camera
     // m_ffCamera = camera;
 
     // Skybox
     m_skybox = new StaticObject('K', 15.f, 20.f, 250.f, 250.f);
 
+=======
+>>>>>>> 9a5e319d1efadf37262b7a383708a656e4df7890
     // Plane
     m_plane = Plane();
     m_planeVBO = m_plane.getVBO();
     m_planeIBO = m_plane.getIBO();
     m_planeVAO = m_plane.getVAO(&m_planeIBO, &m_planeVBO);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9a5e319d1efadf37262b7a383708a656e4df7890
     // Cube
     m_cube = Cube();
     m_cubeVBO = m_cube.getVBO();
@@ -32,6 +39,10 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_sphereVBO = m_sphere.getVBO();
     m_sphereIBO = m_sphere.getIBO();
     m_sphereVAO = m_sphere.getVAO(&m_sphereIBO, &m_sphereVBO);
+
+    // Model3D
+    buildModel(&m_ghostModel, &m_ghostModelVBO, &m_ghostModelIBO, &m_ghostModelVAO, "snapchat.obj", "snapchat.mtl");
+    //buildModel(&m_rock, &m_rockVBO, &m_rockIBO, &m_rockVAO, "rock/rock.obj", "snapchat.mtl");
 
     // Matrices
     // Projection Matrix (world) : vertical view angle, window ratio, near, far
@@ -77,6 +88,9 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
 
     // Mini Map
     m_miniMap = new StaticObject('F', gameSize.y/2, gameSize.x/2, gameSize.y, gameSize.x);
+
+    // State
+    m_state = GameManager::PacmanState::NORMAL;
 }
 
 // Destructor
@@ -109,6 +123,7 @@ RenderManager::~RenderManager()
 // ---------------
 // TEXT FUNCTIONS
 // ---------------
+<<<<<<< HEAD
 
 void RenderManager::loadFont()
 {
@@ -166,6 +181,61 @@ GLuint* RenderManager::getPlaneVAOPtr()
     return &m_planeVAO;
 }
 
+// ---------------
+// 3D MODEL FUNCTIONS
+// ---------------
+
+// Build 3D Model
+void RenderManager::buildModel(Geometry* objModel, GLuint* VBO, GLuint* IBO, GLuint* VAO, std::string objFile, std::string mtlFile)
+{
+    objFile = "../Code/assets/models/"+objFile;
+    mtlFile = "../Code/assets/models/"+mtlFile;
+
+    objModel->loadOBJ(objFile, mtlFile, true);
+
+    glGenBuffers(1, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, *VBO);
+
+    // Nombre de vertex * taille des données du vertex
+    glBufferData(GL_ARRAY_BUFFER, objModel->getVertexCount() * sizeof(Geometry::Vertex), objModel->getVertexBuffer(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // => Creation du IBO
+    glGenBuffers(1, IBO);
+
+    // => On bind sur GL_ELEMENT_ARRAY_BUFFER, cible reservée pour les IBOs
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *IBO);
+
+
+    // => On remplit l'IBO avec les indices:
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, objModel->getIndexCount() * sizeof(uint32_t), objModel->getIndexBuffer(), GL_STATIC_DRAW);
+
+    // => Comme d'habitude on debind avant de passer à autre chose
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    // VAO
+    glGenVertexArrays(1, VAO);
+    glBindVertexArray(*VAO);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *IBO);
+
+    const GLuint VERTEX_ATTR_POSITION = 0;
+    const GLuint VERTEX_ATTR_NORMAL = 1;
+    const GLuint VERTEX_ATTR_TEXCOORD = 2;
+    glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
+    glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
+    glEnableVertexAttribArray(VERTEX_ATTR_TEXCOORD);
+
+    glBindBuffer(GL_ARRAY_BUFFER, *VBO);
+
+    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*) 0);
+    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*) offsetof(Geometry::Vertex, m_Normal));
+    glVertexAttribPointer(VERTEX_ATTR_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Geometry::Vertex), (const GLvoid*) offsetof(Geometry::Vertex, m_TexCoords));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
 
 // ---------------
 // RENDERING FUNCTIONS
@@ -263,6 +333,10 @@ void RenderManager::useProgram(FS shader)
             m_programList->pointLightProgram->m_Program.use();
             break;
 
+        case BLACK_AND_WHITE :
+            m_programList->bwProgram->m_Program.use();
+            break;
+
         default :
             m_programList->normalProgram->m_Program.use();
             break;
@@ -334,11 +408,17 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
 
         case DIRECTIONNAL_LIGHT :
             glUniform1i(m_programList->directionnalLightProgram->uTexture, 0);
+            // White Color to keep the correct color
+            glUniform3f(m_programList->directionnalLightProgram->uColor, 1.0,1.0,1.0);
 
             lightMatrix = glm::rotate(m_MVMatrix, 180.f, glm::vec3(1,1,1));
             lightVector = glm::normalize(glm::vec4(1,1,1,0)*lightMatrix);
             glUniform3f(m_programList->directionnalLightProgram->uLightDir_vs, lightVector.x, lightVector.y, lightVector.z);
-            glUniform3f(m_programList->directionnalLightProgram->uLightIntensity, 2.0,2.0,2.0);
+
+            if (m_state == GameManager::PacmanState::NORMAL)
+                glUniform3f(m_programList->directionnalLightProgram->uLightIntensity, 2.0,2.0,2.0);
+            else
+                glUniform3f(m_programList->directionnalLightProgram->uLightIntensity, 2.0,1.0,1.0);
 
             glUniformMatrix4fv(m_programList->directionnalLightProgram->uMVPMatrix, 1, GL_FALSE,
             glm::value_ptr(m_ProjMatrix * matrix));
@@ -368,6 +448,25 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
             glm::value_ptr(glm::transpose(glm::inverse(matrix))));
             break;
 
+        case BLACK_AND_WHITE :
+            glUniform1i(m_programList->bwProgram->uTexture, 0);
+
+            lightMatrix = glm::rotate(m_MVMatrix, 180.f, glm::vec3(1,1,1));
+            lightVector = glm::normalize(glm::vec4(1,1,1,0)*lightMatrix);
+            glUniform3f(m_programList->bwProgram->uLightDir_vs, lightVector.x, lightVector.y, lightVector.z);
+            glUniform3f(m_programList->bwProgram->uLightIntensity, 2.0,2.0,2.0);
+
+            glUniformMatrix4fv(m_programList->bwProgram->uMVPMatrix, 1, GL_FALSE,
+            glm::value_ptr(m_ProjMatrix * matrix));
+
+            glUniformMatrix4fv(m_programList->bwProgram->uMVMatrix, 1, GL_FALSE,
+            glm::value_ptr(matrix));
+
+            glUniformMatrix4fv(m_programList->bwProgram->uNormalMatrix, 1, GL_FALSE,
+            glm::value_ptr(glm::transpose(glm::inverse(matrix))));
+            break;
+
+
         default :
             break;
     }
@@ -376,7 +475,7 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
 // Material Transformations for light
 void RenderManager::materialTransformations(FS shader, float Kd, float Ks, float shininess)
 {
-    if ((shader == DIRECTIONNAL_LIGHT) || (shader == POINT_LIGHT))
+    if ((shader == DIRECTIONNAL_LIGHT) || (shader == POINT_LIGHT) || (shader == BLACK_AND_WHITE))
     {
         glUniform3f(m_programList->directionnalLightProgram->uKd, Kd, Kd, Kd);
         glUniform3f(m_programList->directionnalLightProgram->uKs,  Ks, Ks, Ks);
@@ -387,7 +486,7 @@ void RenderManager::materialTransformations(FS shader, float Kd, float Ks, float
 // Enable texture if we use shader texture
 void RenderManager::enableTexture(FS shader, Texture* texture)
 {
-    if ((shader == TEXTURE) || (shader == DIRECTIONNAL_LIGHT) || (shader == POINT_LIGHT))
+    if (shader != NORMAL)
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture->getID());
@@ -397,7 +496,7 @@ void RenderManager::enableTexture(FS shader, Texture* texture)
 // Disable texture if we use shader texture
 void RenderManager::disableTexture(FS shader)
 {
-    if ((shader == TEXTURE) || (shader == DIRECTIONNAL_LIGHT) || (shader == POINT_LIGHT))
+    if (shader != NORMAL)
     {
         glBindTexture(GL_TEXTURE_2D, 0);
         glActiveTexture(GL_TEXTURE0);
@@ -432,27 +531,28 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
 {
     for (unsigned int i = 0; i < ghost.size(); ++i)
     {
+        //useProgram(shader);
+
+        enableTexture(shader, m_GumTexture/*m_GhostTexture*/);
+
+        glm::mat4 transformationMatrix = transformMatrix(ghost[i]);
+        transformationMatrix = glm::rotate(transformationMatrix, -1.57f, glm::vec3(0,1,0));
+        applyTransformations(shader, transformationMatrix);
+        materialTransformations(shader, 1.0, 0.0, 100);
         if (ghost[i]->getSuper())
         {
-            useProgram(NORMAL);
-
-            glm::mat4 transformationMatrix = transformMatrix(ghost[i]);
-            applyTransformations(NORMAL, transformationMatrix);
-            m_cube.drawCube();
+            glUniform3f(m_programList->directionnalLightProgram->uColor, 0.0,0.0,1.0);
         }
         else
         {
-            useProgram(shader);
-
-            enableTexture(shader, m_GhostTexture);
-
-            glm::mat4 transformationMatrix = transformMatrix(ghost[i]);
-            applyTransformations(shader, transformationMatrix);
-            materialTransformations(shader, 0.8, 0.2, 100);
-            m_cube.drawCube();
-
-            disableTexture(shader);
+            glm::vec3 color = ghost[i]->getColor();
+            glUniform3f(m_programList->directionnalLightProgram->uColor, color.r,color.g,color.b);
         }
+        //m_cube.drawCube();
+        glDrawElements(GL_TRIANGLES, m_ghostModel.getIndexCount(), GL_UNSIGNED_INT, 0);
+
+        disableTexture(shader);
+
     }
 }
 
@@ -470,6 +570,7 @@ void RenderManager::drawWalls(std::vector<Wall*> wall, FS shader)
         applyTransformations(shader, transformationMatrix);
         materialTransformations(shader, 0.9, 0.1, 20);
         m_cube.drawCube();
+        //glDrawElements(GL_TRIANGLES, m_rock.getIndexCount(), GL_UNSIGNED_INT, 0);
     }
 
     disableTexture(shader);
@@ -601,6 +702,7 @@ void RenderManager::drawMiniMap(FS shader)
 // Draw the map (Characters & Objects)
 void RenderManager::drawMap(Map* map, Controller* controller)
 {
+    //FS shader;
     // --- PLANE OBJECTS --- //
     bindPlaneVAO();
 
@@ -616,9 +718,13 @@ void RenderManager::drawMap(Map* map, Controller* controller)
     useProgram(CUBEMAP);
     drawSkybox();
 
-    drawGhosts(map->getGhosts(), DIRECTIONNAL_LIGHT);
+    // if (m_state == GameManager::PacmanState::NORMAL)
+    //     shader = DIRECTIONNAL_LIGHT;
+    // else
+    //     shader = BLACK_AND_WHITE;
 
     useProgram(DIRECTIONNAL_LIGHT);
+
     drawWalls(map->getWalls(), DIRECTIONNAL_LIGHT);
 
     debindVAO();
@@ -635,5 +741,76 @@ void RenderManager::drawMap(Map* map, Controller* controller)
     drawFruits(map->getFruits(), DIRECTIONNAL_LIGHT);
 
     //De-bind Sphere VAO
+    debindVAO();
+
+    //useProgram(DIRECTIONNAL_LIGHT);
+    glBindVertexArray(m_ghostModelVAO);
+    // m_ghostModel.bindVAO();
+    drawGhosts(map->getGhosts(), DIRECTIONNAL_LIGHT);
+    debindVAO();
+}
+
+// Update State
+
+void RenderManager::updateState(GameManager::PacmanState state)
+{
+    m_state = state;
+}
+
+// ---- MENU ---- //
+
+void RenderManager::drawMenu(Menu* menu)
+{
+    FS shader = TEXTURE;
+    bindPlaneVAO();
+
+    useProgram(shader);
+
+    glm::mat4 originMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.f));
+
+    // Background
+     glm::mat4 matrix = originMatrix;
+    matrix = glm::scale(matrix, glm::vec3(12.8f, 7.2f, 1.f));
+    applyTransformations(shader, matrix);
+    enableTexture(shader, menu->getTextures()[3]);
+    m_plane.drawPlane();
+    disableTexture(shader);
+
+    // Play
+    matrix = originMatrix;
+    matrix = glm::translate(matrix, glm::vec3(0.0f, 1.5f, 0.2f));
+    matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
+    applyTransformations(shader, matrix);
+    enableTexture(shader, menu->getTextures()[Menu::PLAY]);
+    m_plane.drawPlane();
+    disableTexture(shader);
+
+    // Continue
+    matrix = originMatrix;
+    matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 0.2f));
+    matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
+    applyTransformations(shader, matrix);
+    enableTexture(shader, menu->getTextures()[Menu::CONTINUE]);
+    m_plane.drawPlane();
+    disableTexture(shader);
+
+    // Exit
+    matrix = originMatrix;
+    matrix = glm::translate(matrix, glm::vec3(0.0f, -1.5f, 0.2f));
+    matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
+    applyTransformations(shader, matrix);
+    enableTexture(shader, menu->getTextures()[Menu::EXIT]);
+    m_plane.drawPlane();
+    disableTexture(shader);
+
+    // Select
+    matrix = originMatrix;
+    matrix = glm::translate(matrix, glm::vec3(0.0f, -1.5*(menu->getButton())+1.5f, 0.2f));
+    matrix = glm::scale(matrix, glm::vec3(2.2f, 1.2f, 1.f));
+    applyTransformations(shader, matrix);
+    enableTexture(shader, menu->getTextures()[4]);
+    m_plane.drawPlane();
+    disableTexture(shader);
+
     debindVAO();
 }

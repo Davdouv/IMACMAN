@@ -9,6 +9,7 @@ private:
     int m_type;
     int m_death;
     bool m_super;
+    glm::vec3 m_color;
 
 public:
     /* 4 GHOSTS :
@@ -27,6 +28,7 @@ public:
     int getType() const;
     int getDeath() const;
     bool getSuper() const;
+    glm::vec3 getColor() const;
 
     // setter
     void setType(int);
