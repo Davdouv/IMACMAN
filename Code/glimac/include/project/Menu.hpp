@@ -16,7 +16,8 @@ private:
     Texture* m_texture[5];
 
 public:
-    Menu();
+    //Menu();
+    Menu(bool mainMenu);
     ~Menu();
 
     Texture** getTextures();

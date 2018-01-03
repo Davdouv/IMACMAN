@@ -122,6 +122,7 @@ void Controller::updateCameraAction()
 		}
 	}
 	// Else check keys
+	/*
     else if (m_windowManager->isKeyPressed(SDLK_UP))
 	{
 		cameraAction = UP;
@@ -137,7 +138,7 @@ void Controller::updateCameraAction()
 	else if (m_windowManager->isKeyPressed(SDLK_RIGHT))
 	{
 		cameraAction = RIGHT;
-	}
+	}*/
     else
     {
         cameraAction = NONE;

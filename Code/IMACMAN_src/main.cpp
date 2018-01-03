@@ -103,13 +103,14 @@ int main(int argc, char** argv) {
     audioManager.playMusic(0);
 
     /* -------------
-    *   MENU
+    *   MENU | PAUSE MENU
     *  ------------- */
 
-    Menu menu = Menu();
+    Menu menu = Menu(true);
+    Menu menuPause = Menu(false);
 
     /* ------------------------------------------------------------
-    *   APPLICATION LOOP | 1.EVENTS | 2.MENU | 3. RENDERING
+    *   MENU APPLICATION LOOP | 1.EVENTS | 2. RENDERING
     *  ------------------------------------------------------------ */
 
     bool game = true;
@@ -131,7 +132,7 @@ int main(int argc, char** argv) {
 
         if (controller.getInterfaceAction() == Controller::Key::ENTER)
         {
-            if (menu.getButton() == Menu::Button::PLAY)
+            if ((menu.getButton() == Menu::Button::PLAY) || (menu.getButton() == Menu::Button::CONTINUE)) // PLAY OR CONTIUE
             {
                 play = true;
                 game = false;
@@ -148,20 +149,21 @@ int main(int argc, char** argv) {
                 windowManager.updateDeltaTime();
                 gameManager.setStartTime(SDL_GetTicks());
             }
-            else if (menu.getButton() == Menu::Button::EXIT)
+            else if (menu.getButton() == Menu::Button::EXIT)    // EXIT
                 game = false;
         }
 
         // --- RENDERING --- //
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Render the menu
         renderManager.drawMenu(&menu);
         // Update the display
         windowManager.swapBuffers();
 
-        /* ------------------------------------------------------------
-        *   APPLICATION LOOP | 1.EVENTS | 2.GAME ENGINE | 3. RENDERING
-        *  ------------------------------------------------------------ */
+        /* -----------------------------------------------------------------
+        *   GAME APPLICATION LOOP | 1.EVENTS | 2.GAME ENGINE | 3. RENDERING
+        *  ----------------------------------------------------------------- */
         
         while(play) {
             renderManager.drawMenu(&menu);
@@ -185,6 +187,28 @@ int main(int argc, char** argv) {
 
                 // Update controller with key & mouse events each frame
                 controller.updateController(map.getPacman());
+            }
+
+            // If game paused, use menuPause
+            if(gameManager.isPause())
+            {
+                menuPause.selectButton(&controller, &audioManager);
+
+                if (controller.getInterfaceAction() == Controller::Key::ENTER)
+                {
+                    if (menu.getButton() == Menu::Button::PLAY) // RESTART
+                    {
+                        Mix_RewindMusic();
+                    }
+                    else if (menu.getButton() == Menu::Button::CONTINUE) // SAVE
+                    {
+                        //gameManager.save();
+                    }
+                    else if (menu.getButton() == Menu::Button::EXIT)    // EXIT
+                    {
+                        play = false;
+                    }
+                }
             }
 
             /* ------------------

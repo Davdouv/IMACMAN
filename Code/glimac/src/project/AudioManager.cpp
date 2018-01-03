@@ -26,7 +26,7 @@ void AudioManager::initAudio()
     else
     {
         Mix_VolumeMusic(MIX_MAX_VOLUME / 8);
-        Mix_AllocateChannels(10);
+        Mix_AllocateChannels(8);
     }
 }
 // CLOSE AUDIO
@@ -117,9 +117,13 @@ void AudioManager::freeSound(Mix_Chunk* sound)
 // Here we create all the sounds
 void AudioManager::fillSounds()
 {
-    addSound(createSound("../Code/assets/audio/select.wav"));
-    addSound(createSound("../Code/assets/audio/eat4.wav"));
-    addSound(createSound("../Code/assets/audio/hit2.wav"));
-    addSound(createSound("../Code/assets/audio/eatGhost.wav"));
-    addSound(createSound("../Code/assets/audio/super.wav"));
+    addSound(createSound("../Code/assets/audio/select.wav"));       // 0
+    addSound(createSound("../Code/assets/audio/eat4.wav"));         // 1
+    addSound(createSound("../Code/assets/audio/hit2.wav"));         // 2
+    addSound(createSound("../Code/assets/audio/eatGhost.wav"));     // 3
+    addSound(createSound("../Code/assets/audio/super.wav"));        // 4
+    addSound(createSound("../Code/assets/audio/superTimer.wav"));   // 5
+    addSound(createSound("../Code/assets/audio/crunch.wav"));       // 6
+    addSound(createSound("../Code/assets/audio/endGame.wav"));      // 7
+    
 }

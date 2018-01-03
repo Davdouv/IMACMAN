@@ -226,6 +226,11 @@ bool GameManager::pacmanGhostCollision(AudioManager* audioManager) {
                     setStartTime(SDL_GetTicks());
                     audioManager->playSound(2,1);
                 }
+                else // We're dead
+                {
+                    audioManager->playSound(7,1);
+                    Mix_PauseMusic();
+                }
                 for (int i = 0; i < m_map->getGhosts().size(); i++) {
                     m_map->getGhosts()[i]->reset();
                 }
@@ -512,7 +517,7 @@ bool GameManager::pacmanEdibleCollision(AudioManager* audioManager) {
         switch (e->getTypeEdible()) {
 
             case Edible::Type::FRUIT : 
-                audioManager->playSound(1,1);
+                audioManager->playSound(6,1);
                 if (e->getAvailability() && e->getFruit()!=Edible::Fruit::NONE) {
                     m_player.gainPoints(e->gain());
                     e->upgradeFruit();
@@ -531,7 +536,9 @@ bool GameManager::pacmanEdibleCollision(AudioManager* audioManager) {
                 break;
 
             case Edible::Type::SUPER_PAC_GOMME :
+                Mix_PauseMusic();
                 audioManager->playSound(4,1);
+                audioManager->playSound(5,1);
                 m_player.gainPoints(e->gain());
                 switchSuperState();
                 m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()]->setType('V');
@@ -560,6 +567,7 @@ void GameManager::stateManager() {
     if (this->getState() == GameManager::PacmanState::SUPER) {
         int timer = 7000; // 1 second * 1000
         if (SDL_GetTicks() - this->getSuperTimer() > timer) {
+            Mix_ResumeMusic();
             this->setState(GameManager::PacmanState::NORMAL);
             this->setEatenGhosts(0);
             for (int i = 0; i < m_map->getGhosts().size(); i++) { 
