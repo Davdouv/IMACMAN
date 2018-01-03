@@ -67,9 +67,10 @@ int main(int argc, char** argv) {
     map.initialization();
 
     GameManager gameManager = GameManager(&map);
+    gameManager.load(true);
 
     // Game Infos
-    glm::vec2 gameSize = glm::vec2(map.getNbX(),map.getNbY());
+    glm::vec2 gameSize = glm::vec2(gameManager.getMap()->getNbX(),gameManager.getMap()->getNbY());
 
     //TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,0.0f);    // CAMERA VUE 2D
     TrackballCamera tpsCamera = TrackballCamera(gameSize.x,0,0.0f,-0.4f);
