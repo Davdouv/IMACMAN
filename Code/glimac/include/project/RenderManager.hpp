@@ -92,6 +92,7 @@ private:
     // Text
 		TTF_Font* m_font;
 		SDL_Surface* m_text;
+		GLuint m_textTexture;
 
     // Game Size Infos
     glm::vec2 m_gameSize;
@@ -117,7 +118,8 @@ public:
 
     // Text
 		void loadFont();
-		void drawText(const char *text, SDL_Color fg);
+		void renderText();
+		void drawText();
 
     // Skybox
     void initSkybox();

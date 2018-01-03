@@ -157,13 +157,13 @@ int main(int argc, char** argv) {
         // // De-bind Sphere VAO
         // renderManager.debindVAO();
         //
-        // // --- CUBE --- //
+        // // --- CUBE --- //T
          renderManager.bindCubeVAO();
          renderManager.drawSkybox();
          renderManager.debindVAO();
 
          // TEXT
-         //renderManager.drawText("Bonjour", {255,0,0});
+         renderManager.drawText();
 
         // Update the display
         windowManager.swapBuffers();
