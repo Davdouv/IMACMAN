@@ -804,7 +804,7 @@ void RenderManager::drawMenu(Menu* menu)
 
     glm::mat4 originMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.f));
     glm::mat4 matrix = originMatrix;
-    
+
     if (menu->isMainMenu())
     {
         // Background
@@ -850,6 +850,32 @@ void RenderManager::drawMenu(Menu* menu)
     enableTexture(shader, menu->getTextures()[3]);
     m_plane.drawPlane();
     disableTexture(shader);
+
+    debindVAO();
+}
+
+// ---- UI ---- //
+
+void RenderManager::drawUI(UI* ui)
+{
+    FS shader = TEXTURE;
+    bindPlaneVAO();
+
+    useProgram(shader);
+
+    glm::mat4 originMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.f));
+
+    // Life
+    for (unsigned int i = 0; i < ui->getPlayer()->getLife(); ++i)
+    {
+        glm::mat4 matrix = originMatrix;
+        matrix = glm::translate(matrix, glm::vec3(5.5f-(0.5*i), 3.0f, 0.2f));
+        matrix = glm::scale(matrix, glm::vec3(0.5f, 0.5f, 1.f));
+        applyTransformations(shader, matrix);
+        enableTexture(shader, ui->getTextures()[0]);
+        m_plane.drawPlane();
+        disableTexture(shader);
+    }
 
     debindVAO();
 }
