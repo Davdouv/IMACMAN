@@ -32,6 +32,7 @@ public:
     bool isPause();
     int getEatenGhosts() const;
     Player* getPlayer();
+    Map* getMap();
 
     // setters
     void setState(PacmanState);

@@ -23,6 +23,7 @@ uint32_t GameManager::getFruitTimer() const { return m_fruitTimer; }
 bool GameManager::isPause() { return m_pause; }
 int GameManager::getEatenGhosts() const { return m_eatenGhosts; }
 Player* GameManager::getPlayer() { return &m_player; }
+Map* GameManager::getMap() { return m_map; }
 void GameManager::setState(PacmanState state) { m_state = state;}
 void GameManager::setStartTime(uint32_t t) { m_startTime = t;}
 void GameManager::setSuperTimer(uint32_t t) { m_superTimer = t;}
@@ -1019,6 +1020,7 @@ void GameManager::ghostMove() {
     for (int i = 0; i < m_map->getGhosts().size(); i++) {
         if (m_map->getGhosts()[i]->ready()) {
 
+            std::cout << "Ghost " << i+1 << " is ready !!" << std::endl << std::endl;
             switch (m_map->getGhosts()[i]->getOrientation()) {
 
                 case Object::Orientation::UP : action = Controller::Z;
