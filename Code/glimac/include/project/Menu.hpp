@@ -14,13 +14,17 @@ public:
 private:
     Button m_button;
     Texture* m_texture[5];
+    bool m_mainMenu;
 
 public:
     //Menu();
     Menu(bool mainMenu);
     ~Menu();
 
+    // Getters
     Texture** getTextures();
     Button getButton() const;
+    bool isMainMenu() const;
+    // Setter for button
     void selectButton(Controller* controller, AudioManager* audioManager);
 };

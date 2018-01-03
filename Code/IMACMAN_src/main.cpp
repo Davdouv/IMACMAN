@@ -166,7 +166,6 @@ int main(int argc, char** argv) {
         *  ----------------------------------------------------------------- */
         
         while(play) {
-            renderManager.drawMenu(&menu);
             /* ------------------
             *   UPDATE DELTA TIME
             *  ------------------ */
@@ -196,15 +195,15 @@ int main(int argc, char** argv) {
 
                 if (controller.getInterfaceAction() == Controller::Key::ENTER)
                 {
-                    if (menu.getButton() == Menu::Button::PLAY) // RESTART
+                    if (menuPause.getButton() == Menu::Button::PLAY) // RESTART
                     {
                         Mix_RewindMusic();
                     }
-                    else if (menu.getButton() == Menu::Button::CONTINUE) // SAVE
+                    else if (menuPause.getButton() == Menu::Button::CONTINUE) // SAVE
                     {
                         //gameManager.save();
                     }
-                    else if (menu.getButton() == Menu::Button::EXIT)    // EXIT
+                    else if (menuPause.getButton() == Menu::Button::EXIT)    // EXIT
                     {
                         play = false;
                     }
@@ -253,6 +252,12 @@ int main(int argc, char** argv) {
 
             // Render the map (objects, skybox and ground)
             renderManager.drawMap(&map, &controller);
+
+            // Render the pause menu if the game is paused
+            if(gameManager.isPause())
+            {
+                renderManager.drawMenu(&menuPause);
+            }
 
             // Update the display
             windowManager.swapBuffers();

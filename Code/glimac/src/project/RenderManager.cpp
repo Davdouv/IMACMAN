@@ -803,16 +803,19 @@ void RenderManager::drawMenu(Menu* menu)
     useProgram(shader);
 
     glm::mat4 originMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.f));
+    glm::mat4 matrix = originMatrix;
+    
+    if (menu->isMainMenu())
+    {
+        // Background
+        matrix = glm::scale(matrix, glm::vec3(12.8f, 7.2f, 1.f));
+        applyTransformations(shader, matrix);
+        enableTexture(shader, menu->getTextures()[4]);
+        m_plane.drawPlane();
+        disableTexture(shader);
+    }
 
-    // Background
-     glm::mat4 matrix = originMatrix;
-    matrix = glm::scale(matrix, glm::vec3(12.8f, 7.2f, 1.f));
-    applyTransformations(shader, matrix);
-    enableTexture(shader, menu->getTextures()[3]);
-    m_plane.drawPlane();
-    disableTexture(shader);
-
-    // Play
+    // Play | Restart
     matrix = originMatrix;
     matrix = glm::translate(matrix, glm::vec3(0.0f, 1.5f, 0.2f));
     matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
@@ -821,7 +824,7 @@ void RenderManager::drawMenu(Menu* menu)
     m_plane.drawPlane();
     disableTexture(shader);
 
-    // Continue
+    // Continue | Save
     matrix = originMatrix;
     matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 0.2f));
     matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
@@ -844,7 +847,7 @@ void RenderManager::drawMenu(Menu* menu)
     matrix = glm::translate(matrix, glm::vec3(0.0f, -1.5*(menu->getButton())+1.5f, 0.2f));
     matrix = glm::scale(matrix, glm::vec3(2.2f, 1.2f, 1.f));
     applyTransformations(shader, matrix);
-    enableTexture(shader, menu->getTextures()[4]);
+    enableTexture(shader, menu->getTextures()[3]);
     m_plane.drawPlane();
     disableTexture(shader);
 
