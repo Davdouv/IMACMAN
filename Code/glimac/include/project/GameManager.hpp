@@ -1,6 +1,7 @@
 #pragma once
 #include "project/Map.hpp"
 #include "Player.hpp"
+#include "project/AudioManager.hpp"
 
 using namespace glimac;
 
@@ -39,9 +40,9 @@ public:
     void switchPause();
     void setEatenGhosts(int);
 
-    void start();
-    void play();
-    void play(Controller* controller);
+    void start(AudioManager*);
+    void play(AudioManager*);
+    void play(Controller* controller, AudioManager* audioManager);
 
     void setTimers();
 
@@ -71,9 +72,9 @@ private:
     bool characterLeftDoorCollision(Character*);
     bool characterRightDoorCollision(Character*);
 
-    bool pacmanGhostCollision();
+    bool pacmanGhostCollision(AudioManager*);
     bool ghostCollision();
-    void pacmanEdibleCollision();
+    bool pacmanEdibleCollision(AudioManager*);
 
     // Ghost moves algorithms
     int shortestWay(int, float, float);

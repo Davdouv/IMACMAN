@@ -25,8 +25,8 @@ void AudioManager::initAudio()
     }
     else
     {
-        Mix_VolumeMusic(MIX_MAX_VOLUME / 2);
-        Mix_AllocateChannels(14);
+        Mix_VolumeMusic(MIX_MAX_VOLUME / 8);
+        Mix_AllocateChannels(10);
     }
 }
 // CLOSE AUDIO
@@ -51,14 +51,14 @@ void AudioManager::addMusic(Mix_Music* music)
     m_music.push_back(music);
 }
 // PLAY A MUSIC
-void AudioManager::playMusic(Mix_Music* music)
-{
-    Mix_PlayMusic(music, -1);
-}
+// void AudioManager::playMusic(Mix_Music* music)
+// {
+//     Mix_PlayMusic(music, -1);
+// }
 void AudioManager::playMusic(unsigned int i)
 {
     if (m_music.size() >= i+1)
-        playMusic(m_music[i]);
+        Mix_PlayMusic(m_music[i], -1);//playMusic(m_music[i]);
     else
         std::cout << "There's not enough music" << std::endl;
 }
@@ -86,22 +86,23 @@ void AudioManager::addSound(Mix_Chunk* sound)
 }
 
 // PLAY SOUND
-void AudioManager::playSound(unsigned int channel, Mix_Chunk* sound)
-{
-    while(Mix_Playing(channel))
-        ++channel;
-    Mix_Volume(channel, MIX_MAX_VOLUME);
-    Mix_PlayChannel(channel, sound, 0);
-}
-void AudioManager::playSound(unsigned int channel, unsigned int i)
+// void AudioManager::playSound(unsigned int channel, Mix_Chunk* sound)
+// {
+//     while(Mix_Playing(channel))
+//         ++channel;
+//     Mix_Volume(channel, MIX_MAX_VOLUME);
+//     Mix_PlayChannel(channel, sound, 0);
+// }
+void AudioManager::playSound(unsigned int i, unsigned int time)
 {
     if (m_sound.size() >= i+1)
     {
+        unsigned int channel = i;
         // Find a channel that is not played
         while(Mix_Playing(channel))
             ++channel;
         Mix_Volume(channel, MIX_MAX_VOLUME);
-        Mix_PlayChannel(channel, m_sound[i], 0);
+        Mix_PlayChannel(channel, m_sound[i], time-1);
     }
     else
         std::cout << "There's not enough sound" << std::endl;
@@ -111,4 +112,14 @@ void AudioManager::playSound(unsigned int channel, unsigned int i)
 void AudioManager::freeSound(Mix_Chunk* sound)
 {
     Mix_FreeChunk(sound);
+}
+
+// Here we create all the sounds
+void AudioManager::fillSounds()
+{
+    addSound(createSound("../Code/assets/audio/select.wav"));
+    addSound(createSound("../Code/assets/audio/eat4.wav"));
+    addSound(createSound("../Code/assets/audio/hit2.wav"));
+    addSound(createSound("../Code/assets/audio/eatGhost.wav"));
+    addSound(createSound("../Code/assets/audio/super.wav"));
 }

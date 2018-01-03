@@ -2,6 +2,7 @@
 
 #include "project/Texture.hpp"
 #include "project/Controller.hpp"
+#include "project/AudioManager.hpp"
 
 using namespace glimac;
 
@@ -20,5 +21,5 @@ public:
 
     Texture** getTextures();
     Button getButton() const;
-    void selectButton(Controller* controller);
+    void selectButton(Controller* controller, AudioManager* audioManager);
 };

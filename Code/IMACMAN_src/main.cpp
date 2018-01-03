@@ -6,7 +6,7 @@
 
 #include "project/RenderManager.hpp"
 #include "project/GameManager.hpp"
-// #include "project/AudioManager.hpp"
+#include "project/AudioManager.hpp"
 #include "project/Controller.hpp"
 #include "glimac/TrackballCamera.hpp"
 #include "glimac/FreeflyCamera.hpp"
@@ -93,10 +93,14 @@ int main(int argc, char** argv) {
     renderManager.initSkybox();
 
     /* ---------------------
-    *   INIT AUDIO | NOT WORKING YET. NEED TO LINK THE LIBRARY
+    *   INIT AUDIO | START MUSIC
     *  --------------------- */
 
-    //AudioManager audioManager = AudioManager();
+    AudioManager audioManager = AudioManager();
+    audioManager.addMusic(audioManager.createMusic("../Code/assets/audio/mainTheme.mp3"));
+    audioManager.addMusic(audioManager.createMusic("../Code/assets/audio/mainThemeFast.mp3"));
+    audioManager.fillSounds();
+    audioManager.playMusic(0);
 
     /* -------------
     *   MENU
@@ -123,7 +127,7 @@ int main(int argc, char** argv) {
             // Update controller with key events each frame
             controller.updateInterfaceAction();
         }
-        menu.selectButton(&controller);
+        menu.selectButton(&controller, &audioManager);
 
         if (controller.getInterfaceAction() == Controller::Key::ENTER)
         {
@@ -131,6 +135,8 @@ int main(int argc, char** argv) {
             {
                 play = true;
                 game = false;
+
+                audioManager.playMusic(1);  // Change Music
                 
                 /* -------------
                 *   INIT TIME
@@ -209,7 +215,7 @@ int main(int argc, char** argv) {
             *   PLAY FUNCTION : Move characters, Check for collision, Update Player infos
             *  -------------------------------------------------------------------------- */
 
-            gameManager.play(&controller);
+            gameManager.play(&controller, &audioManager);
             renderManager.updateState(gameManager.getState());
 
             /* ------------------

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <random>
 #include <cstdlib>
+#include <SDL/SDL_mixer.h>
 
 using namespace glimac;
 
@@ -50,18 +51,20 @@ void GameManager::pause(Controller* controller) {
     {
                 switchPause();
                 controller->setInterfaceAction(Controller::NONE);
+                if (m_pause) Mix_PauseMusic();
+                else Mix_ResumeMusic();
     }
         
 }
 
-void GameManager::start() {
+void GameManager::start(AudioManager* audioManager) {
 
     setTimers();
-    play();
+    play(audioManager);
 }
 
 // For console only
-void GameManager::play() {
+void GameManager::play(AudioManager* audioManager) {
 
     Controller * c;
     Pacman *p = m_map->getPacman();
@@ -94,8 +97,8 @@ void GameManager::play() {
                 m_map->save(); 
                 return;
             }
-            pacmanGhostCollision();
-            pacmanEdibleCollision();
+            pacmanGhostCollision(audioManager);
+            pacmanEdibleCollision(audioManager);
             ghostMove();
             std::cout << "Points : " << m_player.getPoints() << std::endl;
             std::cout << "Lives : " << m_player.getLife() << std::endl;
@@ -176,8 +179,8 @@ void GameManager::pacmanMove(Controller* controller)
 }
 
 
-// need to call setTimers before this function to set them ready 
-void GameManager::play(Controller* controller) {
+// --- PLAY FUNCTION | Call all other functions --- //
+void GameManager::play(Controller* controller, AudioManager* audioManager) {
 
     if (!(lost()) && ready() && !isPause())
     {
@@ -185,8 +188,8 @@ void GameManager::play(Controller* controller) {
         activateFruit();
         pacmanMove(controller);
         ghostMove();
-        pacmanEdibleCollision();
-        if (pacmanGhostCollision())
+        pacmanEdibleCollision(audioManager);
+        if (pacmanGhostCollision(audioManager))
         {
             controller->setPlayerAction(Controller::Key::Q);
         }
@@ -210,7 +213,7 @@ void GameManager::newLevel(Controller* controller)
     setTimers();
 }
 
-bool GameManager::pacmanGhostCollision() {
+bool GameManager::pacmanGhostCollision(AudioManager* audioManager) {
 
     for (int i = 0; i < m_map->getGhosts().size(); i++) {
         if (m_map->getPacman()->collision(m_map->getGhosts()[i])) {
@@ -221,6 +224,7 @@ bool GameManager::pacmanGhostCollision() {
                     std::cout << m_player.getLife() << std::endl;
                     m_map->getPacman()->reset();
                     setStartTime(SDL_GetTicks());
+                    audioManager->playSound(2,1);
                 }
                 for (int i = 0; i < m_map->getGhosts().size(); i++) {
                     m_map->getGhosts()[i]->reset();
@@ -231,6 +235,7 @@ bool GameManager::pacmanGhostCollision() {
             else {
                 m_map->getGhosts()[i]->reset();
                 eatGhost();
+                audioManager->playSound(3,1);
             }
         }
     }
@@ -493,13 +498,13 @@ bool GameManager::characterRightDoorCollision(Character* character)
     return false;
 }
 
-void GameManager::pacmanEdibleCollision() {
+bool GameManager::pacmanEdibleCollision(AudioManager* audioManager) {
     // If we're going left, we want Pacman to be half inside the cell
     if ((m_map->getPacman()->getPosX() - (int)m_map->getPacman()->getPosX()) > m_map->getPacman()->getWidth())
-        return;
+        return false;
     // If we're going up, we want Pacman to be half inside the cell
     if ((m_map->getPacman()->getPosY() - (int)m_map->getPacman()->getPosY()) > m_map->getPacman()->getHeight())
-        return;
+        return false;
     if (m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()]->getType()=='E'){
         //std::cout << "we're here ! " << std::endl;
         Edible *e;
@@ -507,6 +512,7 @@ void GameManager::pacmanEdibleCollision() {
         switch (e->getTypeEdible()) {
 
             case Edible::Type::FRUIT : 
+                audioManager->playSound(1,1);
                 if (e->getAvailability() && e->getFruit()!=Edible::Fruit::NONE) {
                     m_player.gainPoints(e->gain());
                     e->upgradeFruit();
@@ -514,30 +520,32 @@ void GameManager::pacmanEdibleCollision() {
                     if (e->getFruit() == Edible::Fruit::NONE) m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()]->setType('V');
                     else m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()] = e;
                 }
+                return true;
                 break;
 
             case Edible::Type::PAC_GOMME :
-                //std::cout << "Pac gomme caught! " << std::endl;
+                audioManager->playSound(1,1);
                 m_player.gainPoints(e->gain());
                 m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()]->setType('V');
-
+                return true;
                 break;
 
             case Edible::Type::SUPER_PAC_GOMME :
-                //std::cout << " Super pac gomme caught" << std::endl;
+                audioManager->playSound(4,1);
                 m_player.gainPoints(e->gain());
                 switchSuperState();
                 m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()]->setType('V');
+                return true;
                 break;
-            default:return;
+            default:return false;
         }
         // std::cout << "Points : " << m_player.getPoints() << std::endl;
         // std::cout << "Life : " << m_player.getLife() << std::endl;
     }
+    return false;
 }
 
 void GameManager::switchSuperState() {
-            
     this->setState(GameManager::PacmanState::SUPER);
     this->setSuperTimer(SDL_GetTicks());
     this->setEatenGhosts(0);
