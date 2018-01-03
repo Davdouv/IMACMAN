@@ -829,10 +829,12 @@ void RenderManager::drawMenu(Menu* menu)
         alpha = true;
     }
 
+    float zDistance = 4.5f;
+
     // Play | Restart
     matrix = originMatrix;
-    matrix = glm::translate(matrix, glm::vec3(0.0f, 1.5f, 0.2f));
-    matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
+    matrix = glm::translate(matrix, glm::vec3(0.0f, 0.2f, zDistance));
+    matrix = glm::scale(matrix, glm::vec3(0.2f, 0.10f, 1.f));
     applyTransformations(shader, matrix);
     enableTexture(shader, menu->getTextures()[Menu::PLAY], alpha);
     m_plane.drawPlane();
@@ -840,8 +842,8 @@ void RenderManager::drawMenu(Menu* menu)
 
     // Continue | Save
     matrix = originMatrix;
-    matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 0.2f));
-    matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
+    matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, zDistance));
+    matrix = glm::scale(matrix, glm::vec3(0.2f, 0.10f, 1.f));
     applyTransformations(shader, matrix);
     enableTexture(shader, menu->getTextures()[Menu::CONTINUE], alpha);
     m_plane.drawPlane();
@@ -849,8 +851,8 @@ void RenderManager::drawMenu(Menu* menu)
 
     // Exit
     matrix = originMatrix;
-    matrix = glm::translate(matrix, glm::vec3(0.0f, -1.5f, 0.2f));
-    matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
+    matrix = glm::translate(matrix, glm::vec3(0.0f, -0.2f, zDistance));
+    matrix = glm::scale(matrix, glm::vec3(0.2f, 0.10f, 1.f));
     applyTransformations(shader, matrix);
     enableTexture(shader, menu->getTextures()[Menu::EXIT], alpha);
     m_plane.drawPlane();
@@ -858,8 +860,8 @@ void RenderManager::drawMenu(Menu* menu)
 
     // Select
     matrix = originMatrix;
-    matrix = glm::translate(matrix, glm::vec3(0.0f, -1.5*(menu->getButton())+1.5f, 0.2f));
-    matrix = glm::scale(matrix, glm::vec3(2.2f, 1.2f, 1.f));
+    matrix = glm::translate(matrix, glm::vec3(0.0f, -0.2*(menu->getButton())+0.2f, zDistance));
+    matrix = glm::scale(matrix, glm::vec3(0.22f, 0.12f, 1.f));
     applyTransformations(shader, matrix);
     enableTexture(shader, menu->getTextures()[3], false);
     m_plane.drawPlane();

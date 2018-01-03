@@ -1,7 +1,7 @@
 # Blender MTL File: 'SNAPCHAT.blend'
 # Material Count: 2
 
-newmtl Material.002
+newmtl corp
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
@@ -11,7 +11,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 
-newmtl Material.003
+newmtl yeux
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
