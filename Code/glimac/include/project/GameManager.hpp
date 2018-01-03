@@ -31,6 +31,7 @@ public:
     uint32_t getFruitTimer() const;
     bool isPause();
     int getEatenGhosts() const;
+    Player* getPlayer();
 
     // setters
     void setState(PacmanState);

@@ -22,6 +22,7 @@
 #include "project/GLSLProgram.hpp"
 #include "project/GameManager.hpp"
 #include "project/Menu.hpp"
+#include "project/UI.hpp"
 
 using namespace glimac;
 
@@ -193,4 +194,7 @@ public:
 
     // MENU
     void drawMenu(Menu*);
+
+    // UI
+    void drawUI(UI*);
 };

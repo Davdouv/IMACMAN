@@ -11,6 +11,7 @@
 #include "glimac/TrackballCamera.hpp"
 #include "glimac/FreeflyCamera.hpp"
 #include "project/Menu.hpp"
+#include "project/UI.hpp"
 
 #include "project/GLSLProgram.hpp"
 
@@ -101,6 +102,11 @@ int main(int argc, char** argv) {
     audioManager.addMusic(audioManager.createMusic("../Code/assets/audio/mainThemeFast.mp3"));
     audioManager.fillSounds();
     audioManager.playMusic(0);
+
+    /* ---------------
+    *   UI
+    * --------------- */
+    UI ui = UI(gameManager.getPlayer());
 
     /* -------------
     *   MENU | PAUSE MENU
@@ -252,6 +258,9 @@ int main(int argc, char** argv) {
 
             // Render the map (objects, skybox and ground)
             renderManager.drawMap(&map, &controller);
+
+            // Render UI (life, score?)
+            renderManager.drawUI(&ui);
 
             // Render the pause menu if the game is paused
             if(gameManager.isPause())
