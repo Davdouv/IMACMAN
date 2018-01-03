@@ -21,7 +21,7 @@ namespace Text {
     return font;
   }
 
-  SDL_Surface* renderFont(TTF_Font *font, const char *text, SDL_Color fg)
+  GLuint renderFont(TTF_Font *font, const char *text, SDL_Color fg)
   {
     SDL_Surface * surface = TTF_RenderUTF8_Blended(font, text, fg);
     int colors = surface->format->BytesPerPixel;
@@ -51,15 +51,12 @@ namespace Text {
                   GL_UNSIGNED_BYTE,
                   surface->pixels
                 );
-    glBindTexture(GL_TEXTURE_2D, 0);
-  }
 
-  void drawFont(SDL_Surface * surface, SDL_Surface * display)
-  {
-    SDL_Rect position;
-    position.x = 60;
-    position.y = 370;
-    SDL_BlitSurface(surface, NULL, display, &position);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    return texture;
   }
 
   void clean()

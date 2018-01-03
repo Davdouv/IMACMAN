@@ -124,13 +124,49 @@ void RenderManager::loadFont()
   m_font = Text::loadFont("../Code/assets/fonts/DejaVuSans.ttf", 48);
 }
 
-void RenderManager::drawText(const char *text, SDL_Color fg)
+void RenderManager::renderText()
 {
-  m_text = Text::renderFont(m_font, text, fg);
-  if (m_screen != NULL)
-    Text::drawFont(m_text, m_screen);
-  else
-    std::cout << "Pb avec le screen" << std::endl;
+  m_text = TTF_RenderUTF8_Blended(m_font, "Hello", {255, 0, 0});
+  int colors = m_text->format->BytesPerPixel;
+  GLenum texture_format;
+  if (colors == 4) {   // alpha
+      if (m_text->format->Rmask == 0x000000ff)
+          texture_format = GL_RGBA;
+      else
+          texture_format = GL_BGRA_EXT;
+  } else {             // no alpha
+      if (m_text->format->Rmask == 0x000000ff)
+          texture_format = GL_RGB;
+      else
+          texture_format = GL_BGR_EXT;
+  }
+
+  glGenTextures(1, &m_textTexture);
+  glBindTexture(GL_TEXTURE_2D, m_textTexture);
+  glTexImage2D( GL_TEXTURE_2D,
+                0,
+                colors,
+                m_text->w,
+                m_text->h,
+                0,
+                texture_format,
+                GL_UNSIGNED_BYTE,
+                m_text->pixels
+              );
+}
+
+void RenderManager::drawText()
+{
+  renderText();
+
+  glm::mat4 matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.f));
+  matrix = glm::translate(matrix, glm::vec3(0.0f, 1.5f, 0.2f));
+  matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
+  applyTransformations(TEXTURE, matrix);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, m_textTexture);
+  m_plane.drawPlane();
+  disableTexture(TEXTURE);
 }
 
 // ---------------
