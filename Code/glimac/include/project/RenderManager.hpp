@@ -1,6 +1,10 @@
 #pragma once
 
 #include <ft2build.h>
+#include <stdlib.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#include <SDL/SDL_ttf.h>
 #include FT_FREETYPE_H
 
 #include "glimac/Plane.hpp"
@@ -34,6 +38,7 @@ class RenderManager {
 private:
     // Window Manager
     SDLWindowManager* m_windowManager;
+		SDL_Surface* m_screen;
 
     // Plane
     Plane m_plane;

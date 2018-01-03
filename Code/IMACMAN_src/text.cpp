@@ -82,6 +82,7 @@ int main(int argc, char** argv) {
     renderManager.loadTextures();
 
     // Load font
+    //renderManager.loadFont();
     renderManager.loadFont();
 
     // initialize Skybox
@@ -138,6 +139,7 @@ int main(int argc, char** argv) {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
         // On update la ViewMatrix à chaque tour de boucle
         renderManager.updateMVMatrix(camera, map.getPacman());
 
@@ -161,7 +163,7 @@ int main(int argc, char** argv) {
          renderManager.debindVAO();
 
          // TEXT
-         renderManager.drawText("Bonjour", {255,0,0});
+         //renderManager.drawText("Bonjour", {255,0,0});
 
         // Update the display
         windowManager.swapBuffers();

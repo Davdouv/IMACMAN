@@ -9,6 +9,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
 {
     // Window Manager
     m_windowManager = windowManager;
+    m_screen = windowManager->getScreen();
 
     // Camera
     // m_ffCamera = camera;
@@ -40,7 +41,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
 
     // Matrices
     // Projection Matrix (world) : vertical view angle, window ratio, near, far
-    m_ProjMatrix = glm::perspective(glm::radians(70.f), windowManager->getRatio(), 0.1f, 200.f);
+    m_ProjMatrix = glm::perspective(glm::radians(70.f), windowManager->getRatio(), 0.1f, 300.f);
     // ModelView Matrix (camera)
     m_MVMatrix = camera->getViewMatrix();
     // Normal Matrix in the camera landmark
@@ -126,7 +127,10 @@ void RenderManager::loadFont()
 void RenderManager::drawText(const char *text, SDL_Color fg)
 {
   m_text = Text::renderFont(m_font, text, fg);
-  Text::drawFont(m_text, m_windowManager->getScreen());
+  if (m_screen != NULL)
+    Text::drawFont(m_text, m_screen);
+  else
+    std::cout << "Pb avec le screen" << std::endl;
 }
 
 // ---------------

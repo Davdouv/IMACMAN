@@ -84,5 +84,9 @@ void SDLWindowManager::setHeight(uint32_t height)
 {
     m_height = height;
 }
+SDL_Surface* SDLWindowManager::getScreen()
+{
+  return m_screen;
+}
 
 }

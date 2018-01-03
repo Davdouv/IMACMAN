@@ -38,7 +38,7 @@ public:
     void setWidth(uint32_t width);
     void setHeight(uint32_t height);
 
-    SDL_Surface* getScreen() { return m_screen; }
+    SDL_Surface* getScreen();
 
 private:
     uint32_t m_width;
