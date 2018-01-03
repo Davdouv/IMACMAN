@@ -156,6 +156,26 @@ void Controller::updateInterfaceAction()
 		interfaceAction = C;
 		FPS =! FPS;
 	}
+	else if (m_windowManager->isKeyPressed(SDLK_UP))
+	{
+		interfaceAction = UP;
+	}
+	else if (m_windowManager->isKeyPressed(SDLK_DOWN))
+	{
+		interfaceAction = DOWN;
+	}
+	else if (m_windowManager->isKeyPressed(SDLK_LEFT))
+	{
+		interfaceAction = LEFT;
+	}
+	else if (m_windowManager->isKeyPressed(SDLK_RIGHT))
+	{
+		interfaceAction = RIGHT;
+	}
+	else if (m_windowManager->isKeyPressed(SDLK_RETURN))
+	{
+		interfaceAction = ENTER;
+	}
     else
     {
         interfaceAction = NONE;

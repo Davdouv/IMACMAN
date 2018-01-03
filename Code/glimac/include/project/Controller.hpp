@@ -8,7 +8,7 @@ namespace glimac {
 class Controller {
 public:
     // Every key player can use
-    enum Key {NONE, Z, Q, S, D, UP, LEFT, DOWN, RIGHT, C, ESCAPE};
+    enum Key {NONE, Z, Q, S, D, UP, LEFT, DOWN, RIGHT, C, ESCAPE, ENTER};
     
 public:
     // Constructor
@@ -16,6 +16,7 @@ public:
 
     // Update function, called each frame
     void updateController(Pacman* pacman);
+    void updateInterfaceAction();
     void switchFPS();
 
     // Getters
@@ -49,7 +50,6 @@ private:
     // Update Actions, called each frame
     void updatePlayerAction(Pacman* pacman);
     void updateCameraAction();
-    void updateInterfaceAction();
 
     // Convert FPS key in TPS key
     Controller::Key getFPSkey(Pacman* pacman);

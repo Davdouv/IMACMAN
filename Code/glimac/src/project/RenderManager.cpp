@@ -851,3 +851,61 @@ void RenderManager::updateState(GameManager::PacmanState state)
 {
     m_state = state;
 }
+
+// ---- MENU ---- //
+
+void RenderManager::drawMenu(Menu* menu)
+{
+    FS shader = TEXTURE;
+    bindPlaneVAO();
+
+    useProgram(shader);
+
+    glm::mat4 originMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.f));
+
+    // Background
+     glm::mat4 matrix = originMatrix;
+    matrix = glm::scale(matrix, glm::vec3(12.8f, 7.2f, 1.f));
+    applyTransformations(shader, matrix);
+    enableTexture(shader, menu->getTextures()[3]);
+    m_plane.drawPlane();
+    disableTexture(shader);
+
+    // Play
+    matrix = originMatrix;
+    matrix = glm::translate(matrix, glm::vec3(0.0f, 1.5f, 0.2f));
+    matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
+    applyTransformations(shader, matrix);
+    enableTexture(shader, menu->getTextures()[Menu::PLAY]);
+    m_plane.drawPlane();
+    disableTexture(shader);
+
+    // Continue
+    matrix = originMatrix;
+    matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 0.2f));
+    matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
+    applyTransformations(shader, matrix);
+    enableTexture(shader, menu->getTextures()[Menu::CONTINUE]);
+    m_plane.drawPlane();
+    disableTexture(shader);
+
+    // Exit
+    matrix = originMatrix;
+    matrix = glm::translate(matrix, glm::vec3(0.0f, -1.5f, 0.2f));
+    matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
+    applyTransformations(shader, matrix);
+    enableTexture(shader, menu->getTextures()[Menu::EXIT]);
+    m_plane.drawPlane();
+    disableTexture(shader);
+
+    // Select
+    matrix = originMatrix;
+    matrix = glm::translate(matrix, glm::vec3(0.0f, -1.5*(menu->getButton())+1.5f, 0.2f));
+    matrix = glm::scale(matrix, glm::vec3(2.2f, 1.2f, 1.f));
+    applyTransformations(shader, matrix);
+    enableTexture(shader, menu->getTextures()[4]);
+    m_plane.drawPlane();
+    disableTexture(shader);
+
+    debindVAO();
+}

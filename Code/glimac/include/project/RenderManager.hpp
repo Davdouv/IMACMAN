@@ -17,6 +17,7 @@
 
 #include "project/GLSLProgram.hpp"
 #include "project/GameManager.hpp"
+#include "project/Menu.hpp"
 
 using namespace glimac;
 
@@ -183,4 +184,7 @@ public:
 
     // Update state
     void updateState(GameManager::PacmanState);
+
+    // MENU
+    void drawMenu(Menu*);
 };
