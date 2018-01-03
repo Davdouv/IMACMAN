@@ -40,13 +40,13 @@ void Ghost::display() {
 bool Ghost::ready() {
     switch (m_type) {
 
-        case SHADOW: return (SDL_GetTicks() - m_death > 1000);
+        case SHADOW: return (SDL_GetTicks() - m_death > 3000);
             break;
-        case SPEEDY: return (SDL_GetTicks() - m_death > 2000);
+        case SPEEDY: return (SDL_GetTicks() - m_death > 6000);
             break;
-        case BASHFUL: return (SDL_GetTicks() - m_death > 3000);
+        case BASHFUL: return (SDL_GetTicks() - m_death > 9000);
             break;
-        case POKEY: return (SDL_GetTicks() - m_death > 4000);
+        case POKEY: return (SDL_GetTicks() - m_death > 12000);
             break;
     }
 }

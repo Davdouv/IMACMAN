@@ -1019,6 +1019,7 @@ void GameManager::ghostMove() {
     for (int i = 0; i < m_map->getGhosts().size(); i++) {
         if (m_map->getGhosts()[i]->ready()) {
 
+            std::cout << "Ghost " << i+1 << " is ready !!" << std::endl << std::endl;
             switch (m_map->getGhosts()[i]->getOrientation()) {
 
                 case Object::Orientation::UP : action = Controller::Z;
