@@ -67,6 +67,20 @@ std::vector<Door*> Map::getDoors() {
     return doors;
 }
 
+std::vector<StaticObject*> Map::getSpawnPoint() {
+
+    std::vector<StaticObject*> sp;
+    for (int i = 0; i < m_nbX; i++) {
+        for (int j = 0; j < m_nbY; j++) {
+            if (m_staticObjects[i][j]->getType() == 'X')
+            {
+                sp.push_back(m_staticObjects[i][j]);
+            }
+        }
+    }
+    return sp;
+}
+
 std::vector<Edible*> Map::getSuperPacGommes() {
 
     std::vector<Edible*> superpacgomme;

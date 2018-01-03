@@ -51,6 +51,7 @@ public:
     std::vector<Edible*> getFruits();
     std::vector<Wall*> getWalls();
     std::vector<Door*> getDoors();
+    std::vector<StaticObject*> getSpawnPoint();
 
     // Doors
     void initDoors();
