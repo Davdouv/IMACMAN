@@ -54,6 +54,7 @@ int main(int argc, char** argv) {
     programList.cubemapProgram = &cubemapProgram;
     programList.textProgram = &textProgram;
 
+
     // Enable GPU depth test for 3D rendering
     glEnable(GL_DEPTH_TEST);
 
@@ -175,7 +176,9 @@ int main(int argc, char** argv) {
          renderManager.debindVAO();
 
          // TEXT
+         renderManager.bindPlaneVAO();
          renderManager.drawText();
+         renderManager.debindVAO();
 
         // Update the display
         windowManager.swapBuffers();

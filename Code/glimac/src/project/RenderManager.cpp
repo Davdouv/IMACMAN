@@ -157,10 +157,9 @@ void RenderManager::renderText()
 
 void RenderManager::drawText()
 {
-    useProgram(TEXTURE);
-    bindPlaneVAO();
+  useProgram(TEXTURE);
+  bindPlaneVAO();
   renderText();
-
   glm::mat4 matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.f));
   matrix = glm::translate(matrix, glm::vec3(0.0f, 1.5f, 0.2f));
   matrix = glm::scale(matrix, glm::vec3(2.0f, 1.0f, 1.f));
