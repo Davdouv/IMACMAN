@@ -15,8 +15,8 @@ int main() {
     gameManager.load(false);
     m.initialization();
     m.display();
-    gameManager.play(&audioManager);
-    /*
+   // gameManager.play(&audioManager);
+    
     std::vector<std::vector<int>> passage;
     for (int i = 0; i < m.getNbX(); i++) {
         std::vector<int> tab;
@@ -24,8 +24,8 @@ int main() {
             tab.push_back(0);
         }
         passage.push_back(tab);
-    }*/
-   // std::cout << gameManager.countShortestWay(14,28, 7,1, passage) << std::endl;
+    }
+   std::cout << gameManager.countShortestWay(1,2, 1,13, passage) << std::endl;
     // m.~Map();
     return 0;
 }
