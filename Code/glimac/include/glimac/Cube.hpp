@@ -42,7 +42,7 @@ public:
     // Draw the Cube
     void drawCube() const
     {
-        glDrawElements(GL_TRIANGLES, this->getIndexCount(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, this->getIndexCount()-6, GL_UNSIGNED_INT, 0);
     }
 
     GLuint getVBO();
