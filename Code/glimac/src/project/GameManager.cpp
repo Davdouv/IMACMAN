@@ -233,7 +233,9 @@ void GameManager::restart() {
     m_map->setFileMap("classicMap.txt");
     load(true);
     m_map->initialization();
+    m_player.initialization();
     setTimers();
+    switchPause();
 }
 
 

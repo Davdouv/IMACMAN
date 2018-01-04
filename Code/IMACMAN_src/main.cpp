@@ -210,6 +210,7 @@ int main(int argc, char** argv) {
                     if (menuPause.getButton() == Menu::Button::PLAY) // RESTART
                     {
                         Mix_RewindMusic();
+                        gameManager.restart();
                     }
                     else if (menuPause.getButton() == Menu::Button::CONTINUE) // SAVE
                     {
