@@ -146,10 +146,10 @@ int main(int argc, char** argv) {
 
                 audioManager.playMusic(1);  // Change Music
 
-                // if (menu.getButton() == Menu::Button::PLAY)
-                //     gameManager.load(true);
-                // else
-                //     gameManager.load(false);
+                if (menu.getButton() == Menu::Button::PLAY)
+                    gameManager.load(true);
+                else
+                    gameManager.load(false);
                 
                 /* -------------
                 *   INIT TIME
@@ -214,7 +214,7 @@ int main(int argc, char** argv) {
                     }
                     else if (menuPause.getButton() == Menu::Button::CONTINUE) // SAVE
                     {
-                        //gameManager.save();
+                        gameManager.save();
                     }
                     else if (menuPause.getButton() == Menu::Button::EXIT)    // EXIT
                     {
