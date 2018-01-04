@@ -1082,7 +1082,7 @@ void GameManager::updateSpeed(uint32_t deltaTime)
         {
             // If we can eat a ghost, slow down this ghost
             if(m_map->getGhosts()[i]->getSuper())
-                m_map->getGhosts()[i]->setSpeed((speed*deltaTime)/1.5);
+                m_map->getGhosts()[i]->setSpeed((speed*deltaTime)/2);
             else
                 m_map->getGhosts()[i]->setSpeed(speed*deltaTime);
         }
