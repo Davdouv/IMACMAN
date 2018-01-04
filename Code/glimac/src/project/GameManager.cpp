@@ -238,6 +238,8 @@ void GameManager::play(AudioManager* audioManager) {
     setTimers();
     while (!(this->won())) {
         if (ready()) {
+
+            ghostMove();
             stateManager();
             activateFruit();
             m_map->display();
@@ -261,7 +263,6 @@ void GameManager::play(AudioManager* audioManager) {
             }
             pacmanGhostCollision(audioManager);
             pacmanEdibleCollision(audioManager);
-            ghostMove();
             std::cout << "Points : " << m_player.getPoints() << std::endl;
             std::cout << "Lives : " << m_player.getLife() << std::endl;
         }
@@ -874,33 +875,38 @@ void GameManager::pokeyAI() {
 // returns 0 if the goal isn't achieved yet
 Controller::Key GameManager::shortestWay(int ghostType, float x, float y) {
 
+    std::cout << "Par rapport à : " << ghostType+1 << std::endl;
     float gx = m_map->getGhosts()[ghostType]->getPosX();
     float gy = m_map->getGhosts()[ghostType]->getPosY();
     if ((gx != x) && (gy != y)) {
 
         // if goal is at the right top
-        if ((gx - x < 0) && (gy - y < 0)) {
+        if ((gx - x < 0) && (gy - y > 0)) {
+            std::cout << "goal en  haut à droite " << std::endl;
             if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
         }
         // if goal is at the right bottom
-        else if ((gx - x < 0) && (gy - y > 0)) {
+        else if ((gx - x < 0) && (gy - y < 0)) {
+            std::cout << "goal en  bas à droite " << std::endl;
             if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
         }
         // if goal is at the left top
-        else if ((gx - x > 0) && (gy - y < 0)) {
+        else if ((gx - x > 0) && (gy - y > 0)) {
+            std::cout << "goal en  haut à gauche " << std::endl;
             if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
         }
         // if goal is at the left bottom
-        else if ((gx - x > 0) && (gy - y > 0)) {
+        else if ((gx - x > 0) && (gy - y < 0)) {
+            std::cout << "goal en  bas à gauche " << std::endl;
             if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
@@ -908,6 +914,7 @@ Controller::Key GameManager::shortestWay(int ghostType, float x, float y) {
         }
         // if goal is at the right
         else if ((gx - x < 0) && (gy - y == 0)) {
+            std::cout << "goal  à droite " << std::endl;
             if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
@@ -915,25 +922,29 @@ Controller::Key GameManager::shortestWay(int ghostType, float x, float y) {
         }
         // if goal is at the left
         else if ((gx - x > 0) && (gy - y == 0)) {
+            std::cout << "goal à gauche " << std::endl;
             if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
         }
         // if goal is at the top
-        else if ((gx - x == 0) && (gy - y < 0)) {
+        else if ((gx - x == 0) && (gy - y > 0)) {
+            std::cout << "goal en haut" << std::endl;
             if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
         }
         // if goal is at the bottom
-        else if ((gx - x == 0) && (gy - y > 0)) {
+        else if ((gx - x == 0) && (gy - y < 0)) {
+            std::cout << "goal en  bas " << std::endl;
             if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
         }
+        else std::cout << "oops" << std::endl;
     }
 }
 
@@ -951,8 +962,7 @@ void GameManager::ghostMove() {
             if ( (m_map->getGhosts()[i]->getPosY() == m_map->getGhosts()[i]->getInitY()) && (m_map->getGhosts()[i]->getPosX() == m_map->getGhosts()[i]->getInitX()) ) {
                 m_map->getGhosts()[i]->setOrientation(Object::Orientation::UP);
                 m_map->getGhosts()[i]->setPosX(m_map->getSpawnPoint()[0]->getPosX());
-                m_map->getGhosts()[i]->setPosY(m_map->getSpawnPoint()[0]->getPosY());
-
+                m_map->getGhosts()[i]->setPosY(m_map->getSpawnPoint()[0]->getPosY()-1);
                 m_map->getGhosts()[i]->setInSpawn(true);
             }
             else {
@@ -962,6 +972,8 @@ void GameManager::ghostMove() {
 /*** SHADOW ARTIFICIAL INTELLIGENCE ***/
 
                     case Ghost::Type::SHADOW : action = shortestWay(Ghost::Type::SHADOW,m_map->getPacman()->getPosX(), m_map->getPacman()->getPosY());
+                    
+                        moveCharacter(m_map->getGhosts()[i], action);
                         break;
 
 /*** SPEEDY ARTICIAL INTELLIGNCE ***/
@@ -986,6 +998,8 @@ void GameManager::ghostMove() {
                                 break;
                             default:break;
                         }
+
+                        moveCharacter(m_map->getGhosts()[i], action);
                         break;
 
 /*** BASHFUL ARTIFICIAL INTELLIGENCE ***/
@@ -1051,8 +1065,7 @@ void GameManager::ghostMove() {
                         }
                         break;
                 }
-                m_map->getGhosts()[i]->setInSpawn(false);
-                /*
+                
                 switch (m_map->getGhosts()[i]->getOrientation()) {
 
                     case Object::Orientation::UP : action = Controller::Z;
@@ -1063,7 +1076,7 @@ void GameManager::ghostMove() {
                         break;
                     case Object::Orientation::LEFT :action = Controller::Q;
                         break;
-                }*/
+                }
                 while (!moveCharacter(m_map->getGhosts()[i], action)) {
                     
                     int r =  (rand() % 4);

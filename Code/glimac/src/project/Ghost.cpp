@@ -57,6 +57,7 @@ void Ghost::reset () {
     if (m_super) setSpeed(getSpeed()*1.5);  
     m_death = SDL_GetTicks();
     m_super = false;
+    setInSpawn(true);
     
 }
 
