@@ -214,7 +214,9 @@ int main(int argc, char** argv) {
                     }
                     else if (menuPause.getButton() == Menu::Button::CONTINUE) // SAVE
                     {
+                        audioManager.playSound(8,1);
                         gameManager.save();
+                        SDL_Delay(1000);
                     }
                     else if (menuPause.getButton() == Menu::Button::EXIT)    // EXIT
                     {
