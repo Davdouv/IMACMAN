@@ -957,8 +957,7 @@ void GameManager::ghostMove() {
                 m_map->getGhosts()[i]->setInSpawn(true);
             }
             else {
-<<<<<<< HEAD
-                
+                m_map->getGhosts()[i]->setInSpawn(false);
                 switch (m_map->getGhosts()[i]->getType()) {
 
 /*** SHADOW ARTIFICIAL INTELLIGENCE ***/
@@ -1054,9 +1053,6 @@ void GameManager::ghostMove() {
                         break;
                 }
                 /*
-=======
-                m_map->getGhosts()[i]->setInSpawn(false);
->>>>>>> 487790d12b670cfe0f17edc4647425a8be8bdcf6
                 switch (m_map->getGhosts()[i]->getOrientation()) {
 
                     case Object::Orientation::UP : action = Controller::Z;
