@@ -81,7 +81,7 @@ int GameManager::load(bool newGame) {
             std::string delimiter = ",";
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
-            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 0.004, i+1, Object::Orientation::LEFT, 0);
+            Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 0.004, i, Object::Orientation::LEFT, 0);
             if (!newGame) {
                 getline(file,tmp);
                 std::string delimiter = ",";
@@ -951,27 +951,35 @@ We calculate the shortest way to get to a goal from:
 
 int GameManager::countShortestWay(int dx, int dy, int ax, int ay, std::vector<std::vector<int>> passage) {
     
-    std::cout << "( "<<dx<<", "<<dy<<" )" << std::endl;
+    std::cout << "( "<<dx<<", "<<dy<<" ) ( "<<ax<<", "<<ay<<" )( "<<m_map->getNbX()<<", "<<m_map->getNbY()<<" )" << std::endl;
     if ((dx == ax) && (dy == ay)) {
-        std::cout << "On est arrivés." << std::endl;
+        std::cout << "***********" << std::endl << "On est arrivés." << std::endl;
         return 0;
     }
+    if (dx < 0) return 1000;
+
+    if (dy < 0) return 1000;
+
+    if (dx >= m_map->getNbX()) return 1000;
+
+    if (dy >= m_map->getNbY()) return 1000;
+
     if (m_map->getStaticObjects()[dy][dx]->getType()=='W') {
         std::cout << "C'est un mur." << std::endl;
         return 1000;
     }
-    if (dx < 0) return 1000;
-    if (dy < 0) return 1000;
-    if (dx > m_map->getNbX()) return 1000;
-    if (dy > m_map->getNbY()) return 1000;
     if (!passage[dy][dx]) {
         std::cout << "On peut passer" << std::endl;
         passage[dy][dx] = 1;
         std::vector<int> moves;
-        moves.push_back(countShortestWay(dx+1, dy, ax, ay, passage));
-        moves.push_back(countShortestWay(dx-1, dy, ax, ay, passage));
-        moves.push_back(countShortestWay(dx, dy-1, ax, ay, passage));
+        std::cout << "on essaie d'aller à droite" << std::endl;
         moves.push_back(countShortestWay(dx, dy+1, ax, ay, passage));
+        std::cout << "on essaie d'aller à gauche" << std::endl;
+        moves.push_back(countShortestWay(dx, dy-1, ax, ay, passage));
+        std::cout << "on essaie d'aller en haut" << std::endl;
+        moves.push_back(countShortestWay(dx-1, dy, ax, ay, passage));
+        std::cout << "on essaie d'aller en bas" << std::endl;
+        moves.push_back(countShortestWay(dx+1, dy, ax, ay, passage));
         return 1+min(moves);
     }
     std::cout << "On est déjà passés!" << std::endl;
