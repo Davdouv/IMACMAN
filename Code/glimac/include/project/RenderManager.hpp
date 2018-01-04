@@ -5,6 +5,7 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
+#include <sstream>
 #include FT_FREETYPE_H
 
 #include "glimac/Plane.hpp"
@@ -62,6 +63,8 @@ private:
 		// UI
 		SDL_Surface* m_scoreSurface;
 		GLuint m_scoreImg;
+		SDL_Surface* m_timeSurface;
+		GLuint m_timeImg;
 
 		// Score Panel
 		SDL_Surface* m_scorePanel_title;
@@ -211,5 +214,6 @@ public:
     void drawMenu(Menu*);
 
     // UI
-    void drawUI(UI*);
+		std::string getTimeString(Uint32 start_game_time, Uint32 pause_time);
+    void drawUI(UI*,Uint32 start_game_time, Uint32 pause_time);
 };

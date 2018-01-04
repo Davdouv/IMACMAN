@@ -210,6 +210,8 @@ int main(int argc, char** argv) {
             {
                 menuPause.selectButton(&controller, &audioManager);
 
+                gameManager.setPauseStartTime(SDL_GetTicks());
+
                 if (controller.getInterfaceAction() == Controller::Key::ENTER)
                 {
                     if (menuPause.getButton() == Menu::Button::PLAY) // RESTART
@@ -226,6 +228,7 @@ int main(int argc, char** argv) {
                     }
                 }
             }
+
 
             /* ------------------
             *   MANAGE CAMERAS
@@ -271,7 +274,8 @@ int main(int argc, char** argv) {
             renderManager.drawMap(gameManager.getMap(), &controller);
 
             // Render UI (life, score?)
-            renderManager.drawUI(&ui);
+            renderManager.drawUI(&ui, gameManager.getStartTime(), gameManager.getPauseTime());
+
 
             // Render the pause menu if the game is paused
             if(gameManager.isPause())
@@ -285,6 +289,8 @@ int main(int argc, char** argv) {
 
             // Update the display
             windowManager.swapBuffers();
+
+            gameManager.setPauseTime(SDL_GetTicks());
         }
     }
 

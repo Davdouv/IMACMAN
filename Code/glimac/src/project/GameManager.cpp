@@ -15,10 +15,14 @@ GameManager::GameManager(Map* map)
     m_player.initialization();
     m_pause = false;
     m_lost = false;
+    m_pauseTime = 0;
+    m_pauseStartTime = 0;
 }
 
 GameManager::PacmanState GameManager::getState() const { return m_state;}
 uint32_t GameManager::getStartTime() const { return m_startTime; }
+uint32_t GameManager::getPauseTime() const { return m_pauseTime; }
+uint32_t GameManager::getPauseStartTime() const { return m_pauseStartTime; }
 uint32_t GameManager::getSuperTimer() const { return m_superTimer; }
 uint32_t GameManager::getFruitTimer() const { return m_fruitTimer; }
 bool GameManager::isPause() { return m_pause; }
@@ -28,9 +32,25 @@ Player* GameManager::getPlayer() { return &m_player; }
 Map* GameManager::getMap() { return m_map; }
 void GameManager::setState(PacmanState state) { m_state = state;}
 void GameManager::setStartTime(uint32_t t) { m_startTime = t;}
+void GameManager::setPauseTime(uint32_t t) {
+  if (m_pause == false && m_pauseTimeRecording == true)
+  {
+    m_pauseTime += t - m_pauseStartTime;
+    m_pauseStartTime = 0;
+    m_pauseTimeRecording = false;
+  }
+}
+void GameManager::setPauseStartTime(uint32_t t) {
+  if (m_pauseTimeRecording == false)
+  {
+    m_pauseStartTime = t;
+    m_pauseTimeRecording = true;
+  }
+}
+
 void GameManager::setSuperTimer(uint32_t t) { m_superTimer = t;}
 void GameManager::setFruitTimer(uint32_t t) { m_fruitTimer = t; }
-void GameManager::switchPause() { m_pause=!isPause();}
+void GameManager::switchPause() { m_pause=!isPause(); }
 void GameManager::setEatenGhosts(int eatenGhosts) { m_eatenGhosts = eatenGhosts;}
 
 // FILE MANAGER

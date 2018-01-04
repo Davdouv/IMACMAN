@@ -113,6 +113,8 @@ RenderManager::~RenderManager()
     delete(m_skybox);
     delete(m_floor);
 
+    delete(m_scoreSurface);
+
     Text::clean();
 }
 
@@ -928,7 +930,22 @@ void RenderManager::drawMenu(Menu* menu)
 
 // ---- UI ---- //
 
-void RenderManager::drawUI(UI* ui)
+std::string RenderManager::getTimeString(Uint32 start_game_time, Uint32 pause_time)
+{
+  std::string current_time;
+  Uint32 total_time = SDL_GetTicks() - start_game_time - pause_time;
+  if (total_time > 1000000000)
+    current_time = "0:0:0";
+  else {
+    int m_time  = total_time/(60*1000);
+    int s_time  = ((total_time%(60*1000))/1000);
+    int ms_time = (((total_time%(60*10000))%1000) / 100);
+    current_time = std::to_string(m_time) + ":" + std::to_string(s_time) + ":" + std::to_string(ms_time);
+  }
+  return current_time;
+}
+
+void RenderManager::drawUI(UI* ui, Uint32 start_game_time, Uint32 pause_time)
 {
     FS shader = TEXTURE;
     bindPlaneVAO();
@@ -955,5 +972,8 @@ void RenderManager::drawUI(UI* ui)
     drawText(m_scoreSurface, m_scoreImg, 0.3f,
              5.5f, 2.5f);
 
-
+    // Time
+    m_timeSurface = createTextTexture(&m_timeImg, getTimeString(start_game_time, pause_time), {255,255,255});
+    drawText(m_timeSurface, m_timeImg, 0.25f,
+             5.3f, 2.0f);
 }

@@ -15,10 +15,13 @@ private:
     PacmanState m_state;    // If pacman can eat ghosts or not
     Player m_player;
     uint32_t m_startTime;
+    uint32_t m_pauseTime;
+    uint32_t m_pauseStartTime;
     uint32_t m_superTimer;
     uint32_t m_fruitTimer;
     bool m_pause;
     bool m_lost;
+    bool m_pauseTimeRecording;
     int m_eatenGhosts;
 
 public:
@@ -28,6 +31,8 @@ public:
     // getters
     PacmanState getState() const;
     uint32_t getStartTime() const;
+    uint32_t getPauseTime() const;
+    uint32_t getPauseStartTime() const;
     uint32_t getSuperTimer() const;
     uint32_t getFruitTimer() const;
     bool isPause();
@@ -39,6 +44,8 @@ public:
     // setters
     void setState(PacmanState);
     void setStartTime(uint32_t);
+    void setPauseTime(uint32_t);
+    void setPauseStartTime(uint32_t);
     void setSuperTimer(uint32_t);
     void setFruitTimer(uint32_t);
     void switchPause();
