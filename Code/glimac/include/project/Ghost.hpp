@@ -3,6 +3,10 @@
 #include "Character.hpp"
 #include "../glimac/SDLWindowManager.hpp"
 
+/* -------------
+ *  GHOST CLASS
+ * ------------- */
+
 class Ghost : public Character {
 
 private:
@@ -37,9 +41,4 @@ public:
 
     bool ready();
     void reset() override;
-    void display() override;
-    void move() override;
-
-    void slowDown();
-    void randomAI();
 };

@@ -145,31 +145,3 @@ void Map::initDoors() {
         m_staticObjects[doors[1]->getPosY()][doors[1]->getPosX()] = doors[1];
     }
 }
-
-
-// For console only
-void Map::display() {
-    bool ghost = false;
-    m_pacman.display();
-    if (m_staticObjects.empty()) std::cout << "It's empty!" << std::endl;
-    else {
-        for (int i = 0; i < m_nbX; i++) {
-            std::vector<StaticObject*> tmp = m_staticObjects.at(i);
-            for (int  j = 0; j < m_nbY; j++) {
-                ghost = false;
-                for (int k = 0; k < m_ghosts.size(); k++) {
-                    if ( (( m_ghosts[k].getPosX() >= tmp.at(j)->getPosX()) && (m_ghosts[k].getPosX() < tmp.at(j)->getPosX()+1)) && ((m_ghosts[k].getPosY() >= tmp.at(j)->getPosY()) && (m_ghosts[k].getPosY() < tmp.at(j)->getPosY()+1)) )
-                 {std::cout << k+1 << " ";
-                    ghost = true;}
-                }
-                if ( ((m_pacman.getPosX() >= tmp.at(j)->getPosX()) && (m_pacman.getPosX() < tmp.at(j)->getPosX()+1)) && ((m_pacman.getPosY() >= tmp.at(j)->getPosY()) && (m_pacman.getPosY() < tmp.at(j)->getPosY()+1)) )
-                std::cout << m_pacman.getType() << " ";
-                else if ((tmp.at(j) != NULL) && (!ghost)) {
-                    std::cout << tmp.at(j)->getType() << " ";
-                }
-                else if (!ghost) std::cout << "V ";
-            }
-            std::cout << std::endl;
-        }
-    }
-}

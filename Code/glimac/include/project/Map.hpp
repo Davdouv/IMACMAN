@@ -1,7 +1,7 @@
 #pragma once
-#include "Cell.hpp"
 #include <string>
 #include <fstream>
+#include "Utilities.hpp"
 #include "Pacman.hpp"
 #include "Ghost.hpp"
 #include "StaticObject.hpp"
@@ -65,8 +65,4 @@ public:
 
     // map initialization
     void initialization();
-
-    
-    // displays the map
-    void display();
 };

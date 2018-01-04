@@ -11,13 +11,21 @@ public:
     enum PacmanState { NORMAL, SUPER };
 
 private:
-    Map* m_map;
-    PacmanState m_state;    // If pacman can eat ghosts or not
+
+    // Game elements and state
+    Map* m_map; 
+    PacmanState m_state;    // super or normal mode, also the map state
     Player m_player;
+
+    // timers 
     uint32_t m_startTime;
     uint32_t m_superTimer;
     uint32_t m_fruitTimer;
+
+    // true is the game is paused 
+
     bool m_pause;
+    // number of eaten ghosts during one super state
     int m_eatenGhosts;
 
 public:
@@ -43,14 +51,12 @@ public:
     void setEatenGhosts(int);
 
     void start(AudioManager*);
-    void play(AudioManager*);
     void play(Controller* controller, AudioManager* audioManager);
     void restart();
     void setTimers();
 
     // Use of Delta Time
     void updateSpeed(uint32_t deltaTime);
-    int countShortestWay(int, int, int, int, std::vector<std::vector<int>>);
 
     // file manager
     int load(bool);
@@ -81,13 +87,6 @@ private:
     bool pacmanGhostCollision(AudioManager*);
     bool ghostCollision();
     bool pacmanEdibleCollision(AudioManager*);
-
-    // Ghost moves algorithms
-    Controller::Key shortestWay(int, float, float);
-    void shadowAI();
-    void speedyAI();
-    void bashfulAI();
-    void pokeyAI();
 
     // New game
     void newLevel(Controller*);

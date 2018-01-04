@@ -1,6 +1,10 @@
 #pragma once
 #include "StaticObject.hpp"
 
+/* -------------
+ *  EDIBLE CLASS
+ * ------------- */
+
 class Edible : public StaticObject {
 
 public:
@@ -28,7 +32,6 @@ public:
     void setAvailability(bool);
     void setFruit(Fruit);
     void upgradeFruit();
-    void display() override;
 
     // the bonus given by the edible depending on its type
     int gain();

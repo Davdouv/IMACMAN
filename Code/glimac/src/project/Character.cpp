@@ -22,10 +22,6 @@ void Character::setInitY(float initY) { m_initY = initY;}
 void Character::setIsPacman(bool pacman) { m_pacman = pacman;}
 void Character::setInSpawn(bool inSpawn) { m_inSpawn = inSpawn; }
 
-void Character::move() {
-
-}
-
 void Character::moveLeft() {
     setPosX(getPosX() - m_speed); 
     setOrientation(Object::Orientation::LEFT);   
@@ -44,10 +40,6 @@ void Character::moveUp() {
 void Character::moveDown() {
     setPosY(getPosY() + m_speed);
     setOrientation(Object::Orientation::DOWN);
-}
-
-void Character::display() {
-    std::cout << "Character" << std::endl;
 }
 
 void Character::reset() {

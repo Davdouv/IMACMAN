@@ -31,50 +31,91 @@ void GameManager::setFruitTimer(uint32_t t) { m_fruitTimer = t; }
 void GameManager::switchPause() { m_pause=!isPause();}
 void GameManager::setEatenGhosts(int eatenGhosts) { m_eatenGhosts = eatenGhosts;}
 
-// FILE MANAGER
+/* -------------
+ *  MAIN METHOD
+ * ------------- */
 
+// --- PLAY FUNCTION | Call all other functions --- //
+void GameManager::play(Controller* controller, AudioManager* audioManager) {
+
+    if (!(lost()) && ready() && !isPause())
+    {
+        stateManager();
+        activateFruit();
+        pacmanMove(controller);
+        ghostMove();
+        pacmanEdibleCollision(audioManager);
+        if (pacmanGhostCollision(audioManager))
+        {
+            controller->setPlayerAction(Controller::Key::Q);
+        }
+        if(won())
+        {
+            newLevel(controller);
+        }
+        if(lost())
+        {
+            std::cout << "Player Score : " << m_player.getPoints() << std::endl;
+        }
+    }
+    pause(controller);
+}
+
+/* ---------------------
+ *  FILE MANAGER
+ * --------------------- */
+
+
+/*  Game loader
+ *  reads a txt file  
+ *  set true to newGame if brand new Game wanted
+ *  set false to newGame if last saved Game wanted
+ */
 int GameManager::load(bool newGame) {
 
     std::fstream file;
     if (!newGame) 
         file.open("../Code/data/save_"+m_map->getFileMap(), std::ios::binary | std::ios::out | std::ios::in);
     else file.open("../Code/data/"+m_map->getFileMap(), std::ios::binary | std::ios::out | std::ios::in);
+    
     if (!file.is_open()) {
         std::cout << " error loading the file " << std::endl;
         return 0;
     }
+
     else {
         std::vector<std::vector<StaticObject*>> vec;
         int i = 0;
         std::string tmp;
         file.seekg(0);
-
-        // if saved game, load lives and points 
-        if (!newGame) {
+ 
+        if (!newGame) {  // if saved game, load player lives and points
+        /*** PLAYER INFORMATION ***/
             getline(file,tmp);
             m_player.setLife(atoi(tmp.c_str()));
             getline(file,tmp);
             m_player.setPoints(atoi(tmp.c_str()));
         }
+
+        /*** PACMAN INFORMATION ***/
         getline(file,tmp);
         std::string delimiter = ",";
         std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
         std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
         Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.004, Object::Orientation::LEFT);
-
         
-        // if saved game get pacman initial positions
-        if (!newGame) {
-        getline(file,tmp);
+        if (!newGame) {  // if saved game get pacman initial positions
+            getline(file,tmp);
             std::string delimiter = ",";
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
             p->setInitX(atoi(pos_x.c_str()));
             p->setInitY(atoi(pos_y.c_str()));    
         }
-        
         m_map->setPacman(*p);
+        delete(p);
         
+        /*** GHOSTS INFORMATIONS ***/
         std::vector<Ghost> tabGhost;
         for (int i = 0; i < 4; i++) {
             getline(file,tmp);
@@ -82,7 +123,8 @@ int GameManager::load(bool newGame) {
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
             Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 0.004, i, Object::Orientation::LEFT, 0);
-            if (!newGame) {
+            
+            if (!newGame) { // if saved game get ghosts initial position
                 getline(file,tmp);
                 std::string delimiter = ",";
                 std::string init_x = tmp.substr(1, tmp.find(delimiter)-1);
@@ -94,18 +136,20 @@ int GameManager::load(bool newGame) {
             delete(g);
         }
         m_map->setGhosts(tabGhost);
+
+        /** MAP/STATIC OBJECTS **/
         bool once = true;
         while (!file.eof()) {
             getline(file, tmp);
             std::vector<StaticObject*> row;
             if(once)
             {
-                m_map->setNbY(tmp.size());
+                m_map->setNbY(tmp.size()); // number of columns in the maze
                 once = false;
             }
             for (int j = 0; j < tmp.size(); j++) {
                 StaticObject *o;
-                if (!isStaticElement(tmp[j])) tmp[j] = 'V';
+                if (!isStaticElement(tmp[j])) tmp[j] = 'V'; // if error in the file replace it by an empty path
                 switch(tmp[j]) {
 
                     case 'W' : o = new Wall(j, i, 1, 1,  Object::Orientation::LEFT);
@@ -128,38 +172,37 @@ int GameManager::load(bool newGame) {
             vec.push_back(row);
             i++;
         }
-        m_map->setStaticObjects(vec);
-        delete(p);
-
-        m_map->setNbX(i-1);
+        m_map->setStaticObjects(vec); 
+        m_map->setNbX(i-1); // number of rows in the maze
     }
     file.close();
     return 1;
 }
 
-
+/*  Game saver
+ *  saves the game's information in a  txt file
+ */
 int GameManager::save() {
 
     std::fstream file;
     file.open("../Code/data/save_"+m_map->getFileMap(), std::ios::binary | std::ios::out | std::ios::in);
     if (!file.is_open()) {
-        std::ofstream outfile("../Code/data/save_"+m_map->getFileMap());
+        std::ofstream outfile("../Code/data/save_"+m_map->getFileMap()); // create new file if the game was never saved before
         outfile.close();
-        save();
+        save(); // recall the function to save the game in the file that was just created
     }
     else {
         file.seekg(0);
-        // save player lives
-        file << m_player.getLife() << std::endl;
-        // save player points
-        file << m_player.getPoints() << std::endl;
         
-        // current pacman position
+        /*** PLAYER INFORMATION ***/
+        file << m_player.getLife() << std::endl;
+        file << m_player.getPoints() << std::endl;
+
+        /*** PACMAN INFORMATION ***/
         file << "P" << m_map->getPacman()->getPosX() << "," << m_map->getPacman()->getPosY() << std::endl;
-        // initial pacman position
         file << "P" << m_map->getPacman()->getInitX() << "," << m_map->getPacman()->getInitY() << std::endl;
 
-        // ghosts positions
+        /*** GHOSTS INFORMATION ***/
         file << "G" << m_map->getGhosts()[Ghost::Type::SHADOW]->getPosX() << "," << m_map->getGhosts()[Ghost::Type::SHADOW]->getPosY() << std::endl;
         file << "G" << m_map->getGhosts()[Ghost::Type::SHADOW]->getInitX() << "," << m_map->getGhosts()[Ghost::Type::SHADOW]->getInitY() << std::endl;
         file << "G" << m_map->getGhosts()[Ghost::Type::SPEEDY]->getPosX() << "," << m_map->getGhosts()[Ghost::Type::SPEEDY]->getPosY() << std::endl;
@@ -169,6 +212,7 @@ int GameManager::save() {
         file << "G" << m_map->getGhosts()[Ghost::Type::POKEY]->getPosX() << "," << m_map->getGhosts()[Ghost::Type::POKEY]->getPosY() << std::endl;
         file << "G" << m_map->getGhosts()[Ghost::Type::POKEY]->getInitX() << "," << m_map->getGhosts()[Ghost::Type::POKEY]->getInitY() << std::endl;
 
+        /*** MAP/STATIC OBJECTS ***/
         for (int i = 0; i < m_map->getNbX(); i++) {
             for (int j = 0; j < m_map->getNbY(); j++) {
                 if (m_map->getStaticObjects()[i][j]->getType() == 'E') {
@@ -192,23 +236,17 @@ int GameManager::save() {
     return 1;
 }
 
-// returns true if no edible on the map
-bool GameManager::won() {
-    
-    return (m_map->getSuperPacGommes().empty() && m_map->getPacGommes().empty());
-}
 
-// returns true if the players lost all his lives
-bool GameManager::lost() {
 
-    return (!m_player.getLife());
-}
+/*  ---------------------
+ *  BASIC OPTIONS MANAGER
+ *  --------------------- */
 
-bool GameManager::ready() {
 
-    return (SDL_GetTicks() - getStartTime() > 1000);
-}
-
+/* Pause switcher
+ * when the player hits ESCAPE 
+ * its stops the game and the music
+ */
 void GameManager::pause(Controller* controller) {
 
     if (controller->getInterfaceAction() == Controller::ESCAPE)
@@ -217,16 +255,13 @@ void GameManager::pause(Controller* controller) {
                 controller->setInterfaceAction(Controller::NONE);
                 if (m_pause) Mix_PauseMusic();
                 else Mix_ResumeMusic();
-    }
-        
+    }    
 }
 
-void GameManager::start(AudioManager* audioManager) {
-
-    setTimers();
-    play(audioManager);
-}
-
+/* Game restarter
+ * it initializes the player 
+ * and loads a new game
+ */
 void GameManager::restart() {
 
     setState(NORMAL);
@@ -236,53 +271,82 @@ void GameManager::restart() {
     setTimers();
 }
 
-
-// For console only
-void GameManager::play(AudioManager* audioManager) {
-
-    Controller * c;
-    m_map->getPacman()->setSpeed(1);
-    for (int i = 0; i < m_map->getGhosts().size(); i++) m_map->getGhosts()[i]->setSpeed(1);
-    std::string line;
-    this->setStartTime(SDL_GetTicks());
+void GameManager::newLevel(Controller* controller)
+{
+    controller->setPlayerPreviousAction(Controller::Key::Q);
+    setState(NORMAL);
+    Player save_player = m_player;
+    m_map->initialization();
+    load(true);
+    m_player = save_player;
     setTimers();
-    while (!(this->won())) {
-        if (ready()) {
+}
 
-            ghostMove();
-            stateManager();
-            activateFruit();
-            m_map->display();
-            std::cout << "Your move : " << std::endl;
-            getline(std::cin, line);
-            if (line == "Z") {
-                if (!characterWallCollision(m_map->getPacman(), 'Z')) m_map->getPacman()->moveUp();
-            }
-            if (line == "Q") {
-                if (!characterWallCollision(m_map->getPacman(), 'Q')) m_map->getPacman()->moveLeft();
-            }
-            if (line == "S") {
-                if (!characterWallCollision(m_map->getPacman(), 'S')) m_map->getPacman()->moveDown();
-            }
-            if (line == "D") {
-                if (!characterWallCollision(m_map->getPacman(), 'D')) m_map->getPacman()->moveRight();
-            }
-            if (line == "C") {
-                save(); 
-                return;
-            }
-            if (line == "R") {
-                restart();
-            }
-            pacmanGhostCollision(audioManager);
-            pacmanEdibleCollision(audioManager);
-            std::cout << "Points : " << m_player.getPoints() << std::endl;
-            std::cout << "Lives : " << m_player.getLife() << std::endl;
+
+/*  -------------------------
+ *  GAME/PLAYER STATE MANAGER
+ *  ------------------------- */
+
+/*  "Winner" detector
+ *  if there are no edible on the map
+ */
+bool GameManager::won() {
+    
+    return (m_map->getSuperPacGommes().empty() && m_map->getPacGommes().empty());
+}
+
+/*  Loser  detector
+ *  if the player lost all of his lives
+ */
+bool GameManager::lost() {
+
+    return (!m_player.getLife());
+}
+
+/* Game timer
+ * waits for 1 second before starting the game
+ */
+bool GameManager::ready() {
+
+    return (SDL_GetTicks() - getStartTime() > 1000);
+}
+
+/* timers initialization
+ * waits for 1 second before starting the game
+ */
+void GameManager::setTimers() {
+    setFruitTimer(SDL_GetTicks());
+    for (int i = 0; i < m_map->getGhosts().size(); i++) m_map->getGhosts()[i]->reset();
+}
+
+// Update speed with delta time
+void GameManager::updateSpeed(uint32_t deltaTime)
+{
+    if(deltaTime > 0)
+    {
+        // Basic speed should be arround 0.02
+        double speed = 0.004;
+        m_map->getPacman()->setSpeed(speed*deltaTime);
+
+        for (unsigned int i = 0; i < m_map->getGhosts().size(); ++i)
+        {
+            // If we can eat a ghost, slow down this ghost
+            if(m_map->getGhosts()[i]->getSuper())
+                m_map->getGhosts()[i]->setSpeed((speed*deltaTime)/2);
+            else
+                m_map->getGhosts()[i]->setSpeed(speed*deltaTime);
         }
     }
 }
 
-// Returns true if can move, false if not (or if he takes door)
+/*  --------------
+ *  MOVES MANAGER
+ *  -------------- */
+
+
+/* Character's move ability
+ * Returns true if can move, false if not (or if he takes door)
+ */
 bool GameManager::moveCharacter(Character* character, Controller::Key action)
 {
     bool pacman = false;
@@ -339,8 +403,10 @@ bool GameManager::moveCharacter(Character* character, Controller::Key action)
     return false;
 }
 
-void GameManager::pacmanMove(Controller* controller)
-{
+/* Pacman moves
+ * controlled by the player/controller
+ */
+void GameManager::pacmanMove(Controller* controller) {
     Controller::Key action = controller->getPlayerAction();
 
     if (moveCharacter(m_map->getPacman(), action))
@@ -354,44 +420,65 @@ void GameManager::pacmanMove(Controller* controller)
     }
 }
 
+/* Ghosts moves
+ * the move around randomly in the maze
+ * they keep going in the same direction until 
+ * they collide to a wall
+ * then they change direction randomly again
+ * and take an availble path
+ */
+void GameManager::ghostMove() {
 
-// --- PLAY FUNCTION | Call all other functions --- //
-void GameManager::play(Controller* controller, AudioManager* audioManager) {
+    Controller::Key action;
+    for (int i = 0; i < m_map->getGhosts().size(); i++) {
+        if (m_map->getGhosts()[i]->ready()) {
 
-    if (!(lost()) && ready() && !isPause())
-    {
-        stateManager();
-        activateFruit();
-        pacmanMove(controller);
-        ghostMove();
-        pacmanEdibleCollision(audioManager);
-        if (pacmanGhostCollision(audioManager))
-        {
-            controller->setPlayerAction(Controller::Key::Q);
-        }
-        if(won())
-        {
-            newLevel(controller);
-        }
-        if(lost())
-        {
-            std::cout << "Player Score : " << m_player.getPoints() << std::endl;
+            if ( (m_map->getGhosts()[i]->getPosY() == m_map->getGhosts()[i]->getInitY()) && (m_map->getGhosts()[i]->getPosX() == m_map->getGhosts()[i]->getInitX()) ) {
+                m_map->getGhosts()[i]->setOrientation(Object::Orientation::UP);
+                m_map->getGhosts()[i]->setPosX(m_map->getSpawnPoint()[0]->getPosX());
+                m_map->getGhosts()[i]->setPosY(m_map->getSpawnPoint()[0]->getPosY()-1);
+                m_map->getGhosts()[i]->setInSpawn(false);
+            }
+            else {
+
+                switch (m_map->getGhosts()[i]->getOrientation()) {
+
+                    case Object::Orientation::UP : action = Controller::Z;
+                        break;
+                    case Object::Orientation::DOWN: action = Controller::S;
+                        break;
+                    case Object::Orientation::RIGHT: action = Controller::D;
+                        break;
+                    case Object::Orientation::LEFT :action = Controller::Q;
+                        break;
+                }
+                while (!moveCharacter(m_map->getGhosts()[i], action)) {
+                    
+                    int r =  (rand() % 4);
+                    switch (r) {
+
+                        case 0: action = Controller::Z;
+                            break;
+                        case 1: action = Controller::Q;
+                            break;
+                        case 2: action = Controller::D;
+                            break;
+                        case 3:action = Controller::S;
+                            break;
+                    }
+                }
+            }
         }
     }
-    pause(controller);
 }
 
-void GameManager::newLevel(Controller* controller)
-{
-    controller->setPlayerPreviousAction(Controller::Key::Q);
-    setState(NORMAL);
-    Player save_player = m_player;
-    m_map->initialization();
-    load(true);
-    m_player = save_player;
-    setTimers();
-}
 
+/*  --------------
+ *  COLLISIONS MANAGER
+ *  -------------- */
+
+/* Detects a collision between Pacman and a Ghost
+*/
 bool GameManager::pacmanGhostCollision(AudioManager* audioManager) {
 
     for (int i = 0; i < m_map->getGhosts().size(); i++) {
@@ -426,16 +513,8 @@ bool GameManager::pacmanGhostCollision(AudioManager* audioManager) {
     return false;
 }
 
-bool GameManager::ghostCollision() {
 
-    for (int i = 0; i < m_map->getGhosts().size(); i++) {
-        for (int j = 0; j < m_map->getGhosts().size() && j!=i; j++) {
-               if (m_map->getGhosts()[i]->collision(m_map->getGhosts()[j])) return true;
-        }
-    }
-    return false;
-}
-
+// Detects a collision between a Character and the upper side of a wall
 bool GameManager::wallCollisionUP(float fposY, int iposY, int iposX, float speed, Character* character)
 {
     // Check if we're still going to be inside the cell
@@ -482,6 +561,7 @@ bool GameManager::wallCollisionUP(float fposY, int iposY, int iposX, float speed
     }
 }
 
+// Detects a collision between a Character and the left side of a wall
 bool GameManager::wallCollisionLEFT(float fposX, int iposY, int iposX, float speed, Character* character)
 {
     if((fposX - speed) > iposX)
@@ -517,6 +597,7 @@ bool GameManager::wallCollisionLEFT(float fposX, int iposY, int iposX, float spe
     }
 }
 
+// Detects a collision between a Character and the down side of a wall
 bool GameManager::wallCollisionDOWN(float fposY, int iposY, int iposX, float speed, Character* character)
 {
     // Check if we can go on the bottom cell
@@ -546,6 +627,7 @@ bool GameManager::wallCollisionDOWN(float fposY, int iposY, int iposX, float spe
     }
 }
 
+// Detects a collision between a Character and the right side of a wall
 bool GameManager::wallCollisionRIGHT(float fposX, int iposY, int iposX, float speed, Character* character)
 {
     if(iposX+1 <= m_map->getNbY()-1)
@@ -573,6 +655,7 @@ bool GameManager::wallCollisionRIGHT(float fposX, int iposY, int iposX, float sp
     }
 }
 
+// Detects a collision between a Character and a Wall
 bool GameManager::characterWallCollision(Character* character, char direction) {
     float fposX = character->getPosX();
     float fposY = character->getPosY();
@@ -652,6 +735,7 @@ bool GameManager::characterWallCollision(Character* character, char direction) {
 
 }
 
+// Detects a collision between a Character and the left Door
 bool GameManager::characterLeftDoorCollision(Character* character)
 {
     float fposX = character->getPosX();
@@ -668,6 +752,7 @@ bool GameManager::characterLeftDoorCollision(Character* character)
     return false;
 }
 
+// Detects a collision between a Character and the right
 bool GameManager::characterRightDoorCollision(Character* character)
 {
     float fposX = character->getPosX();
@@ -681,7 +766,15 @@ bool GameManager::characterRightDoorCollision(Character* character)
     }
     return false;
 }
+/* Note that doors must be placed on the left and right sides
+ * of the maze in order for teleportation to work 
+ */
 
+/* Detects a Collision between an Edible object and Pacman
+ * points gaining
+ * fruit upgrade if fruit
+ * switch to super mode if super pac gomme
+ */
 bool GameManager::pacmanEdibleCollision(AudioManager* audioManager) {
     // If we're going left, we want Pacman to be half inside the cell
     if ((m_map->getPacman()->getPosX() - (int)m_map->getPacman()->getPosX()) > m_map->getPacman()->getWidth())
@@ -731,16 +824,28 @@ bool GameManager::pacmanEdibleCollision(AudioManager* audioManager) {
     return false;
 }
 
+/*  --------------
+ *  STATE MANAGER
+ *  -------------- */
+
+/* Switch to super state mode
+ * it includes : 
+ * pacman's ability to eat ghost
+ * eaten ghosts counter initialization
+ */
 void GameManager::switchSuperState() {
     this->setState(GameManager::PacmanState::SUPER);
     this->setSuperTimer(SDL_GetTicks());
     this->setEatenGhosts(0);
     for (int i = 0; i < m_map->getGhosts().size(); i++) { 
         m_map->getGhosts()[i]->setSuper(true);
-        //m_map->getGhosts()[i]->slowDown();
     }
 }
 
+/* if the super mode is on
+ * set the time (7 seconds)
+ * go back to normal state when time's up
+ */
 void GameManager::stateManager() {
 
     if (this->getState() == GameManager::PacmanState::SUPER) {
@@ -756,6 +861,15 @@ void GameManager::stateManager() {
     }
 }
 
+
+/*  --------------
+ *  EDIBLE MANAGER
+ *  -------------- */
+
+/* while the super mode is on
+ * double the gained points everytime 
+ * a ghost is eaten
+ */
 void GameManager::eatGhost() {
 
     this->setEatenGhosts(this->getEatenGhosts()+1);
@@ -771,266 +885,12 @@ void GameManager::eatGhost() {
         default:return;
     }
 }
-// Shadow will follow Pacman all along, so he will find the shortest way to go to Pacman
-void GameManager::shadowAI() {
 
-    if (m_map->getGhosts()[Ghost::Type::SHADOW]->getDeath()) {
-
-        shortestWay(Ghost::Type::SHADOW, m_map->getGhosts()[Ghost::Type::SHADOW]->getInitY(), m_map->getGhosts()[Ghost::Type::SHADOW]->getInitX());
-    }
-    else shortestWay(Ghost::Type::SHADOW, m_map->getPacman()->getPosX(), m_map->getPacman()->getPosY());
-}
-
-// Speedy aims the direction Pacman is going so he find the shortest way to this direction
-void GameManager::speedyAI() {
-
-    if (m_map->getGhosts()[Ghost::Type::SPEEDY]->getDeath()) {
-
-        shortestWay(Ghost::Type::SPEEDY, m_map->getGhosts()[Ghost::Type::SPEEDY]->getInitY(), m_map->getGhosts()[Ghost::Type::SPEEDY]->getInitX());
-    }
-    else {
-        switch(m_map->getPacman()->getOrientation()) {
-
-            case Object::Orientation::LEFT:
-                shortestWay(Ghost::Type::SPEEDY, 0, m_map->getPacman()->getPosY());
-                break;
-
-            case Object::Orientation::RIGHT:
-                shortestWay(Ghost::Type::SPEEDY, m_map->getNbX(), m_map->getPacman()->getPosY());
-                break;
-
-            case Object::Orientation::UP:
-                shortestWay(Ghost::Type::SPEEDY, m_map->getPacman()->getPosX(), 0);
-                break;
-
-            case Object::Orientation::DOWN:
-                shortestWay(Ghost::Type::SPEEDY, m_map->getPacman()->getPosX(), m_map->getNbY());
-                break;
-            default:break;
-        }
-    }
-
-}
-
-// When Pacman gets really close to Bashful, he goes to Pacman's opposite direction
-// else it keeps moving the way it is
-// moves like Speedy until he gets close to pacman
-
-void GameManager::bashfulAI() {
-
-    if (m_map->getGhosts()[Ghost::Type::BASHFUL]->getDeath()) {
-
-        shortestWay(Ghost::Type::BASHFUL, m_map->getGhosts()[Ghost::Type::BASHFUL]->getInitY(), m_map->getGhosts()[Ghost::Type::BASHFUL]->getInitX());
-    }
-    else if ((std::abs(m_map->getPacman()->getPosX() - m_map->getGhosts()[Ghost::Type::BASHFUL]->getPosX()) <= 2)  && (std::abs(m_map->getPacman()->getPosY() - m_map->getGhosts()[Ghost::Type::BASHFUL]->getPosY()) <= 10)) {
-
-        switch(m_map->getPacman()->getOrientation()) {
-
-            case Object::Orientation::LEFT:
-                shortestWay(Ghost::Type::BASHFUL, m_map->getNbX(), m_map->getPacman()->getPosY());
-                break;
-
-            case Object::Orientation::RIGHT:
-                shortestWay(Ghost::Type::BASHFUL, 0, m_map->getPacman()->getPosY());
-                break;
-
-            case Object::Orientation::UP:
-                shortestWay(Ghost::Type::BASHFUL, m_map->getPacman()->getPosX(), m_map->getNbY());
-                break;
-
-            case Object::Orientation::DOWN:
-                shortestWay(Ghost::Type::BASHFUL, m_map->getPacman()->getPosX(), 0);
-                break;
-            default:break;
-        }
-    }
-
-    else {
-
-        switch(m_map->getPacman()->getOrientation()) {
-
-            case Object::Orientation::LEFT:
-                shortestWay(Ghost::Type::BASHFUL, 0, m_map->getPacman()->getPosY());
-                break;
-
-            case Object::Orientation::RIGHT:
-                shortestWay(Ghost::Type::BASHFUL, m_map->getNbX(), m_map->getPacman()->getPosY());
-                break;
-
-            case Object::Orientation::UP:
-                shortestWay(Ghost::Type::BASHFUL, m_map->getPacman()->getPosX(), 0);
-                break;
-
-            case Object::Orientation::DOWN:
-                shortestWay(Ghost::Type::BASHFUL, m_map->getPacman()->getPosX(), m_map->getNbY());
-                break;
-            default:break;
-        }
-    }
-}
-
-// goes around randomly
-void GameManager::pokeyAI() {
-
-    if (m_map->getGhosts()[Ghost::Type::POKEY]->getDeath()) {
-
-        shortestWay(Ghost::Type::POKEY, m_map->getGhosts()[Ghost::Type::POKEY]->getInitY(), m_map->getGhosts()[Ghost::Type::POKEY]->getInitX());
-    }
-    else {
-        int rx = (rand()/RAND_MAX) * m_map->getNbX();
-        int ry = (rand()/RAND_MAX) * m_map->getNbY();
-        shortestWay(Ghost::Type::POKEY, rx, ry);
-    }
-}
-
-// Shortest way for a ghost to get to the position (x, y)
-// returns 1 if the goal is achieved so we set another one
-// returns 0 if the goal isn't achieved yet
-Controller::Key GameManager::shortestWay(int ghostType, float x, float y) {
-
-    std::cout << "Par rapport à : " << ghostType+1 << std::endl;
-    float gx = m_map->getGhosts()[ghostType]->getPosX();
-    float gy = m_map->getGhosts()[ghostType]->getPosY();
-    if ((gx != x) && (gy != y)) {
-
-        // if goal is at the right top
-        if ((gx - x < 0) && (gy - y > 0)) {
-            std::cout << "goal en  haut à droite " << std::endl;
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
-        }
-        // if goal is at the right bottom
-        else if ((gx - x < 0) && (gy - y < 0)) {
-            std::cout << "goal en  bas à droite " << std::endl;
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
-        }
-        // if goal is at the left top
-        else if ((gx - x > 0) && (gy - y > 0)) {
-            std::cout << "goal en  haut à gauche " << std::endl;
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
-        }
-        // if goal is at the left bottom
-        else if ((gx - x > 0) && (gy - y < 0)) {
-            std::cout << "goal en  bas à gauche " << std::endl;
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
-        }
-        // if goal is at the right
-        else if ((gx - x < 0) && (gy - y == 0)) {
-            std::cout << "goal  à droite " << std::endl;
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
-        }
-        // if goal is at the left
-        else if ((gx - x > 0) && (gy - y == 0)) {
-            std::cout << "goal à gauche " << std::endl;
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
-        }
-        // if goal is at the top
-        else if ((gx - x == 0) && (gy - y > 0)) {
-            std::cout << "goal en haut" << std::endl;
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
-        }
-        // if goal is at the bottom
-        else if ((gx - x == 0) && (gy - y < 0)) {
-            std::cout << "goal en  bas " << std::endl;
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
-        }
-        else std::cout << "oops" << std::endl;
-    }
-}
-
-void GameManager::setTimers() {
-    setFruitTimer(SDL_GetTicks());
-    for (int i = 0; i < m_map->getGhosts().size(); i++) m_map->getGhosts()[i]->reset();
-}
-
-void GameManager::ghostMove() {
-
-    Controller::Key action;
-    for (int i = 0; i < m_map->getGhosts().size(); i++) {
-        if (m_map->getGhosts()[i]->ready()) {
-
-            if ( (m_map->getGhosts()[i]->getPosY() == m_map->getGhosts()[i]->getInitY()) && (m_map->getGhosts()[i]->getPosX() == m_map->getGhosts()[i]->getInitX()) ) {
-                m_map->getGhosts()[i]->setOrientation(Object::Orientation::UP);
-                m_map->getGhosts()[i]->setPosX(m_map->getSpawnPoint()[0]->getPosX());
-                m_map->getGhosts()[i]->setPosY(m_map->getSpawnPoint()[0]->getPosY()-1);
-                m_map->getGhosts()[i]->setInSpawn(false);
-            }
-            else {
-
-                switch (m_map->getGhosts()[i]->getOrientation()) {
-
-                    case Object::Orientation::UP : action = Controller::Z;
-                        break;
-                    case Object::Orientation::DOWN: action = Controller::S;
-                        break;
-                    case Object::Orientation::RIGHT: action = Controller::D;
-                        break;
-                    case Object::Orientation::LEFT :action = Controller::Q;
-                        break;
-                }
-                while (!moveCharacter(m_map->getGhosts()[i], action)) {
-                    
-                    int r =  (rand() % 4);
-                    switch (r) {
-
-                        case 0: action = Controller::Z;
-                            break;
-                        case 1: action = Controller::Q;
-                            break;
-                        case 2: action = Controller::D;
-                            break;
-                        case 3:action = Controller::S;
-                            break;
-                    }
-                }
-            }
-        }
-    }
-}
-
-// Update speed with delta time
-void GameManager::updateSpeed(uint32_t deltaTime)
-{
-    if(deltaTime > 0)
-    {
-        // Basic speed should be arround 0.02
-        double speed = 0.004;
-        m_map->getPacman()->setSpeed(speed*deltaTime);
-
-        for (unsigned int i = 0; i < m_map->getGhosts().size(); ++i)
-        {
-            // If we can eat a ghost, slow down this ghost
-            if(m_map->getGhosts()[i]->getSuper())
-                m_map->getGhosts()[i]->setSpeed((speed*deltaTime)/2);
-            else
-                m_map->getGhosts()[i]->setSpeed(speed*deltaTime);
-        }
-    }
-}
-
+/* fruit activation
+ * a fruit is availble 30 seconds after the game starts
+ * until pacman eats it
+ * then 30 seconds later another one appears
+ */
 void GameManager::activateFruit() {
 
     int timer = 30000;  // 1sec * 1000

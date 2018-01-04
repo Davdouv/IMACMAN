@@ -1,6 +1,11 @@
 #pragma once
 #include "Object.hpp"
 
+/* -------------
+ *  CHARACTER CLASS
+ * ------------- */
+// representing pacman and the ghosts
+
 class Character : public Object {
 
 private:
@@ -31,13 +36,10 @@ public:
     void setInSpawn(bool);
 
     // move methods
-    virtual void move();
     void moveRight();
     void moveLeft();
     void moveUp();
     void moveDown();
 
-
-    void display() override;
     virtual void reset();
 };

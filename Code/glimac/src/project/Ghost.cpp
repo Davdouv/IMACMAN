@@ -33,10 +33,6 @@ void Ghost::setType(int type) { m_type = type; }
 void Ghost::setDeath(int death) { m_death = death; }
 void Ghost::setSuper(bool super) { m_super = super; }
 
-void Ghost::display() {
-    std::cout << "G";
-}
-
 bool Ghost::ready() {
     switch (m_type) {
 
@@ -60,15 +56,3 @@ void Ghost::reset () {
     setInSpawn(true);
 }
 
-void Ghost::move() {
-
-}
-
-// We don't use this function with speed = speed * deltaTime
-void Ghost::slowDown() {
-    setSpeed(getSpeed()/1.5);
-}
-
-void Ghost::randomAI() {
-
-}

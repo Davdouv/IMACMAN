@@ -35,10 +35,4 @@ bool Object::collision(Object *c) {
         return true;
     }
     return false; 
-} 
-
-void Object::display() {
-
-    std::cout << "Objet : ";
 }
-

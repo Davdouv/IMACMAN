@@ -38,7 +38,4 @@ public:
 
     // collision
     bool collision(Object*);
-
-    // display 
-    virtual void display();
 };

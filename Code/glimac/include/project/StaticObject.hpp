@@ -1,6 +1,11 @@
 #pragma once
 #include "Object.hpp"
 
+/* ---------------
+ *  STATIC OBJECTS
+ * --------------- */
+// including walls, doors, empty paths and dots
+
 class StaticObject : public Object {
 
 public:
@@ -8,6 +13,4 @@ public:
     // constructor
     StaticObject(char, float, float, float, float, Orientation = LEFT);
     StaticObject();
-
-    void display() override;
 };

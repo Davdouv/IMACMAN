@@ -11,20 +11,6 @@ void Edible::setTypeEdible(int type) { m_type = type;}
 void Edible::setAvailability(bool available) { m_available = available; }
 void Edible::setFruit(Edible::Fruit fruit) { m_fruit = fruit; }
 
-
-void Edible::display() {
-    switch(getTypeEdible()) {
-
-        case FRUIT: std::cout << "F ";
-            break;
-        case PAC_GOMME: std::cout << "G ";
-            break;
-        case SUPER_PAC_GOMME: std::cout << "S ";
-            break;
-        default:return;
-    }
-}
-
 int Edible::gain() {
 
     switch(m_type) {

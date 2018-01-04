@@ -1,6 +1,10 @@
 #pragma once
 #include "StaticObject.hpp"
 
+/* -------------
+ *  DOOR CLASS
+ * ------------- */
+
 class Door : public StaticObject {
 
 private:
