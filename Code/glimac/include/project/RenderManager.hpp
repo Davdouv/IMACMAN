@@ -60,16 +60,10 @@ private:
     GLuint m_sphereVAO;
 
     // Model3D
-    Geometry m_ghostModel;
-    GLuint m_ghostModelVBO;
-    GLuint m_ghostModelIBO;
-    GLuint m_ghostModelVAO;
-
-    // Model3D
-    // Geometry m_rock;
-    // GLuint m_rockVBO;
-    // GLuint m_rockIBO;
-    // GLuint m_rockVAO;
+    Geometry m_model[4];
+    GLuint m_modelVBO[4];
+    GLuint m_modelIBO[4];
+    GLuint m_modelVAO[4];
 
     // Matrix
     glm::mat4 m_ProjMatrix;
