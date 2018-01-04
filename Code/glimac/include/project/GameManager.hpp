@@ -63,7 +63,7 @@ public:
     bool lost();
     bool ready();
     void pause(Controller* controller);
-    
+
 private:
     // Move
     bool moveCharacter(Character*, Controller::Key);
@@ -90,10 +90,7 @@ private:
     void speedyAI();
     void bashfulAI();
     void pokeyAI();
-<<<<<<< HEAD
     char nextMove(float, float, float, float);
-=======
->>>>>>> 9da497ecb91f6d116b638ced0b03b6a7c96f85a0
 
     // New game
     void newLevel(Controller*);

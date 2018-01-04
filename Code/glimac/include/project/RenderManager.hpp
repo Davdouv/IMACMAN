@@ -59,6 +59,10 @@ private:
     GLuint m_sphereIBO;
     GLuint m_sphereVAO;
 
+		// UI
+		SDL_Surface* m_scoreSurface;
+		GLuint m_scoreImg;
+
 		// Score Panel
 		SDL_Surface* m_scorePanel_title;
 		SDL_Surface* m_scorePanel_points;
@@ -98,8 +102,6 @@ private:
 
     // Text
 		TTF_Font* m_font;
-		SDL_Surface* m_text;
-		GLuint m_textTexture;
 
     // Game Size Infos
     glm::vec2 m_gameSize;
@@ -128,7 +130,7 @@ public:
 
     // Text
 		void loadFont();
-		void createTextTexture(SDL_Surface* textSurface, GLuint textImg, std::string text, SDL_Color color);
+		SDL_Surface* createTextTexture(GLuint* textImg, std::string text, SDL_Color color);
 		void drawText(SDL_Surface* textSurface, GLuint textImg, float size, float x, float y);
 
     // Skybox

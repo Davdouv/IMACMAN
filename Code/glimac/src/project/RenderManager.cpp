@@ -125,27 +125,29 @@ void RenderManager::loadFont()
   m_font = Text::loadFont("../Code/assets/fonts/DejaVuSans.ttf");
 }
 
-void RenderManager::createTextTexture(SDL_Surface* textSurface, GLuint textImg, std::string text, SDL_Color color)
+SDL_Surface* RenderManager::createTextTexture(GLuint* textImg, std::string text, SDL_Color color)
 {
-  textSurface = SDL_DisplayFormatAlpha(TTF_RenderUTF8_Blended( m_font, text.data(), color ));
-  int colors = textSurface->format->BytesPerPixel;
+  SDL_Surface* surface = SDL_DisplayFormatAlpha(TTF_RenderUTF8_Blended( m_font, text.data(), color ));
+  int colors = surface->format->BytesPerPixel;
   SDL_Rect area;
-  area.x = 0; area.y = 0; area.w = textSurface->w; area.h = textSurface->h;
-  SDL_Surface* temp = SDL_CreateRGBSurface(SDL_HWSURFACE | SDL_SRCALPHA, textSurface->w, textSurface->h, 32,0x000000ff, 0x0000ff00, 0x00ff0000, 0x000000ff);
-  SDL_BlitSurface(textSurface, &area, temp, NULL);
+  area.x = 0; area.y = 0; area.w = surface->w; area.h = surface->h;
+  SDL_Surface* temp = SDL_CreateRGBSurface(SDL_HWSURFACE | SDL_SRCALPHA, surface->w, surface->h, 32,0x000000ff, 0x0000ff00, 0x00ff0000, 0x000000ff);
+  SDL_BlitSurface(surface, &area, temp, NULL);
   GLenum texture_format = GL_RGBA;
 
   glDisable(GL_TEXTURE);
   glDisable(GL_TEXTURE_2D);
   glEnable(GL_BLEND);
   //glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-  glGenTextures(1, &m_textTexture);
-  glBindTexture(GL_TEXTURE_2D, m_textTexture);
+  GLuint img;
+
+  glGenTextures(1, &img);
+  glBindTexture(GL_TEXTURE_2D, img);
   glTexImage2D( GL_TEXTURE_2D,
                 0,
                 colors,
-                textSurface->w,
-                textSurface->h,
+                surface->w,
+                surface->h,
                 0,
                 texture_format,
                 GL_UNSIGNED_BYTE,
@@ -154,6 +156,9 @@ void RenderManager::createTextTexture(SDL_Surface* textSurface, GLuint textImg, 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glBindTexture(GL_TEXTURE_2D, 0);
+  *textImg = img;
+
+  return surface;
 }
 
 void RenderManager::drawText(SDL_Surface* textSurface, GLuint textImg, float size, float x, float y)
@@ -162,7 +167,7 @@ void RenderManager::drawText(SDL_Surface* textSurface, GLuint textImg, float siz
   useProgram(TEXTURE);
   bindPlaneVAO();
   glm::mat4 matrix = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, -5.0f));
-  float ratio = textSurface->w / textSurface->h;
+  float ratio = floatDivision(textSurface->w, textSurface->h);
   matrix = glm::scale(matrix, glm::vec3(size * ratio, size, 1.f));
   applyTransformations(TEXTURE, matrix);
   glActiveTexture(GL_TEXTURE0);
@@ -225,25 +230,25 @@ GLuint* RenderManager::getPlaneVAOPtr()
 
 void RenderManager::createScorePanel(float pointsScore, float timeScore)
 {
-  createTextTexture(m_scorePanel_title, m_scorePanel_titleImg, "SCORE", {255,255,255});
-  createTextTexture(m_scorePanel_points, m_scorePanel_pointsImg, "Points:", {255,255,255});
-  createTextTexture(m_scorePanel_time, m_scorePanel_timeImg, "Time:", {255,255,255});
-  createTextTexture(m_scorePanel_pointsScore, m_scorePanel_pointsScoreImg, std::to_string(pointsScore), {255,255,255});
-  createTextTexture(m_scorePanel_timeScore, m_scorePanel_timeScoreImg, std::to_string(timeScore), {255,255,255});
+  // createTextTexture(m_scorePanel_title, m_scorePanel_titleImg, "SCORE", {255,255,255});
+  // createTextTexture(m_scorePanel_points, m_scorePanel_pointsImg, "Points:", {255,255,255});
+  // createTextTexture(m_scorePanel_time, m_scorePanel_timeImg, "Time:", {255,255,255});
+  // createTextTexture(m_scorePanel_pointsScore, m_scorePanel_pointsScoreImg, std::to_string(pointsScore), {255,255,255});
+  // createTextTexture(m_scorePanel_timeScore, m_scorePanel_timeScoreImg, std::to_string(timeScore), {255,255,255});
 }
 
 void RenderManager::drawScorePanel()
 {
-  drawText(m_scorePanel_title, m_scorePanel_titleImg, 0.6f,
-           0.f, -1.f);
-  drawText(m_scorePanel_points, m_scorePanel_pointsImg, 0.2f,
-          -0.2f, 0.f);
-  drawText(m_scorePanel_pointsScore, m_scorePanel_pointsScoreImg, 0.4f,
-           0.2f, 0.f);
-  drawText(m_scorePanel_time, m_scorePanel_timeImg, 0.2f,
-          -0.2f, 0.2f);
-  drawText(m_scorePanel_timeScore, m_scorePanel_timeScoreImg, 0.4f,
-           0.2f, 0.2f);
+  // drawText(m_scorePanel_title, m_scorePanel_titleImg, 0.6f,
+  //          0.f, -1.f);
+  // drawText(m_scorePanel_points, m_scorePanel_pointsImg, 0.2f,
+  //         -0.2f, 0.f);
+  // drawText(m_scorePanel_pointsScore, m_scorePanel_pointsScoreImg, 0.4f,
+  //          0.2f, 0.f);
+  // drawText(m_scorePanel_time, m_scorePanel_timeImg, 0.2f,
+  //         -0.2f, 0.2f);
+  // drawText(m_scorePanel_timeScore, m_scorePanel_timeScoreImg, 0.4f,
+  //          0.2f, 0.2f);
 }
 
 // ---------------
@@ -609,7 +614,7 @@ void RenderManager::drawPacman(Pacman* pacman, FS shader)
 
     // Top sphere
     glm::mat4 rotateUpMat = glm::rotate(transformationMatrix, 60.f * glm::pi<float>()/180 * angle, glm::vec3(1, 0, 0));
-    applyTransformations(shader, rotateUpMat);    
+    applyTransformations(shader, rotateUpMat);
     m_sphere.drawHalfSphere(1);
 
     // Bottom sphere
@@ -943,6 +948,12 @@ void RenderManager::drawUI(UI* ui)
         m_plane.drawPlane();
         disableTexture(shader, true);
     }
-
     debindVAO();
+
+    // Points
+    m_scoreSurface = createTextTexture(&m_scoreImg, std::to_string( ui->getPlayer()->getPoints()), {255,255,255});
+    drawText(m_scoreSurface, m_scoreImg, 0.3f,
+             5.5f, 2.5f);
+
+
 }

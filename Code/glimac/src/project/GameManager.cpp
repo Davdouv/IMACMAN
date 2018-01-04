@@ -22,6 +22,7 @@ uint32_t GameManager::getStartTime() const { return m_startTime; }
 uint32_t GameManager::getSuperTimer() const { return m_superTimer; }
 uint32_t GameManager::getFruitTimer() const { return m_fruitTimer; }
 bool GameManager::isPause() { return m_pause; }
+bool GameManager::isLost() { return m_lost; }
 int GameManager::getEatenGhosts() const { return m_eatenGhosts; }
 Player* GameManager::getPlayer() { return &m_player; }
 Map* GameManager::getMap() { return m_map; }
@@ -946,10 +947,9 @@ Controller::Key GameManager::shortestWay(int ghostType, float x, float y) {
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
             else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
         }
-<<<<<<< HEAD
-        return 0;
+        //return 0;
     }
-    return 1;
+    //return 1;
 }
 
 
@@ -1029,10 +1029,6 @@ char GameManager::nextMove(float dx, float dy, float ax, float ay) {
         }
     }*/
     return 'N';
-=======
-        else std::cout << "oops" << std::endl;
-    }
->>>>>>> 9da497ecb91f6d116b638ced0b03b6a7c96f85a0
 }
 
 void GameManager::setTimers() {
@@ -1053,22 +1049,19 @@ void GameManager::ghostMove() {
                 m_map->getGhosts()[i]->setInSpawn(true);
             }
             else {
-<<<<<<< HEAD
 
-=======
-                
                 switch (m_map->getGhosts()[i]->getType()) {
 
 /*** SHADOW ARTIFICIAL INTELLIGENCE ***/
 
                     case Ghost::Type::SHADOW : action = shortestWay(Ghost::Type::SHADOW,m_map->getPacman()->getPosX(), m_map->getPacman()->getPosY());
-                    
+
                         moveCharacter(m_map->getGhosts()[i], action);
                         break;
 
 /*** SPEEDY ARTICIAL INTELLIGNCE ***/
 
-                    case Ghost::Type::SPEEDY :         
+                    case Ghost::Type::SPEEDY :
                         switch(m_map->getPacman()->getOrientation()) {
 
                             case Object::Orientation::LEFT:
@@ -1094,7 +1087,7 @@ void GameManager::ghostMove() {
 
 /*** BASHFUL ARTIFICIAL INTELLIGENCE ***/
 
-                    case Ghost::Type::BASHFUL : 
+                    case Ghost::Type::BASHFUL :
                         if ((std::abs(m_map->getPacman()->getPosX() - m_map->getGhosts()[Ghost::Type::BASHFUL]->getPosX()) <= 2)  && (std::abs(m_map->getPacman()->getPosY() - m_map->getGhosts()[Ghost::Type::BASHFUL]->getPosY()) <= 10)) {
 
                             switch(m_map->getPacman()->getOrientation()) {
@@ -1141,7 +1134,7 @@ void GameManager::ghostMove() {
                             }
                         }
                         break;
-                    case Ghost::Type::POKEY :                 
+                    case Ghost::Type::POKEY :
                         switch (m_map->getGhosts()[Ghost::Type::POKEY]->getOrientation()) {
 
                             case Object::Orientation::UP : action = Controller::Z;
@@ -1155,8 +1148,7 @@ void GameManager::ghostMove() {
                         }
                         break;
                 }
-                
->>>>>>> 9da497ecb91f6d116b638ced0b03b6a7c96f85a0
+
                 switch (m_map->getGhosts()[i]->getOrientation()) {
 
                     case Object::Orientation::UP : action = Controller::Z;

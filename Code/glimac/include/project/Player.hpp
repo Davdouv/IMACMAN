@@ -9,12 +9,12 @@ private:
 public:
 
     Player();
-    // getters 
+    // getters
     int getLife() const;
     int getPoints() const;
     int getMaxLives() const;
 
-    // setters 
+    // setters
     void setLife(int);
     void setPoints(int);
 

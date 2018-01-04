@@ -278,9 +278,9 @@ int main(int argc, char** argv) {
             {
                 renderManager.drawMenu(&menuPause);
             }
-            if(gameManager.isLost()
+            if(gameManager.isLost())
             {
-              
+
             }
 
             // Update the display
