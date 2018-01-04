@@ -72,16 +72,10 @@ private:
 	  GLuint m_scorePanel_timeScoreImg;
 
     // Model3D
-    Geometry m_ghostModel;
-    GLuint m_ghostModelVBO;
-    GLuint m_ghostModelIBO;
-    GLuint m_ghostModelVAO;
-
-    // Model3D
-    // Geometry m_rock;
-    // GLuint m_rockVBO;
-    // GLuint m_rockIBO;
-    // GLuint m_rockVAO;
+    Geometry m_model[4];
+    GLuint m_modelVBO[4];
+    GLuint m_modelIBO[4];
+    GLuint m_modelVAO[4];
 
     // Matrix
     glm::mat4 m_ProjMatrix;
@@ -122,6 +116,9 @@ private:
 
     // State (normal or super)
     GameManager::PacmanState m_state;
+
+    // To make stop last rotate
+    float m_stop;
 
 public:
     // Constructor - SDLWindowManager for Ratio - Camera for viewMatrix - FilePath for Shaders
@@ -165,7 +162,7 @@ public:
     glm::mat4 getNormalMatrix() const;
     // Update
     void updateMVMatrix(Camera* camera);
-    void updateMVMatrix(Camera* camera, Character* character);
+    void updateMVMatrix(Camera* camera, Character* character, bool lost);
 
     // Texture functions
     void loadTextures() const;

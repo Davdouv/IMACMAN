@@ -4,7 +4,7 @@
 Ghost::Ghost(int posX, int posY, float width, float height, double speed, int type2, Orientation orientation, int death) : 
     Character('G', posX, posY, width, height, speed, orientation, false), m_type(type2), m_death(death), m_super(false)
 {
-    switch (type2-1) {
+    switch (type2) {
         case SHADOW: 
             m_color = glm::vec3(1.0,0.0,0.0);
             break;
@@ -57,6 +57,7 @@ void Ghost::reset () {
     if (m_super) setSpeed(getSpeed()*1.5);  
     m_death = SDL_GetTicks();
     m_super = false;
+    setInSpawn(true);
     
 }
 

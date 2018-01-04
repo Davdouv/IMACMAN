@@ -57,13 +57,14 @@ public:
     // file manager
     int load(bool);
     int save();
-private:
 
     // game state
     bool won();
     bool lost();
     bool ready();
     void pause(Controller* controller);
+    
+private:
     // Move
     bool moveCharacter(Character*, Controller::Key);
     void pacmanMove(Controller* controller);
@@ -84,12 +85,15 @@ private:
     bool pacmanEdibleCollision(AudioManager*);
 
     // Ghost moves algorithms
-    int shortestWay(int, float, float);
+    Controller::Key shortestWay(int, float, float);
     void shadowAI();
     void speedyAI();
     void bashfulAI();
     void pokeyAI();
+<<<<<<< HEAD
     char nextMove(float, float, float, float);
+=======
+>>>>>>> 9da497ecb91f6d116b638ced0b03b6a7c96f85a0
 
     // New game
     void newLevel(Controller*);

@@ -35,8 +35,8 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_sphereVAO = m_sphere.getVAO(&m_sphereIBO, &m_sphereVBO);
 
     // Model3D
-    buildModel(&m_ghostModel, &m_ghostModelVBO, &m_ghostModelIBO, &m_ghostModelVAO, "snapchat.obj", "snapchat.mtl");
-    //buildModel(&m_rock, &m_rockVBO, &m_rockIBO, &m_rockVAO, "rock/rock.obj", "snapchat.mtl");
+    buildModel(&m_model[0], &m_modelVBO[0], &m_modelIBO[0], &m_modelVAO[0], "ghost/snapchat.obj", "ghost/snapchat.mtl");
+    //buildModel(&m_model[1], &m_modelVBO[1], &m_modelIBO[1], &m_modelVAO[1], "banana/banana.obj", "");
 
     // Matrices
     // Projection Matrix (world) : vertical view angle, window ratio, near, far
@@ -47,7 +47,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_NormalMatrix = glm::transpose(glm::inverse(m_MVMatrix));
 
     // Textures
-    m_PacmanTexture = new Texture("../Code/assets/textures/pacman.jpg");
+    m_PacmanTexture = new Texture("../Code/assets/textures/pacman2.png");
     m_GhostTexture = new Texture("../Code/assets/textures/ghost.jpg");
     m_WallTexture = new Texture("../Code/assets/textures/dungeon.png");
     m_GumTexture = new Texture("../Code/assets/textures/gum.jpg");
@@ -85,6 +85,8 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
 
     // State
     m_state = GameManager::PacmanState::NORMAL;
+
+    m_stop = 0.f;
 }
 
 // Destructor
@@ -344,9 +346,17 @@ void RenderManager::updateMVMatrix(Camera* camera)
 {
     m_MVMatrix = camera->getViewMatrix();
 }
-void RenderManager::updateMVMatrix(Camera* camera, Character* character)
+void RenderManager::updateMVMatrix(Camera* camera, Character* character, bool lost)
 {
     m_MVMatrix = camera->getViewMatrix(character, m_gameCorner);
+    if (lost)
+    {
+        if (m_stop < 1)
+        {
+            m_stop += 0.0005;
+        }
+        m_MVMatrix = glm::rotate(m_MVMatrix,m_stop* glm::pi<float>(), glm::vec3(0, 0, 1));
+    }
 }
 
 // ---------------
@@ -588,14 +598,26 @@ void RenderManager::drawPacman(Pacman* pacman, FS shader)
 {
     //useProgram(shader);
 
-    glm::mat4 transformationMatrix = transformMatrix(pacman);
-    applyTransformations(shader, transformationMatrix);
-
     materialTransformations(shader, 0.7, 0.3, 100);
-
     enableTexture(shader, m_PacmanTexture, false);
 
-    m_sphere.drawSphere();
+    glm::mat4 transformationMatrix = transformMatrix(pacman);
+    transformationMatrix = glm::rotate(transformationMatrix, glm::pi<float>(), glm::vec3(0, 1, 0));
+    transformationMatrix = glm::rotate(transformationMatrix, glm::pi<float>()/8, glm::vec3(1, 0, 0));
+
+    float angle = fabs(glm::cos(glm::pi<float>()/180 * 0.2f * SDL_GetTicks()));
+
+    // Top sphere
+    glm::mat4 rotateUpMat = glm::rotate(transformationMatrix, 60.f * glm::pi<float>()/180 * angle, glm::vec3(1, 0, 0));
+    applyTransformations(shader, rotateUpMat);    
+    m_sphere.drawHalfSphere(1);
+
+    // Bottom sphere
+    glm::mat4 rotateDownMat = glm::rotate(transformationMatrix, -20.f * glm::pi<float>()/180 * angle, glm::vec3(1, 0, 0));
+    applyTransformations(shader, rotateDownMat);
+    m_sphere.drawHalfSphere(0);
+
+    //m_sphere.drawSphere();
 
     disableTexture(shader, false);
 }
@@ -623,7 +645,7 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
             glUniform3f(m_programList->directionnalLightProgram->uColor, color.r,color.g,color.b);
         }
         //m_cube.drawCube();
-        glDrawElements(GL_TRIANGLES, m_ghostModel.getIndexCount(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, m_model[0].getIndexCount(), GL_UNSIGNED_INT, 0);
 
         disableTexture(shader, true);
 
@@ -697,6 +719,7 @@ void RenderManager::drawFruits(std::vector<Edible*> edible, FS shader)
             glm::mat4 transformationMatrix = transformMatrix(edible[i]);
             applyTransformations(shader, transformationMatrix);
             materialTransformations(shader, 0.9, 0.3, 50);
+            //glDrawElements(GL_TRIANGLES, m_model[1].getIndexCount(), GL_UNSIGNED_INT, 0);
             m_sphere.drawSphere();
             disableTexture(shader, false);
         }
@@ -812,14 +835,15 @@ void RenderManager::drawMap(Map* map, Controller* controller)
         drawPacman(map->getPacman(), DIRECTIONNAL_LIGHT);
     drawPacGommes(map->getPacGommes(), DIRECTIONNAL_LIGHT);
     drawSuperPacGommes(map->getSuperPacGommes(), DIRECTIONNAL_LIGHT);
-    drawFruits(map->getFruits(), DIRECTIONNAL_LIGHT);
-
     //De-bind Sphere VAO
+    //debindVAO();
+
+    //glBindVertexArray(m_modelVAO[1]);
+    drawFruits(map->getFruits(), DIRECTIONNAL_LIGHT);
     debindVAO();
 
     //useProgram(DIRECTIONNAL_LIGHT);
-    glBindVertexArray(m_ghostModelVAO);
-    // m_ghostModel.bindVAO();
+    glBindVertexArray(m_modelVAO[0]);
     drawGhosts(map->getGhosts(), DIRECTIONNAL_LIGHT);
     debindVAO();
 }

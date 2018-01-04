@@ -265,7 +265,7 @@ int main(int argc, char** argv) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             // Update The View Matrix each time we enter the while loop
-            renderManager.updateMVMatrix(camera, gameManager.getMap()->getPacman());
+            renderManager.updateMVMatrix(camera, gameManager.getMap()->getPacman(), false);
 
             // Render the map (objects, skybox and ground)
             renderManager.drawMap(gameManager.getMap(), &controller);
