@@ -45,7 +45,7 @@ public:
     void start(AudioManager*);
     void play(AudioManager*);
     void play(Controller* controller, AudioManager* audioManager);
-
+    void restart();
     void setTimers();
 
     // Use of Delta Time

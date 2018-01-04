@@ -227,6 +227,16 @@ void GameManager::start(AudioManager* audioManager) {
     play(audioManager);
 }
 
+void GameManager::restart() {
+
+    setState(NORMAL);
+    m_map->setFileMap("classicMap.txt");
+    load(true);
+    m_map->initialization();
+    setTimers();
+}
+
+
 // For console only
 void GameManager::play(AudioManager* audioManager) {
 
@@ -260,6 +270,9 @@ void GameManager::play(AudioManager* audioManager) {
             if (line == "C") {
                 save(); 
                 return;
+            }
+            if (line == "R") {
+                restart();
             }
             pacmanGhostCollision(audioManager);
             pacmanEdibleCollision(audioManager);
@@ -963,109 +976,10 @@ void GameManager::ghostMove() {
                 m_map->getGhosts()[i]->setOrientation(Object::Orientation::UP);
                 m_map->getGhosts()[i]->setPosX(m_map->getSpawnPoint()[0]->getPosX());
                 m_map->getGhosts()[i]->setPosY(m_map->getSpawnPoint()[0]->getPosY()-1);
-                m_map->getGhosts()[i]->setInSpawn(true);
+                m_map->getGhosts()[i]->setInSpawn(false);
             }
             else {
-                
-                switch (m_map->getGhosts()[i]->getType()) {
 
-/*** SHADOW ARTIFICIAL INTELLIGENCE ***/
-
-                    case Ghost::Type::SHADOW : action = shortestWay(Ghost::Type::SHADOW,m_map->getPacman()->getPosX(), m_map->getPacman()->getPosY());
-                    
-                        moveCharacter(m_map->getGhosts()[i], action);
-                        break;
-
-/*** SPEEDY ARTICIAL INTELLIGNCE ***/
-
-                    case Ghost::Type::SPEEDY :         
-                        switch(m_map->getPacman()->getOrientation()) {
-
-                            case Object::Orientation::LEFT:
-                                action = shortestWay(Ghost::Type::SPEEDY, 0, m_map->getPacman()->getPosY());
-                                break;
-
-                            case Object::Orientation::RIGHT:
-                                action = shortestWay(Ghost::Type::SPEEDY, m_map->getNbX(), m_map->getPacman()->getPosY());
-                                break;
-
-                            case Object::Orientation::UP:
-                                action = shortestWay(Ghost::Type::SPEEDY, m_map->getPacman()->getPosX(), 0);
-                                break;
-
-                            case Object::Orientation::DOWN:
-                                action = shortestWay(Ghost::Type::SPEEDY, m_map->getPacman()->getPosX(), m_map->getNbY());
-                                break;
-                            default:break;
-                        }
-
-                        moveCharacter(m_map->getGhosts()[i], action);
-                        break;
-
-/*** BASHFUL ARTIFICIAL INTELLIGENCE ***/
-
-                    case Ghost::Type::BASHFUL : 
-                        if ((std::abs(m_map->getPacman()->getPosX() - m_map->getGhosts()[Ghost::Type::BASHFUL]->getPosX()) <= 2)  && (std::abs(m_map->getPacman()->getPosY() - m_map->getGhosts()[Ghost::Type::BASHFUL]->getPosY()) <= 10)) {
-
-                            switch(m_map->getPacman()->getOrientation()) {
-
-                                case Object::Orientation::LEFT:
-                                    action = shortestWay(Ghost::Type::BASHFUL, m_map->getNbX(), m_map->getPacman()->getPosY());
-                                    break;
-
-                                case Object::Orientation::RIGHT:
-                                    action = shortestWay(Ghost::Type::BASHFUL, 0, m_map->getPacman()->getPosY());
-                                    break;
-
-                                case Object::Orientation::UP:
-                                    action = shortestWay(Ghost::Type::BASHFUL, m_map->getPacman()->getPosX(), m_map->getNbY());
-                                    break;
-
-                                case Object::Orientation::DOWN:
-                                    action = shortestWay(Ghost::Type::BASHFUL, m_map->getPacman()->getPosX(), 0);
-                                    break;
-                                default:break;
-                            }
-                        }
-
-                        else {
-
-                            switch(m_map->getPacman()->getOrientation()) {
-
-                                case Object::Orientation::LEFT:
-                                    action = shortestWay(Ghost::Type::BASHFUL, 0, m_map->getPacman()->getPosY());
-                                    break;
-
-                                case Object::Orientation::RIGHT:
-                                    action = shortestWay(Ghost::Type::BASHFUL, m_map->getNbX(), m_map->getPacman()->getPosY());
-                                    break;
-
-                                case Object::Orientation::UP:
-                                    action = shortestWay(Ghost::Type::BASHFUL, m_map->getPacman()->getPosX(), 0);
-                                    break;
-
-                                case Object::Orientation::DOWN:
-                                    action = shortestWay(Ghost::Type::BASHFUL, m_map->getPacman()->getPosX(), m_map->getNbY());
-                                    break;
-                                default:break;
-                            }
-                        }
-                        break;
-                    case Ghost::Type::POKEY :                 
-                        switch (m_map->getGhosts()[Ghost::Type::POKEY]->getOrientation()) {
-
-                            case Object::Orientation::UP : action = Controller::Z;
-                                break;
-                            case Object::Orientation::DOWN: action = Controller::S;
-                                break;
-                            case Object::Orientation::RIGHT: action = Controller::D;
-                                break;
-                            case Object::Orientation::LEFT :action = Controller::Q;
-                                break;
-                        }
-                        break;
-                }
-                
                 switch (m_map->getGhosts()[i]->getOrientation()) {
 
                     case Object::Orientation::UP : action = Controller::Z;
