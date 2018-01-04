@@ -14,6 +14,7 @@ GameManager::GameManager(Map* map)
     m_state = NORMAL;
     m_player.initialization();
     m_pause = false;
+    m_lost = false;
 }
 
 GameManager::PacmanState GameManager::getState() const { return m_state;}
@@ -36,7 +37,7 @@ void GameManager::setEatenGhosts(int eatenGhosts) { m_eatenGhosts = eatenGhosts;
 int GameManager::load(bool newGame) {
 
     std::fstream file;
-    if (!newGame) 
+    if (!newGame)
         file.open("../Code/data/save_"+m_map->getFileMap(), std::ios::binary | std::ios::out | std::ios::in);
     else file.open("../Code/data/"+m_map->getFileMap(), std::ios::binary | std::ios::out | std::ios::in);
     if (!file.is_open()) {
@@ -49,7 +50,7 @@ int GameManager::load(bool newGame) {
         std::string tmp;
         file.seekg(0);
 
-        // if saved game, load lives and points 
+        // if saved game, load lives and points
         if (!newGame) {
             getline(file,tmp);
             m_player.setLife(atoi(tmp.c_str()));
@@ -62,7 +63,7 @@ int GameManager::load(bool newGame) {
         std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
         Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.004, Object::Orientation::LEFT);
 
-        
+
         // if saved game get pacman initial positions
         if (!newGame) {
         getline(file,tmp);
@@ -70,11 +71,11 @@ int GameManager::load(bool newGame) {
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
             p->setInitX(atoi(pos_x.c_str()));
-            p->setInitY(atoi(pos_y.c_str()));    
+            p->setInitY(atoi(pos_y.c_str()));
         }
-        
+
         m_map->setPacman(*p);
-        
+
         std::vector<Ghost> tabGhost;
         for (int i = 0; i < 4; i++) {
             getline(file,tmp);
@@ -88,7 +89,7 @@ int GameManager::load(bool newGame) {
                 std::string init_x = tmp.substr(1, tmp.find(delimiter)-1);
                 std::string init_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
                 g->setInitX(atoi(init_x.c_str()));
-                g->setInitY(atoi(init_y.c_str()));   
+                g->setInitY(atoi(init_y.c_str()));
             }
             tabGhost.push_back(*g);
             delete(g);
@@ -153,7 +154,7 @@ int GameManager::save() {
         file << m_player.getLife() << std::endl;
         // save player points
         file << m_player.getPoints() << std::endl;
-        
+
         // current pacman position
         file << "P" << m_map->getPacman()->getPosX() << "," << m_map->getPacman()->getPosY() << std::endl;
         // initial pacman position
@@ -194,7 +195,7 @@ int GameManager::save() {
 
 // returns true if no edible on the map
 bool GameManager::won() {
-    
+
     return (m_map->getSuperPacGommes().empty() && m_map->getPacGommes().empty());
 }
 
@@ -218,7 +219,7 @@ void GameManager::pause(Controller* controller) {
                 if (m_pause) Mix_PauseMusic();
                 else Mix_ResumeMusic();
     }
-        
+
 }
 
 void GameManager::start(AudioManager* audioManager) {
@@ -256,7 +257,7 @@ void GameManager::play(AudioManager* audioManager) {
                 if (!characterWallCollision(m_map->getPacman(), 'D')) m_map->getPacman()->moveRight();
             }
             if (line == "C") {
-                save(); 
+                save();
                 return;
             }
             pacmanGhostCollision(audioManager);
@@ -361,6 +362,7 @@ void GameManager::play(Controller* controller, AudioManager* audioManager) {
         }
         if(lost())
         {
+            m_lost = true;
             std::cout << "Player Score : " << m_player.getPoints() << std::endl;
         }
     }
@@ -449,7 +451,7 @@ bool GameManager::wallCollisionUP(float fposY, int iposY, int iposX, float speed
             {
                 // It's the spawn gate, return true -> it's a collision, put the character on the top of the cell
                 character->setPosY((float)iposY);
-                return true; 
+                return true;
             }
             else
             {
@@ -681,7 +683,7 @@ bool GameManager::pacmanEdibleCollision(AudioManager* audioManager) {
         e =  (Edible*) m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()];
         switch (e->getTypeEdible()) {
 
-            case Edible::Type::FRUIT : 
+            case Edible::Type::FRUIT :
                 audioManager->playSound(6,1);
                 if (e->getAvailability() && e->getFruit()!=Edible::Fruit::NONE) {
                     m_player.gainPoints(e->gain());
@@ -721,7 +723,7 @@ void GameManager::switchSuperState() {
     this->setState(GameManager::PacmanState::SUPER);
     this->setSuperTimer(SDL_GetTicks());
     this->setEatenGhosts(0);
-    for (int i = 0; i < m_map->getGhosts().size(); i++) { 
+    for (int i = 0; i < m_map->getGhosts().size(); i++) {
         m_map->getGhosts()[i]->setSuper(true);
         //m_map->getGhosts()[i]->slowDown();
     }
@@ -735,9 +737,9 @@ void GameManager::stateManager() {
             Mix_ResumeMusic();
             this->setState(GameManager::PacmanState::NORMAL);
             this->setEatenGhosts(0);
-            for (int i = 0; i < m_map->getGhosts().size(); i++) { 
+            for (int i = 0; i < m_map->getGhosts().size(); i++) {
                 m_map->getGhosts()[i]->setSuper(false);
-            } 
+            }
         }
     }
 }
@@ -747,7 +749,7 @@ void GameManager::eatGhost() {
     this->setEatenGhosts(this->getEatenGhosts()+1);
     switch (this->getEatenGhosts()) {
         case 1: m_player.gainPoints(200);
-            break; 
+            break;
         case 2: m_player.gainPoints(400);
             break;
         case 3: m_player.gainPoints(800);
@@ -950,7 +952,7 @@ We calculate the shortest way to get to a goal from:
 */
 
 int GameManager::countShortestWay(int dx, int dy, int ax, int ay, std::vector<std::vector<int>> passage) {
-    
+
     std::cout << "( "<<dx<<", "<<dy<<" ) ( "<<ax<<", "<<ay<<" )( "<<m_map->getNbX()<<", "<<m_map->getNbY()<<" )" << std::endl;
     if ((dx == ax) && (dy == ay)) {
         std::cout << "***********" << std::endl << "On est arrivés." << std::endl;
@@ -987,7 +989,7 @@ int GameManager::countShortestWay(int dx, int dy, int ax, int ay, std::vector<st
 }
 
 char GameManager::nextMove(float dx, float dy, float ax, float ay) {
- /*   
+ /*
     if (countShortestWay(dx, dy, ax, ay)) {
         std::cout << "Started : " << std::endl;
         std::vector<int> moves;
@@ -1035,7 +1037,7 @@ void GameManager::ghostMove() {
                 m_map->getGhosts()[i]->setPosY(m_map->getSpawnPoint()[0]->getPosY());
             }
             else {
-                
+
                 switch (m_map->getGhosts()[i]->getOrientation()) {
 
                     case Object::Orientation::UP : action = Controller::Z;
@@ -1048,7 +1050,7 @@ void GameManager::ghostMove() {
                         break;
                 }
                 while (!moveCharacter(m_map->getGhosts()[i], action)) {
-                    
+
                     int r =  (rand() % 4);
                     switch (r) {
 
@@ -1093,7 +1095,7 @@ void GameManager::activateFruit() {
     if (SDL_GetTicks() - m_fruitTimer > timer)  {
         if (!m_map->getFruits().empty())
         {
-            if (!m_map->getFruits()[0]->getAvailability() && m_map->getFruits()[0]->getFruit() != Edible::Fruit::NONE ) 
+            if (!m_map->getFruits()[0]->getAvailability() && m_map->getFruits()[0]->getFruit() != Edible::Fruit::NONE )
                 m_map->getFruits()[0]->setAvailability(true);
         }
     }

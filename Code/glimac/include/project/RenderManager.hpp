@@ -59,6 +59,18 @@ private:
     GLuint m_sphereIBO;
     GLuint m_sphereVAO;
 
+		// Score Panel
+		SDL_Surface* m_scorePanel_title;
+		SDL_Surface* m_scorePanel_points;
+	  SDL_Surface* m_scorePanel_time;
+	  SDL_Surface* m_scorePanel_pointsScore;
+	  SDL_Surface* m_scorePanel_timeScore;
+		GLuint m_scorePanel_titleImg;
+		GLuint m_scorePanel_pointsImg;
+	  GLuint m_scorePanel_timeImg;
+	  GLuint m_scorePanel_pointsScoreImg;
+	  GLuint m_scorePanel_timeScoreImg;
+
     // Model3D
     Geometry m_ghostModel;
     GLuint m_ghostModelVBO;
@@ -119,8 +131,8 @@ public:
 
     // Text
 		void loadFont();
-		void createTextTexture();
-		void drawText();
+		void createTextTexture(SDL_Surface* textSurface, GLuint textImg, std::string text, SDL_Color color);
+		void drawText(SDL_Surface* textSurface, GLuint textImg, float size, float x, float y);
 
     // Skybox
     void initSkybox();
@@ -159,6 +171,10 @@ public:
     void loadTextures() const;
     void enableTexture(FS shader, Texture* texture, bool alpha);
     void disableTexture(FS shader, bool alpha);
+
+		// Score panel
+		void createScorePanel(float pointsScore, float timeScore);
+		void drawScorePanel();
 
     // GLSL Programs functions
     void useProgram(FS shader);

@@ -18,10 +18,11 @@ private:
     uint32_t m_superTimer;
     uint32_t m_fruitTimer;
     bool m_pause;
+    bool m_lost;
     int m_eatenGhosts;
 
 public:
-    // constructor 
+    // constructor
     GameManager(Map* map);
 
     // getters
@@ -30,6 +31,7 @@ public:
     uint32_t getSuperTimer() const;
     uint32_t getFruitTimer() const;
     bool isPause();
+    bool isLost();
     int getEatenGhosts() const;
     Player* getPlayer();
     Map* getMap();
@@ -86,7 +88,7 @@ private:
     void shadowAI();
     void speedyAI();
     void bashfulAI();
-    void pokeyAI();    
+    void pokeyAI();
     char nextMove(float, float, float, float);
 
     // New game

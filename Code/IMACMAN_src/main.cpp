@@ -3,6 +3,9 @@
 #include <iostream>
 #include <glimac/Program.hpp>
 #include <glimac/FilePath.hpp>
+#include <ft2build.h>
+#include <GL/gl.h>
+#include FT_FREETYPE_H
 
 #include "project/RenderManager.hpp"
 #include "project/GameManager.hpp"
@@ -93,6 +96,8 @@ int main(int argc, char** argv) {
     renderManager.loadTextures();
     // initialize Skybox
     renderManager.initSkybox();
+    // initialize Text
+    renderManager.loadFont();
 
     /* ---------------------
     *   INIT AUDIO | START MUSIC
@@ -150,7 +155,7 @@ int main(int argc, char** argv) {
                 //     gameManager.load(true);
                 // else
                 //     gameManager.load(false);
-                
+
                 /* -------------
                 *   INIT TIME
                 *  ------------- */
@@ -176,7 +181,7 @@ int main(int argc, char** argv) {
         /* -----------------------------------------------------------------
         *   GAME APPLICATION LOOP | 1.EVENTS | 2.GAME ENGINE | 3. RENDERING
         *  ----------------------------------------------------------------- */
-        
+
         while(play) {
             /* ------------------
             *   UPDATE DELTA TIME
@@ -272,6 +277,10 @@ int main(int argc, char** argv) {
             if(gameManager.isPause())
             {
                 renderManager.drawMenu(&menuPause);
+            }
+            if(gameManager.isLost()
+            {
+              
             }
 
             // Update the display
