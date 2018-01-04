@@ -376,6 +376,7 @@ void GameManager::newLevel(Controller* controller)
     load(true);
     m_player = save_player;
     setTimers();
+    setStartTime(SDL_GetTicks());
 }
 
 bool GameManager::pacmanGhostCollision(AudioManager* audioManager) {
