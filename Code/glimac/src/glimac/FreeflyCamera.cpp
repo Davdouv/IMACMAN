@@ -24,9 +24,12 @@ void FreeflyCamera::computeDirectionVectors()
 FreeflyCamera::FreeflyCamera()
 {
 	m_Position = glm::vec3(0,0,0);
-	m_fPhi = glm::pi<float>();
+	m_fPhi = 270 * glm::pi<float>()/180;
 	m_fTheta = 0.f;
 	computeDirectionVectors();
+
+	m_prevOrientation = Object::Orientation::LEFT;
+	m_prevPhi = m_fPhi;
 }
 
 FreeflyCamera::FreeflyCamera(glm::vec3 position = glm::vec3(0), float phi = glm::pi<float>(), float theta = 0.f)
@@ -35,6 +38,9 @@ FreeflyCamera::FreeflyCamera(glm::vec3 position = glm::vec3(0), float phi = glm:
 	m_fPhi = phi;
 	m_fTheta = theta;
 	computeDirectionVectors();
+
+	m_prevOrientation = Object::Orientation::LEFT;
+	m_prevPhi = m_fPhi;
 }
 
 void FreeflyCamera::moveLeft(float t)
@@ -83,6 +89,81 @@ glm::mat4 FreeflyCamera::getViewMatrix(Character* character, glm::vec2 gameSize)
 	return MVMatrix;
 }
 
+void FreeflyCamera::interpolate(Character* character)
+{
+	// If we change angle
+	if (m_fPhi != (float)character->getOrientation() * glm::pi<float>()/180)
+	{
+		//std::cout << "Change angle " << std::endl;
+		int dif = m_prevOrientation - character->getOrientation();
+		// LEFT TO RIGHT
+		if (dif == 90)
+		{
+			if (m_prevPhi > (float)character->getOrientation() * glm::pi<float>()/180)
+				m_prevPhi -= 0.01;
+			else
+			{
+				m_prevOrientation = character->getOrientation();
+				m_prevPhi = (float)character->getOrientation() * glm::pi<float>()/180;
+			}
+		}
+		// LEFT TO RIGHT but when we're are facing down
+		else if (dif == -270)
+		{
+			if (m_prevPhi > (-90 * glm::pi<float>()/180))
+				m_prevPhi -= 0.01;
+			else
+			{
+				m_prevOrientation = character->getOrientation();
+				m_prevPhi = (float)character->getOrientation() * glm::pi<float>()/180;
+			}
+		}
+		// RIGHT TO LEFT
+		else if (dif == -90)
+		{
+			if (m_prevPhi < (float)character->getOrientation() * glm::pi<float>()/180)
+				m_prevPhi += 0.01;
+			else
+			{
+				m_prevOrientation = character->getOrientation();
+				m_prevPhi = (float)character->getOrientation() * glm::pi<float>()/180;
+			}
+		}
+		// RIGHT TO LEFT but when we're facing left
+		else if (dif == 270)
+		{
+			if (m_prevPhi < (360 * glm::pi<float>()/180))
+				m_prevPhi += 0.01;
+			else
+			{
+				m_prevOrientation = character->getOrientation();
+				m_prevPhi = (float)character->getOrientation() * glm::pi<float>()/180;
+			}
+		}
+		
+		// Back direction
+		else if (dif == 180)
+		{
+			if (m_prevPhi > (character->getOrientation() * glm::pi<float>()/180))
+				m_prevPhi -= 0.02;
+			else
+			{
+				m_prevOrientation = character->getOrientation();
+				m_prevPhi = (float)character->getOrientation() * glm::pi<float>()/180;
+			}
+		}
+		else
+		{
+			if (m_prevPhi < (character->getOrientation() * glm::pi<float>()/180))
+				m_prevPhi += 0.02;
+			else
+			{
+				m_prevOrientation = character->getOrientation();
+				m_prevPhi = (float)character->getOrientation() * glm::pi<float>()/180;
+			}
+		}
+	}
+}
 
 void FreeflyCamera::setCameraOnCharacter(Character* character, glm::vec2 gameSize)
 {
@@ -111,7 +192,11 @@ void FreeflyCamera::setCameraOnCharacter(Character* character, glm::vec2 gameSiz
 			break;
 	}
 	m_Position = glm::vec3(character->getPosX()-(gameSize.x/2)+x, 0.5, character->getPosY()-(gameSize.y/2)+character->getHeight()+y);
-	m_fPhi = (float)character->getOrientation() * glm::pi<float>()/180;
+
+	interpolate(character);
+		
+	m_fPhi = m_prevPhi;
+
 	//m_fTheta = 0.f;
 	computeDirectionVectors();
 }

@@ -28,12 +28,16 @@ public:
 private:
 	glm::vec3 m_Position;		// la position de la caméra
 	float m_fPhi; 				// coordonnées sphériques du vecteur F
+	float m_prevPhi;
+	Object::Orientation m_prevOrientation;
 	float m_fTheta;				// coordonnées sphériques du vecteur F
 	glm::vec3 m_FrontVector;	// vecteur F
 	glm::vec3 m_LeftVector;		// vecteur L
 	glm::vec3 m_UpVector;		// vecteur U
 
 	void computeDirectionVectors();	// calcule les vecteurs F, L, U à partir des coordonnées spheriques
+
+	void interpolate(Character* character);
 };
 
 }
