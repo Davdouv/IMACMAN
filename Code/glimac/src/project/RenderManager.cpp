@@ -85,6 +85,8 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
 
     // State
     m_state = GameManager::PacmanState::NORMAL;
+
+    m_stop = 0.f;
 }
 
 // Destructor
@@ -318,9 +320,17 @@ void RenderManager::updateMVMatrix(Camera* camera)
 {
     m_MVMatrix = camera->getViewMatrix();
 }
-void RenderManager::updateMVMatrix(Camera* camera, Character* character)
+void RenderManager::updateMVMatrix(Camera* camera, Character* character, bool lost)
 {
     m_MVMatrix = camera->getViewMatrix(character, m_gameCorner);
+    if (lost)
+    {
+        if (m_stop < 1)
+        {
+            m_stop += 0.0005;
+        }
+        m_MVMatrix = glm::rotate(m_MVMatrix,m_stop* glm::pi<float>(), glm::vec3(0, 0, 1));
+    }
 }
 
 // ---------------

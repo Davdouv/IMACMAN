@@ -105,6 +105,9 @@ private:
     // State (normal or super)
     GameManager::PacmanState m_state;
 
+    // To make stop last rotate
+    float m_stop;
+
 public:
     // Constructor - SDLWindowManager for Ratio - Camera for viewMatrix - FilePath for Shaders
     RenderManager(SDLWindowManager* windowManager, Camera* camera, ProgramList* programList, glm::vec2 gameSize);
@@ -147,7 +150,7 @@ public:
     glm::mat4 getNormalMatrix() const;
     // Update
     void updateMVMatrix(Camera* camera);
-    void updateMVMatrix(Camera* camera, Character* character);
+    void updateMVMatrix(Camera* camera, Character* character, bool lost);
 
     // Texture functions
     void loadTextures() const;

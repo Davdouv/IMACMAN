@@ -55,13 +55,14 @@ public:
     // file manager
     int load(bool);
     int save();
-private:
 
     // game state
     bool won();
     bool lost();
     bool ready();
     void pause(Controller* controller);
+    
+private:
     // Move
     bool moveCharacter(Character*, Controller::Key);
     void pacmanMove(Controller* controller);

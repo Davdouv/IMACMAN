@@ -154,7 +154,7 @@ int main(int argc, char** argv) {
 
 
         // On update la ViewMatrix à chaque tour de boucle
-        renderManager.updateMVMatrix(camera, map.getPacman());
+        renderManager.updateMVMatrix(camera, map.getPacman(), false);
 
         // // --- SPHERE --- //
         // // Bind Sphere VAO
