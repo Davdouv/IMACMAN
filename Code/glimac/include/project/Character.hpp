@@ -8,6 +8,7 @@ private:
     float m_initY;
     float m_speed;
     bool m_pacman;
+    bool m_inSpawn;
 
 public:
 
@@ -20,12 +21,14 @@ public:
     float getInitX() const;
     float getInitY() const;
     bool isPacman() const;
+    bool inSpawn() const;
 
     // setter
     void setSpeed(double);
     void setInitX(float);
     void setInitY(float);
     void setIsPacman(bool);
+    void setInSpawn(bool);
 
     // move methods
     virtual void move();

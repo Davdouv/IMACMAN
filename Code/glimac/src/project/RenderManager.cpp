@@ -47,7 +47,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_NormalMatrix = glm::transpose(glm::inverse(m_MVMatrix));
 
     // Textures
-    m_PacmanTexture = new Texture("../Code/assets/textures/pacman.jpg");
+    m_PacmanTexture = new Texture("../Code/assets/textures/pacman2.png");
     m_GhostTexture = new Texture("../Code/assets/textures/ghost.jpg");
     m_WallTexture = new Texture("../Code/assets/textures/dungeon.png");
     m_GumTexture = new Texture("../Code/assets/textures/gum.jpg");
@@ -562,14 +562,26 @@ void RenderManager::drawPacman(Pacman* pacman, FS shader)
 {
     //useProgram(shader);
 
-    glm::mat4 transformationMatrix = transformMatrix(pacman);
-    applyTransformations(shader, transformationMatrix);
-
     materialTransformations(shader, 0.7, 0.3, 100);
-
     enableTexture(shader, m_PacmanTexture, false);
 
-    m_sphere.drawSphere();
+    glm::mat4 transformationMatrix = transformMatrix(pacman);
+    transformationMatrix = glm::rotate(transformationMatrix, glm::pi<float>(), glm::vec3(0, 1, 0));
+    transformationMatrix = glm::rotate(transformationMatrix, glm::pi<float>()/8, glm::vec3(1, 0, 0));
+
+    float angle = fabs(glm::cos(glm::pi<float>()/180 * 0.2f * SDL_GetTicks()));
+
+    // Top sphere
+    glm::mat4 rotateUpMat = glm::rotate(transformationMatrix, 60.f * glm::pi<float>()/180 * angle, glm::vec3(1, 0, 0));
+    applyTransformations(shader, rotateUpMat);    
+    m_sphere.drawHalfSphere(1);
+
+    // Bottom sphere
+    glm::mat4 rotateDownMat = glm::rotate(transformationMatrix, -20.f * glm::pi<float>()/180 * angle, glm::vec3(1, 0, 0));
+    applyTransformations(shader, rotateDownMat);
+    m_sphere.drawHalfSphere(0);
+
+    //m_sphere.drawSphere();
 
     disableTexture(shader, false);
 }

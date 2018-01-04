@@ -42,6 +42,12 @@ public:
         glDrawElements(GL_TRIANGLES, this->getIndexCount(), GL_UNSIGNED_INT, 0);
     }
 
+    // Draw half of the sphere, true for upper side, false for bottom side
+    void drawHalfSphere(bool side) const
+    {
+        glDrawElements(GL_TRIANGLES, this->getIndexCount()/2, GL_UNSIGNED_INT, (GLvoid*)(side*(getIndexCount()/2)*sizeof(GLuint)));
+    }
+
     GLuint getVBO();
     GLuint getIBO();
     GLuint getVAO(GLuint* ibo, GLuint* vbo);

@@ -445,7 +445,7 @@ bool GameManager::wallCollisionUP(float fposY, int iposY, int iposX, float speed
                 character->setPosY((float)iposY);
                 return true;
             }
-            else if (character->isPacman() && m_map->getStaticObjects()[iposY-1][iposX]->getType()=='X')
+            else if (!character->inSpawn() && m_map->getStaticObjects()[iposY-1][iposX]->getType()=='X')
             {
                 // It's the spawn gate, return true -> it's a collision, put the character on the top of the cell
                 character->setPosY((float)iposY);
@@ -484,7 +484,7 @@ bool GameManager::wallCollisionLEFT(float fposX, int iposY, int iposX, float spe
                 character->setPosX((float)iposX);
                 return true;
             }
-            else if (character->isPacman() && m_map->getStaticObjects()[iposY][iposX-1]->getType()=='X')
+            else if (!character->inSpawn() && m_map->getStaticObjects()[iposY][iposX-1]->getType()=='X')
             {
                 character->setPosX((float)iposX);
                 return true;
@@ -514,7 +514,7 @@ bool GameManager::wallCollisionDOWN(float fposY, int iposY, int iposX, float spe
             character->setPosY((float)iposY);
             return true;
         }
-        else if (character->isPacman() && m_map->getStaticObjects()[iposY+1][iposX]->getType()=='X')
+        else if (!character->inSpawn() && m_map->getStaticObjects()[iposY+1][iposX]->getType()=='X')
         {
             character->setPosY((float)iposY);
             return true;
@@ -541,7 +541,7 @@ bool GameManager::wallCollisionRIGHT(float fposX, int iposY, int iposX, float sp
             character->setPosX((float)iposX);
             return true;
         }
-        else if (character->isPacman() && m_map->getStaticObjects()[iposY][iposX+1]->getType()=='X')
+        else if (!character->inSpawn() && m_map->getStaticObjects()[iposY][iposX+1]->getType()=='X')
         {
             character->setPosX((float)iposX);
             return true;
@@ -952,8 +952,11 @@ void GameManager::ghostMove() {
                 m_map->getGhosts()[i]->setOrientation(Object::Orientation::UP);
                 m_map->getGhosts()[i]->setPosX(m_map->getSpawnPoint()[0]->getPosX());
                 m_map->getGhosts()[i]->setPosY(m_map->getSpawnPoint()[0]->getPosY());
+
+                m_map->getGhosts()[i]->setInSpawn(true);
             }
             else {
+<<<<<<< HEAD
                 
                 switch (m_map->getGhosts()[i]->getType()) {
 
@@ -1050,6 +1053,9 @@ void GameManager::ghostMove() {
                         break;
                 }
                 /*
+=======
+                m_map->getGhosts()[i]->setInSpawn(false);
+>>>>>>> 487790d12b670cfe0f17edc4647425a8be8bdcf6
                 switch (m_map->getGhosts()[i]->getOrientation()) {
 
                     case Object::Orientation::UP : action = Controller::Z;
@@ -1094,7 +1100,7 @@ void GameManager::updateSpeed(uint32_t deltaTime)
         {
             // If we can eat a ghost, slow down this ghost
             if(m_map->getGhosts()[i]->getSuper())
-                m_map->getGhosts()[i]->setSpeed((speed*deltaTime)/1.5);
+                m_map->getGhosts()[i]->setSpeed((speed*deltaTime)/2);
             else
                 m_map->getGhosts()[i]->setSpeed(speed*deltaTime);
         }
