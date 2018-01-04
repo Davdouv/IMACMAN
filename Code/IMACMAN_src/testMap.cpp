@@ -10,12 +10,12 @@ int main() {
     audioManager.fillSounds();
     audioManager.playMusic(0);
     Map m;
-    m.setFileMap("classicMap.txt");
+    m.setFileMap("mapTest.txt");
     GameManager gameManager = GameManager(&m);
-    gameManager.load(false);
+    gameManager.load(true);
     m.initialization();
     m.display();
-   // gameManager.play(&audioManager);
+   gameManager.play(&audioManager);
     
     std::vector<std::vector<int>> passage;
     for (int i = 0; i < m.getNbX(); i++) {
@@ -25,7 +25,7 @@ int main() {
         }
         passage.push_back(tab);
     }
-   std::cout << gameManager.countShortestWay(1,2, 1,13, passage) << std::endl;
+   //std::cout << gameManager.countShortestWay(1,2, 1,13, passage) << std::endl;
     // m.~Map();
     return 0;
 }

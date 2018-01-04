@@ -82,12 +82,11 @@ private:
     bool pacmanEdibleCollision(AudioManager*);
 
     // Ghost moves algorithms
-    int shortestWay(int, float, float);
+    Controller::Key shortestWay(int, float, float);
     void shadowAI();
     void speedyAI();
     void bashfulAI();
-    void pokeyAI();    
-    char nextMove(float, float, float, float);
+    void pokeyAI();
 
     // New game
     void newLevel(Controller*);

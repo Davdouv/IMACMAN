@@ -872,7 +872,7 @@ void GameManager::pokeyAI() {
 // Shortest way for a ghost to get to the position (x, y)
 // returns 1 if the goal is achieved so we set another one
 // returns 0 if the goal isn't achieved yet
-int GameManager::shortestWay(int ghostType, float x, float y) {
+Controller::Key GameManager::shortestWay(int ghostType, float x, float y) {
 
     float gx = m_map->getGhosts()[ghostType]->getPosX();
     float gy = m_map->getGhosts()[ghostType]->getPosY();
@@ -880,142 +880,61 @@ int GameManager::shortestWay(int ghostType, float x, float y) {
 
         // if goal is at the right top
         if ((gx - x < 0) && (gy - y < 0)) {
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) m_map->getGhosts()[ghostType]->moveRight();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) m_map->getGhosts()[ghostType]->moveUp();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) m_map->getGhosts()[ghostType]->moveLeft();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) m_map->getGhosts()[ghostType]->moveDown();
+            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
         }
         // if goal is at the right bottom
         else if ((gx - x < 0) && (gy - y > 0)) {
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) m_map->getGhosts()[ghostType]->moveRight();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) m_map->getGhosts()[ghostType]->moveDown();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) m_map->getGhosts()[ghostType]->moveLeft();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) m_map->getGhosts()[ghostType]->moveUp();
+            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
         }
         // if goal is at the left top
         else if ((gx - x > 0) && (gy - y < 0)) {
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) m_map->getGhosts()[ghostType]->moveLeft();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) m_map->getGhosts()[ghostType]->moveUp();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) m_map->getGhosts()[ghostType]->moveRight();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) m_map->getGhosts()[ghostType]->moveDown();
+            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
         }
         // if goal is at the left bottom
         else if ((gx - x > 0) && (gy - y > 0)) {
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) m_map->getGhosts()[ghostType]->moveLeft();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) m_map->getGhosts()[ghostType]->moveDown();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) m_map->getGhosts()[ghostType]->moveRight();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) m_map->getGhosts()[ghostType]->moveUp();
+            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
         }
         // if goal is at the right
         else if ((gx - x < 0) && (gy - y == 0)) {
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) m_map->getGhosts()[ghostType]->moveRight();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) m_map->getGhosts()[ghostType]->moveLeft();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) m_map->getGhosts()[ghostType]->moveUp();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) m_map->getGhosts()[ghostType]->moveDown();
+            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
         }
         // if goal is at the left
         else if ((gx - x > 0) && (gy - y == 0)) {
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) m_map->getGhosts()[ghostType]->moveLeft();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) m_map->getGhosts()[ghostType]->moveRight();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) m_map->getGhosts()[ghostType]->moveUp();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) m_map->getGhosts()[ghostType]->moveDown();
+            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
         }
         // if goal is at the top
         else if ((gx - x == 0) && (gy - y < 0)) {
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) m_map->getGhosts()[ghostType]->moveUp();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) m_map->getGhosts()[ghostType]->moveDown();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) m_map->getGhosts()[ghostType]->moveLeft();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) m_map->getGhosts()[ghostType]->moveRight();
+            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
         }
         // if goal is at the bottom
         else if ((gx - x == 0) && (gy - y > 0)) {
-            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) m_map->getGhosts()[ghostType]->moveDown();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) m_map->getGhosts()[ghostType]->moveUp();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) m_map->getGhosts()[ghostType]->moveLeft();
-            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) m_map->getGhosts()[ghostType]->moveRight();
+            if (!characterWallCollision(m_map->getGhosts()[ghostType], 'S')) return Controller::Key::DOWN;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Z')) return Controller::Key::UP;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'Q')) return Controller::Key::LEFT;
+            else if (!characterWallCollision(m_map->getGhosts()[ghostType], 'D')) return Controller::Key::RIGHT;
         }
-        return 0;
     }
-    return 1;
-}
-
-
-/* From a starting position dx, dy
-We calculate the shortest way to get to a goal from:
-- dx+1, dy
-- dx-1, dy
-- dx, dy+1
-- dx, dy-1
-
-*/
-
-int GameManager::countShortestWay(int dx, int dy, int ax, int ay, std::vector<std::vector<int>> passage) {
-    
-    std::cout << "( "<<dx<<", "<<dy<<" ) ( "<<ax<<", "<<ay<<" )( "<<m_map->getNbX()<<", "<<m_map->getNbY()<<" )" << std::endl;
-    if ((dx == ax) && (dy == ay)) {
-        std::cout << "***********" << std::endl << "On est arrivés." << std::endl;
-        return 0;
-    }
-    if (dx < 0) return 1000;
-
-    if (dy < 0) return 1000;
-
-    if (dx >= m_map->getNbX()) return 1000;
-
-    if (dy >= m_map->getNbY()) return 1000;
-
-    if (m_map->getStaticObjects()[dy][dx]->getType()=='W') {
-        std::cout << "C'est un mur." << std::endl;
-        return 1000;
-    }
-    if (!passage[dy][dx]) {
-        std::cout << "On peut passer" << std::endl;
-        passage[dy][dx] = 1;
-        std::vector<int> moves;
-        std::cout << "on essaie d'aller à droite" << std::endl;
-        moves.push_back(countShortestWay(dx, dy+1, ax, ay, passage));
-        std::cout << "on essaie d'aller à gauche" << std::endl;
-        moves.push_back(countShortestWay(dx, dy-1, ax, ay, passage));
-        std::cout << "on essaie d'aller en haut" << std::endl;
-        moves.push_back(countShortestWay(dx-1, dy, ax, ay, passage));
-        std::cout << "on essaie d'aller en bas" << std::endl;
-        moves.push_back(countShortestWay(dx+1, dy, ax, ay, passage));
-        return 1+min(moves);
-    }
-    std::cout << "On est déjà passés!" << std::endl;
-    return 1000;
-}
-
-char GameManager::nextMove(float dx, float dy, float ax, float ay) {
- /*   
-    if (countShortestWay(dx, dy, ax, ay)) {
-        std::cout << "Started : " << std::endl;
-        std::vector<int> moves;
-        if ((m_map->getStaticObjects()[dy][dx+1]->getType()!='W') && ((dx+1) >= 0 && (dx+1) < m_map->getNbX()) && (dx >= 0 && dx < m_map->getNbY())) {
-            moves.push_back(countShortestWay(dx+1, dy, ax, ay));
-        }
-        else moves.push_back(-1);
-        if ((m_map->getStaticObjects()[dy][dx-1]->getType()!='W') && ((dx-1) >= 0 && (dx-1) < m_map->getNbX()) && (dx >= 0 && dx < m_map->getNbY())) {
-            moves.push_back(countShortestWay(dx-1, dy, ax, ay));
-        }
-        else moves.push_back(-1);
-        if ((m_map->getStaticObjects()[dy+1][dx]->getType()!='W') && ((dx) >= 0 && (dx) < m_map->getNbX()) && ((dy-1) >= 0 && (dy-1) < m_map->getNbY())) {
-            moves.push_back(countShortestWay(dx, dy+1, ax, ay));
-        }
-        else moves.push_back(-1);
-        if ((m_map->getStaticObjects()[dy-1][dx]->getType()!='W') && ((dx) >= 0 && (dx) < m_map->getNbX()) && ((dy-1) >= 0 && (dy-1) < m_map->getNbY())) {
-            moves.push_back(countShortestWay(dx, dy-1, ax, ay));
-        }
-        else moves.push_back(-1);
-        int mini  = min(moves);
-        switch(mini) {
-            case 0: return 'D';
-            case 1: return 'Q';
-            case 2: return 'S';
-            case 3: return 'Z';
-        }
-    }*/
-    return 'N';
 }
 
 void GameManager::setTimers() {
@@ -1036,6 +955,101 @@ void GameManager::ghostMove() {
             }
             else {
                 
+                switch (m_map->getGhosts()[i]->getType()) {
+
+/*** SHADOW ARTIFICIAL INTELLIGENCE ***/
+
+                    case Ghost::Type::SHADOW : action = shortestWay(Ghost::Type::SHADOW,m_map->getPacman()->getPosX(), m_map->getPacman()->getPosY());
+                        break;
+
+/*** SPEEDY ARTICIAL INTELLIGNCE ***/
+
+                    case Ghost::Type::SPEEDY :         
+                        switch(m_map->getPacman()->getOrientation()) {
+
+                            case Object::Orientation::LEFT:
+                                action = shortestWay(Ghost::Type::SPEEDY, 0, m_map->getPacman()->getPosY());
+                                break;
+
+                            case Object::Orientation::RIGHT:
+                                action = shortestWay(Ghost::Type::SPEEDY, m_map->getNbX(), m_map->getPacman()->getPosY());
+                                break;
+
+                            case Object::Orientation::UP:
+                                action = shortestWay(Ghost::Type::SPEEDY, m_map->getPacman()->getPosX(), 0);
+                                break;
+
+                            case Object::Orientation::DOWN:
+                                action = shortestWay(Ghost::Type::SPEEDY, m_map->getPacman()->getPosX(), m_map->getNbY());
+                                break;
+                            default:break;
+                        }
+                        break;
+
+/*** BASHFUL ARTIFICIAL INTELLIGENCE ***/
+
+                    case Ghost::Type::BASHFUL : 
+                        if ((std::abs(m_map->getPacman()->getPosX() - m_map->getGhosts()[Ghost::Type::BASHFUL]->getPosX()) <= 2)  && (std::abs(m_map->getPacman()->getPosY() - m_map->getGhosts()[Ghost::Type::BASHFUL]->getPosY()) <= 10)) {
+
+                            switch(m_map->getPacman()->getOrientation()) {
+
+                                case Object::Orientation::LEFT:
+                                    action = shortestWay(Ghost::Type::BASHFUL, m_map->getNbX(), m_map->getPacman()->getPosY());
+                                    break;
+
+                                case Object::Orientation::RIGHT:
+                                    action = shortestWay(Ghost::Type::BASHFUL, 0, m_map->getPacman()->getPosY());
+                                    break;
+
+                                case Object::Orientation::UP:
+                                    action = shortestWay(Ghost::Type::BASHFUL, m_map->getPacman()->getPosX(), m_map->getNbY());
+                                    break;
+
+                                case Object::Orientation::DOWN:
+                                    action = shortestWay(Ghost::Type::BASHFUL, m_map->getPacman()->getPosX(), 0);
+                                    break;
+                                default:break;
+                            }
+                        }
+
+                        else {
+
+                            switch(m_map->getPacman()->getOrientation()) {
+
+                                case Object::Orientation::LEFT:
+                                    action = shortestWay(Ghost::Type::BASHFUL, 0, m_map->getPacman()->getPosY());
+                                    break;
+
+                                case Object::Orientation::RIGHT:
+                                    action = shortestWay(Ghost::Type::BASHFUL, m_map->getNbX(), m_map->getPacman()->getPosY());
+                                    break;
+
+                                case Object::Orientation::UP:
+                                    action = shortestWay(Ghost::Type::BASHFUL, m_map->getPacman()->getPosX(), 0);
+                                    break;
+
+                                case Object::Orientation::DOWN:
+                                    action = shortestWay(Ghost::Type::BASHFUL, m_map->getPacman()->getPosX(), m_map->getNbY());
+                                    break;
+                                default:break;
+                            }
+                        }
+                        break;
+                    case Ghost::Type::POKEY :                 
+                        switch (m_map->getGhosts()[Ghost::Type::POKEY]->getOrientation()) {
+
+                            case Object::Orientation::UP : action = Controller::Z;
+                                break;
+                            case Object::Orientation::DOWN: action = Controller::S;
+                                break;
+                            case Object::Orientation::RIGHT: action = Controller::D;
+                                break;
+                            case Object::Orientation::LEFT :action = Controller::Q;
+                                break;
+                        }
+                        break;
+                }
+                /*
                 switch (m_map->getGhosts()[i]->getOrientation()) {
 
                     case Object::Orientation::UP : action = Controller::Z;
@@ -1046,7 +1060,7 @@ void GameManager::ghostMove() {
                         break;
                     case Object::Orientation::LEFT :action = Controller::Q;
                         break;
-                }
+                }*/
                 while (!moveCharacter(m_map->getGhosts()[i], action)) {
                     
                     int r =  (rand() % 4);
