@@ -35,8 +35,8 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_sphereVAO = m_sphere.getVAO(&m_sphereIBO, &m_sphereVBO);
 
     // Model3D
-    buildModel(&m_ghostModel, &m_ghostModelVBO, &m_ghostModelIBO, &m_ghostModelVAO, "snapchat.obj", "snapchat.mtl");
-    //buildModel(&m_rock, &m_rockVBO, &m_rockIBO, &m_rockVAO, "rock/rock.obj", "snapchat.mtl");
+    buildModel(&m_model[0], &m_modelVBO[0], &m_modelIBO[0], &m_modelVAO[0], "ghost/snapchat.obj", "ghost/snapchat.mtl");
+    //buildModel(&m_model[1], &m_modelVBO[1], &m_modelIBO[1], &m_modelVAO[1], "banana/banana.obj", "");
 
     // Matrices
     // Projection Matrix (world) : vertical view angle, window ratio, near, far
@@ -609,7 +609,7 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
             glUniform3f(m_programList->directionnalLightProgram->uColor, color.r,color.g,color.b);
         }
         //m_cube.drawCube();
-        glDrawElements(GL_TRIANGLES, m_ghostModel.getIndexCount(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, m_model[0].getIndexCount(), GL_UNSIGNED_INT, 0);
 
         disableTexture(shader, true);
 
@@ -683,6 +683,7 @@ void RenderManager::drawFruits(std::vector<Edible*> edible, FS shader)
             glm::mat4 transformationMatrix = transformMatrix(edible[i]);
             applyTransformations(shader, transformationMatrix);
             materialTransformations(shader, 0.9, 0.3, 50);
+            //glDrawElements(GL_TRIANGLES, m_model[1].getIndexCount(), GL_UNSIGNED_INT, 0);
             m_sphere.drawSphere();
             disableTexture(shader, false);
         }
@@ -798,14 +799,15 @@ void RenderManager::drawMap(Map* map, Controller* controller)
         drawPacman(map->getPacman(), DIRECTIONNAL_LIGHT);
     drawPacGommes(map->getPacGommes(), DIRECTIONNAL_LIGHT);
     drawSuperPacGommes(map->getSuperPacGommes(), DIRECTIONNAL_LIGHT);
-    drawFruits(map->getFruits(), DIRECTIONNAL_LIGHT);
-
     //De-bind Sphere VAO
+    //debindVAO();
+
+    //glBindVertexArray(m_modelVAO[1]);
+    drawFruits(map->getFruits(), DIRECTIONNAL_LIGHT);
     debindVAO();
 
     //useProgram(DIRECTIONNAL_LIGHT);
-    glBindVertexArray(m_ghostModelVAO);
-    // m_ghostModel.bindVAO();
+    glBindVertexArray(m_modelVAO[0]);
     drawGhosts(map->getGhosts(), DIRECTIONNAL_LIGHT);
     debindVAO();
 }
