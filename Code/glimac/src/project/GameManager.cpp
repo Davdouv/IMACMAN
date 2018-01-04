@@ -376,7 +376,6 @@ void GameManager::newLevel(Controller* controller)
     load(true);
     m_player = save_player;
     setTimers();
-    setStartTime(SDL_GetTicks());
 }
 
 bool GameManager::pacmanGhostCollision(AudioManager* audioManager) {
@@ -957,7 +956,7 @@ void GameManager::ghostMove() {
                 m_map->getGhosts()[i]->setInSpawn(true);
             }
             else {
-                m_map->getGhosts()[i]->setInSpawn(false);
+                
                 switch (m_map->getGhosts()[i]->getType()) {
 
 /*** SHADOW ARTIFICIAL INTELLIGENCE ***/
@@ -1052,6 +1051,7 @@ void GameManager::ghostMove() {
                         }
                         break;
                 }
+                m_map->getGhosts()[i]->setInSpawn(false);
                 /*
                 switch (m_map->getGhosts()[i]->getOrientation()) {
 
