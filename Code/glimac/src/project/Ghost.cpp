@@ -58,7 +58,6 @@ void Ghost::reset () {
     m_death = SDL_GetTicks();
     m_super = false;
     setInSpawn(true);
-    
 }
 
 void Ghost::move() {

@@ -156,6 +156,11 @@ int main(int argc, char** argv) {
                 // else
                 //     gameManager.load(false);
 
+                if (menu.getButton() == Menu::Button::PLAY)
+                    gameManager.load(true);
+                else
+                    gameManager.load(false);
+
                 /* -------------
                 *   INIT TIME
                 *  ------------- */
@@ -217,10 +222,13 @@ int main(int argc, char** argv) {
                     if (menuPause.getButton() == Menu::Button::PLAY) // RESTART
                     {
                         Mix_RewindMusic();
+                        gameManager.restart();
                     }
                     else if (menuPause.getButton() == Menu::Button::CONTINUE) // SAVE
                     {
-                        //gameManager.save();
+                        audioManager.playSound(8,1);
+                        gameManager.save();
+                        SDL_Delay(1000);
                     }
                     else if (menuPause.getButton() == Menu::Button::EXIT)    // EXIT
                     {
@@ -273,8 +281,11 @@ int main(int argc, char** argv) {
             // Render the map (objects, skybox and ground)
             renderManager.drawMap(gameManager.getMap(), &controller);
 
-            // Render UI (life, score?)
-            renderManager.drawUI(&ui, gameManager.getStartTime(), gameManager.getPauseTime());
+            // Render UI (life, score)
+            if(!gameManager.isLost() && !gameManager.isPause())
+            {
+                renderManager.drawUI(&ui, gameManager.getStartTime(), gameManager.getPauseTime());
+            }
 
 
             // Render the pause menu if the game is paused
@@ -284,7 +295,7 @@ int main(int argc, char** argv) {
             }
             if(gameManager.isLost())
             {
-
+                renderManager.drawScorePanel(gameManager.getPlayer()->getPoints());
             }
 
             // Update the display

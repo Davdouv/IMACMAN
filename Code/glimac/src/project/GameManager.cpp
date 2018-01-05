@@ -249,6 +249,18 @@ void GameManager::start(AudioManager* audioManager) {
     play(audioManager);
 }
 
+void GameManager::restart() {
+
+    setState(NORMAL);
+    m_map->setFileMap("classicMap.txt");
+    load(true);
+    m_map->initialization();
+    m_player.initialization();
+    setTimers();
+    switchPause();
+}
+
+
 // For console only
 void GameManager::play(AudioManager* audioManager) {
 
@@ -282,6 +294,9 @@ void GameManager::play(AudioManager* audioManager) {
             if (line == "C") {
                 save();
                 return;
+            }
+            if (line == "R") {
+                restart();
             }
             pacmanGhostCollision(audioManager);
             pacmanEdibleCollision(audioManager);
@@ -1066,7 +1081,7 @@ void GameManager::ghostMove() {
                 m_map->getGhosts()[i]->setOrientation(Object::Orientation::UP);
                 m_map->getGhosts()[i]->setPosX(m_map->getSpawnPoint()[0]->getPosX());
                 m_map->getGhosts()[i]->setPosY(m_map->getSpawnPoint()[0]->getPosY()-1);
-                m_map->getGhosts()[i]->setInSpawn(true);
+                m_map->getGhosts()[i]->setInSpawn(false);
             }
             else {
 
@@ -1169,17 +1184,17 @@ void GameManager::ghostMove() {
                         break;
                 }
 
-                switch (m_map->getGhosts()[i]->getOrientation()) {
-
-                    case Object::Orientation::UP : action = Controller::Z;
-                        break;
-                    case Object::Orientation::DOWN: action = Controller::S;
-                        break;
-                    case Object::Orientation::RIGHT: action = Controller::D;
-                        break;
-                    case Object::Orientation::LEFT :action = Controller::Q;
-                        break;
-                }
+                // switch (m_map->getGhosts()[i]->getOrientation()) {
+                //
+                //     case Object::Orientation::UP : action = Controller::Z;
+                //         break;
+                //     case Object::Orientation::DOWN: action = Controller::S;
+                //         break;
+                //     case Object::Orientation::RIGHT: action = Controller::D;
+                //         break;
+                //     case Object::Orientation::LEFT :action = Controller::Q;
+                //         break;
+                // }
                 while (!moveCharacter(m_map->getGhosts()[i], action)) {
 
                     int r =  (rand() % 4);

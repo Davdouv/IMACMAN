@@ -67,16 +67,16 @@ private:
 		GLuint m_timeImg;
 
 		// Score Panel
-		SDL_Surface* m_scorePanel_title;
-		SDL_Surface* m_scorePanel_points;
-	  SDL_Surface* m_scorePanel_time;
-	  SDL_Surface* m_scorePanel_pointsScore;
-	  SDL_Surface* m_scorePanel_timeScore;
-		GLuint m_scorePanel_titleImg;
-		GLuint m_scorePanel_pointsImg;
-	  GLuint m_scorePanel_timeImg;
-	  GLuint m_scorePanel_pointsScoreImg;
-	  GLuint m_scorePanel_timeScoreImg;
+		SDL_Surface* m_SP_titleSurface;
+		SDL_Surface* m_SP_pointsSurface;
+	  SDL_Surface* m_SP_timeSurface;
+	  SDL_Surface* m_SP_pointsScoreSurface;
+	  SDL_Surface* m_SP_timeScoreSurface;
+		GLuint m_SP_titleImg;
+		GLuint m_SP_pointsImg;
+	  GLuint m_SP_timeImg;
+	  GLuint m_SP_pointsScoreImg;
+	  GLuint m_SP_timeScoreImg;
 
     // Model3D
     Geometry m_model[4];
@@ -105,6 +105,9 @@ private:
 
     // Text
 		TTF_Font* m_font;
+
+		// Time
+		std::string m_time;
 
     // Game Size Infos
     glm::vec2 m_gameSize;
@@ -135,6 +138,7 @@ public:
 		void loadFont();
 		SDL_Surface* createTextTexture(GLuint* textImg, std::string text, SDL_Color color);
 		void drawText(SDL_Surface* textSurface, GLuint textImg, float size, float x, float y);
+		void drawText(SDL_Surface* textSurface, GLuint textImg, float size, glm::mat4 matrix);
 
     // Skybox
     void initSkybox();
@@ -175,8 +179,8 @@ public:
     void disableTexture(FS shader, bool alpha);
 
 		// Score panel
-		void createScorePanel(float pointsScore, float timeScore);
-		void drawScorePanel();
+		void createScorePanel(int points);
+		void drawScorePanel(int points);
 
     // GLSL Programs functions
     void useProgram(FS shader);
