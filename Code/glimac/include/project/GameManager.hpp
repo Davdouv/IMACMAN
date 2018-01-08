@@ -13,18 +13,18 @@ public:
 private:
 
     // Game elements and state
-    Map* m_map; 
+    Map* m_map;
     PacmanState m_state;    // super or normal mode, also the map state
     Player m_player;
 
-    // timers 
+    // timers
     uint32_t m_startTime;
     uint32_t m_pauseTime;
     uint32_t m_pauseStartTime;
     uint32_t m_superTimer;
     uint32_t m_fruitTimer;
 
-    // true is the game is paused 
+    // true is the game is paused
 
     bool m_pause;
     bool m_lost;

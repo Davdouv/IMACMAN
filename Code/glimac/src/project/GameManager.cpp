@@ -77,6 +77,7 @@ void GameManager::play(Controller* controller, AudioManager* audioManager) {
         }
         if(lost())
         {
+            m_lost = true;
             std::cout << "Player Score : " << m_player.getPoints() << std::endl;
         }
     }
@@ -89,7 +90,7 @@ void GameManager::play(Controller* controller, AudioManager* audioManager) {
 
 
 /*  Game loader
- *  reads a txt file  
+ *  reads a txt file
  *  set true to newGame if brand new Game wanted
  *  set false to newGame if last saved Game wanted
  */
@@ -99,7 +100,7 @@ int GameManager::load(bool newGame) {
     if (!newGame)
         file.open("../Code/data/save_"+m_map->getFileMap(), std::ios::binary | std::ios::out | std::ios::in);
     else file.open("../Code/data/"+m_map->getFileMap(), std::ios::binary | std::ios::out | std::ios::in);
-    
+
     if (!file.is_open()) {
         std::cout << " error loading the file " << std::endl;
         return 0;
@@ -110,7 +111,7 @@ int GameManager::load(bool newGame) {
         int i = 0;
         std::string tmp;
         file.seekg(0);
- 
+
         if (!newGame) {  // if saved game, load player lives and points
         /*** PLAYER INFORMATION ***/
             getline(file,tmp);
@@ -125,7 +126,7 @@ int GameManager::load(bool newGame) {
         std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
         std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
         Pacman *p = new Pacman(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.5, 0.004, Object::Orientation::LEFT);
-        
+
         if (!newGame) {  // if saved game get pacman initial positions
             getline(file,tmp);
             std::string delimiter = ",";
@@ -136,7 +137,7 @@ int GameManager::load(bool newGame) {
         }
         m_map->setPacman(*p);
         delete(p);
-        
+
         /*** GHOSTS INFORMATIONS ***/
         std::vector<Ghost> tabGhost;
         for (int i = 0; i < 4; i++) {
@@ -145,7 +146,7 @@ int GameManager::load(bool newGame) {
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
             Ghost *g = new Ghost(atoi(pos_x.c_str()), atoi(pos_y.c_str()), 0.5, 0.75, 0.004, i, Object::Orientation::LEFT, 0);
-            
+
             if (!newGame) { // if saved game get ghosts initial position
                 getline(file,tmp);
                 std::string delimiter = ",";
@@ -194,7 +195,7 @@ int GameManager::load(bool newGame) {
             vec.push_back(row);
             i++;
         }
-        m_map->setStaticObjects(vec); 
+        m_map->setStaticObjects(vec);
         m_map->setNbX(i-1); // number of rows in the maze
     }
     file.close();
@@ -215,7 +216,7 @@ int GameManager::save() {
     }
     else {
         file.seekg(0);
-        
+
         /*** PLAYER INFORMATION ***/
         file << m_player.getLife() << std::endl;
         file << m_player.getPoints() << std::endl;
@@ -266,7 +267,7 @@ int GameManager::save() {
 
 
 /* Pause switcher
- * when the player hits ESCAPE 
+ * when the player hits ESCAPE
  * its stops the game and the music
  */
 void GameManager::pause(Controller* controller) {
@@ -277,11 +278,11 @@ void GameManager::pause(Controller* controller) {
                 controller->setInterfaceAction(Controller::NONE);
                 if (m_pause) Mix_PauseMusic();
                 else Mix_ResumeMusic();
-    }    
+    }
 }
 
 /* Game restarter
- * it initializes the player 
+ * it initializes the player
  * and loads a new game
  */
 void GameManager::restart() {
@@ -315,7 +316,7 @@ void GameManager::newLevel(Controller* controller)
  *  if there are no edible on the map
  */
 bool GameManager::won() {
-    
+
     return (m_map->getSuperPacGommes().empty() && m_map->getPacGommes().empty());
 }
 
@@ -446,7 +447,7 @@ void GameManager::pacmanMove(Controller* controller) {
 
 /* Ghosts moves
  * the move around randomly in the maze
- * they keep going in the same direction until 
+ * they keep going in the same direction until
  * they collide to a wall
  * then they change direction randomly again
  * and take an availble path
@@ -477,7 +478,7 @@ void GameManager::ghostMove() {
                         break;
                 }
                 while (!moveCharacter(m_map->getGhosts()[i], action)) {
-                    
+
                     int r =  (rand() % 4);
                     switch (r) {
 
@@ -791,7 +792,7 @@ bool GameManager::characterRightDoorCollision(Character* character)
     return false;
 }
 /* Note that doors must be placed on the left and right sides
- * of the maze in order for teleportation to work 
+ * of the maze in order for teleportation to work
  */
 
 /* Detects a Collision between an Edible object and Pacman
@@ -853,7 +854,7 @@ bool GameManager::pacmanEdibleCollision(AudioManager* audioManager) {
  *  -------------- */
 
 /* Switch to super state mode
- * it includes : 
+ * it includes :
  * pacman's ability to eat ghost
  * eaten ghosts counter initialization
  */
@@ -891,7 +892,7 @@ void GameManager::stateManager() {
  *  -------------- */
 
 /* while the super mode is on
- * double the gained points everytime 
+ * double the gained points everytime
  * a ghost is eaten
  */
 void GameManager::eatGhost() {
