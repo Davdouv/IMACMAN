@@ -3,6 +3,9 @@
 #include <iostream>
 #include <glimac/Program.hpp>
 #include <glimac/FilePath.hpp>
+#include <ft2build.h>
+#include <GL/gl.h>
+#include FT_FREETYPE_H
 
 #include "project/RenderManager.hpp"
 #include "project/GameManager.hpp"
@@ -93,6 +96,8 @@ int main(int argc, char** argv) {
     renderManager.loadTextures();
     // initialize Skybox
     renderManager.initSkybox();
+    // initialize Text
+    renderManager.loadFont();
 
     /* ---------------------
     *   INIT AUDIO | START MUSIC
@@ -146,11 +151,16 @@ int main(int argc, char** argv) {
 
                 audioManager.playMusic(1);  // Change Music
 
+                // if (menu.getButton() == Menu::Button::PLAY)
+                //     gameManager.load(true);
+                // else
+                //     gameManager.load(false);
+
                 if (menu.getButton() == Menu::Button::PLAY)
                     gameManager.load(true);
                 else
                     gameManager.load(false);
-                
+
                 /* -------------
                 *   INIT TIME
                 *  ------------- */
@@ -176,7 +186,7 @@ int main(int argc, char** argv) {
         /* -----------------------------------------------------------------
         *   GAME APPLICATION LOOP | 1.EVENTS | 2.GAME ENGINE | 3. RENDERING
         *  ----------------------------------------------------------------- */
-        
+
         while(play) {
             /* ------------------
             *   UPDATE DELTA TIME
@@ -205,6 +215,8 @@ int main(int argc, char** argv) {
             {
                 menuPause.selectButton(&controller, &audioManager);
 
+                gameManager.setPauseStartTime(SDL_GetTicks());
+
                 if (controller.getInterfaceAction() == Controller::Key::ENTER)
                 {
                     if (menuPause.getButton() == Menu::Button::PLAY) // RESTART
@@ -214,7 +226,9 @@ int main(int argc, char** argv) {
                     }
                     else if (menuPause.getButton() == Menu::Button::CONTINUE) // SAVE
                     {
+                        audioManager.playSound(8,1);
                         gameManager.save();
+                        SDL_Delay(1000);
                     }
                     else if (menuPause.getButton() == Menu::Button::EXIT)    // EXIT
                     {
@@ -222,6 +236,7 @@ int main(int argc, char** argv) {
                     }
                 }
             }
+
 
             /* ------------------
             *   MANAGE CAMERAS
@@ -266,17 +281,27 @@ int main(int argc, char** argv) {
             // Render the map (objects, skybox and ground)
             renderManager.drawMap(gameManager.getMap(), &controller);
 
-            // Render UI (life, score?)
-            renderManager.drawUI(&ui);
+            // Render UI (life, score)
+            if(!gameManager.isLost() && !gameManager.isPause())
+            {
+                renderManager.drawUI(&ui, gameManager.getStartTime(), gameManager.getPauseTime());
+            }
+
 
             // Render the pause menu if the game is paused
             if(gameManager.isPause())
             {
                 renderManager.drawMenu(&menuPause);
             }
+            if(gameManager.isLost())
+            {
+                renderManager.drawScorePanel(gameManager.getPlayer()->getPoints());
+            }
 
             // Update the display
             windowManager.swapBuffers();
+
+            gameManager.setPauseTime(SDL_GetTicks());
         }
     }
 

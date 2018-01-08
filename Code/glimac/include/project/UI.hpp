@@ -2,6 +2,8 @@
 
 #include "project/Texture.hpp"
 #include "project/Player.hpp"
+#include <SDL/SDL_image.h>
+#include <SDL/SDL_ttf.h>
 
 using namespace glimac;
 

@@ -56,7 +56,7 @@ GLuint VAO(GLuint* ibo, GLuint* vbo)
     glEnableVertexAttribArray(VERTEX_ATTR_TEXCOORD);
 
     glBindBuffer(GL_ARRAY_BUFFER, *vbo);
-    
+
     glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (const GLvoid*) 0);
     glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (const GLvoid*) offsetof(Vertex3D, normal));
     glVertexAttribPointer(VERTEX_ATTR_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (const GLvoid*) offsetof(Vertex3D, texCoords));
@@ -65,6 +65,11 @@ GLuint VAO(GLuint* ibo, GLuint* vbo)
     glBindVertexArray(0);
 
     return vao;
+}
+
+float floatDivision(float a, float b)
+{
+	return a/b;
 }
 
 }

@@ -5,6 +5,7 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
+#include <sstream>
 #include FT_FREETYPE_H
 
 #include "glimac/Plane.hpp"
@@ -59,6 +60,24 @@ private:
     GLuint m_sphereIBO;
     GLuint m_sphereVAO;
 
+		// UI
+		SDL_Surface* m_scoreSurface;
+		GLuint m_scoreImg;
+		SDL_Surface* m_timeSurface;
+		GLuint m_timeImg;
+
+		// Score Panel
+		SDL_Surface* m_SP_titleSurface;
+		SDL_Surface* m_SP_pointsSurface;
+	  SDL_Surface* m_SP_timeSurface;
+	  SDL_Surface* m_SP_pointsScoreSurface;
+	  SDL_Surface* m_SP_timeScoreSurface;
+		GLuint m_SP_titleImg;
+		GLuint m_SP_pointsImg;
+	  GLuint m_SP_timeImg;
+	  GLuint m_SP_pointsScoreImg;
+	  GLuint m_SP_timeScoreImg;
+
     // Model3D
     Geometry m_model[4];
     GLuint m_modelVBO[4];
@@ -86,8 +105,9 @@ private:
 
     // Text
 		TTF_Font* m_font;
-		SDL_Surface* m_text;
-		GLuint m_textTexture;
+
+		// Time
+		std::string m_time;
 
     // Game Size Infos
     glm::vec2 m_gameSize;
@@ -116,8 +136,9 @@ public:
 
     // Text
 		void loadFont();
-		void createTextTexture();
-		void drawText();
+		SDL_Surface* createTextTexture(GLuint* textImg, std::string text, SDL_Color color);
+		void drawText(SDL_Surface* textSurface, GLuint textImg, float size, float x, float y);
+		void drawText(SDL_Surface* textSurface, GLuint textImg, float size, glm::mat4 matrix);
 
     // Skybox
     void initSkybox();
@@ -157,6 +178,10 @@ public:
     void enableTexture(FS shader, Texture* texture, bool alpha);
     void disableTexture(FS shader, bool alpha);
 
+		// Score panel
+		void createScorePanel(int points);
+		void drawScorePanel(int points);
+
     // GLSL Programs functions
     void useProgram(FS shader);
 
@@ -193,5 +218,6 @@ public:
     void drawMenu(Menu*);
 
     // UI
-    void drawUI(UI*);
+		std::string getTimeString(Uint32 start_game_time, Uint32 pause_time);
+    void drawUI(UI*,Uint32 start_game_time, Uint32 pause_time);
 };

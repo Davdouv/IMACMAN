@@ -19,25 +19,31 @@ private:
 
     // timers 
     uint32_t m_startTime;
+    uint32_t m_pauseTime;
+    uint32_t m_pauseStartTime;
     uint32_t m_superTimer;
     uint32_t m_fruitTimer;
 
     // true is the game is paused 
 
     bool m_pause;
-    // number of eaten ghosts during one super state
+    bool m_lost;
+    bool m_pauseTimeRecording;
     int m_eatenGhosts;
 
 public:
-    // constructor 
+    // constructor
     GameManager(Map* map);
 
     // getters
     PacmanState getState() const;
     uint32_t getStartTime() const;
+    uint32_t getPauseTime() const;
+    uint32_t getPauseStartTime() const;
     uint32_t getSuperTimer() const;
     uint32_t getFruitTimer() const;
     bool isPause();
+    bool isLost();
     int getEatenGhosts() const;
     Player* getPlayer();
     Map* getMap();
@@ -45,6 +51,8 @@ public:
     // setters
     void setState(PacmanState);
     void setStartTime(uint32_t);
+    void setPauseTime(uint32_t);
+    void setPauseStartTime(uint32_t);
     void setSuperTimer(uint32_t);
     void setFruitTimer(uint32_t);
     void switchPause();
@@ -67,7 +75,7 @@ public:
     bool lost();
     bool ready();
     void pause(Controller* controller);
-    
+
 private:
     // Move
     bool moveCharacter(Character*, Controller::Key);

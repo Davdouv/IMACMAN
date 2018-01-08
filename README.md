@@ -11,6 +11,15 @@ Download the .zip folder or clone the project with following instruction :
 $ git clone https://github.com/Davdouv/IMACMAN.git
 ```
 
+## REQUIRED LIBRARIES
+
+Make sure that you have SDL, SDL_ttf, SDL_image and SDL_mixer installed.
+If your on Debian or Ubuntu, you can install packages:
+
+```sh
+$ sudo apt-get install libsdl-image1.2 libsdl-image1.2-dev libsdl-ttf2.0-0 libsdl-ttf2.0-dev libsdl-mixer1.2 libsdl-mixer1.2-dev
+```
+
 ## COMPILATION
 
 This projects works on Linux OS. Here are the instructions for the compilation in your bash.

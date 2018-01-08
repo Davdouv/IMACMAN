@@ -31,4 +31,5 @@ GLuint VBO(GLsizeiptr size, const GLvoid* data);
 GLuint IBO(GLsizeiptr size, const GLvoid* data);
 GLuint VAO(GLuint* ibo, GLuint* vbo);
 
+float floatDivision(float a, float b);
 }

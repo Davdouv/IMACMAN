@@ -14,21 +14,43 @@ GameManager::GameManager(Map* map)
     m_state = NORMAL;
     m_player.initialization();
     m_pause = false;
+    m_lost = false;
+    m_pauseTime = 0;
+    m_pauseStartTime = 0;
 }
 
 GameManager::PacmanState GameManager::getState() const { return m_state;}
 uint32_t GameManager::getStartTime() const { return m_startTime; }
+uint32_t GameManager::getPauseTime() const { return m_pauseTime; }
+uint32_t GameManager::getPauseStartTime() const { return m_pauseStartTime; }
 uint32_t GameManager::getSuperTimer() const { return m_superTimer; }
 uint32_t GameManager::getFruitTimer() const { return m_fruitTimer; }
 bool GameManager::isPause() { return m_pause; }
+bool GameManager::isLost() { return m_lost; }
 int GameManager::getEatenGhosts() const { return m_eatenGhosts; }
 Player* GameManager::getPlayer() { return &m_player; }
 Map* GameManager::getMap() { return m_map; }
 void GameManager::setState(PacmanState state) { m_state = state;}
 void GameManager::setStartTime(uint32_t t) { m_startTime = t;}
+void GameManager::setPauseTime(uint32_t t) {
+  if (m_pause == false && m_pauseTimeRecording == true)
+  {
+    m_pauseTime += t - m_pauseStartTime;
+    m_pauseStartTime = 0;
+    m_pauseTimeRecording = false;
+  }
+}
+void GameManager::setPauseStartTime(uint32_t t) {
+  if (m_pauseTimeRecording == false)
+  {
+    m_pauseStartTime = t;
+    m_pauseTimeRecording = true;
+  }
+}
+
 void GameManager::setSuperTimer(uint32_t t) { m_superTimer = t;}
 void GameManager::setFruitTimer(uint32_t t) { m_fruitTimer = t; }
-void GameManager::switchPause() { m_pause=!isPause();}
+void GameManager::switchPause() { m_pause=!isPause(); }
 void GameManager::setEatenGhosts(int eatenGhosts) { m_eatenGhosts = eatenGhosts;}
 
 /* -------------
@@ -74,7 +96,7 @@ void GameManager::play(Controller* controller, AudioManager* audioManager) {
 int GameManager::load(bool newGame) {
 
     std::fstream file;
-    if (!newGame) 
+    if (!newGame)
         file.open("../Code/data/save_"+m_map->getFileMap(), std::ios::binary | std::ios::out | std::ios::in);
     else file.open("../Code/data/"+m_map->getFileMap(), std::ios::binary | std::ios::out | std::ios::in);
     
@@ -110,7 +132,7 @@ int GameManager::load(bool newGame) {
             std::string pos_x = tmp.substr(1, tmp.find(delimiter)-1);
             std::string pos_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
             p->setInitX(atoi(pos_x.c_str()));
-            p->setInitY(atoi(pos_y.c_str()));    
+            p->setInitY(atoi(pos_y.c_str()));
         }
         m_map->setPacman(*p);
         delete(p);
@@ -130,7 +152,7 @@ int GameManager::load(bool newGame) {
                 std::string init_x = tmp.substr(1, tmp.find(delimiter)-1);
                 std::string init_y = tmp.substr(tmp.find(delimiter)+1, tmp.size());
                 g->setInitX(atoi(init_x.c_str()));
-                g->setInitY(atoi(init_y.c_str()));   
+                g->setInitY(atoi(init_y.c_str()));
             }
             tabGhost.push_back(*g);
             delete(g);
@@ -544,7 +566,7 @@ bool GameManager::wallCollisionUP(float fposY, int iposY, int iposX, float speed
             {
                 // It's the spawn gate, return true -> it's a collision, put the character on the top of the cell
                 character->setPosY((float)iposY);
-                return true; 
+                return true;
             }
             else
             {
@@ -790,7 +812,7 @@ bool GameManager::pacmanEdibleCollision(AudioManager* audioManager) {
         e =  (Edible*) m_map->getStaticObjects()[m_map->getPacman()->getPosY()][m_map->getPacman()->getPosX()];
         switch (e->getTypeEdible()) {
 
-            case Edible::Type::FRUIT : 
+            case Edible::Type::FRUIT :
                 audioManager->playSound(6,1);
                 if (e->getAvailability() && e->getFruit()!=Edible::Fruit::NONE) {
                     m_player.gainPoints(e->gain());
@@ -839,7 +861,7 @@ void GameManager::switchSuperState() {
     this->setState(GameManager::PacmanState::SUPER);
     this->setSuperTimer(SDL_GetTicks());
     this->setEatenGhosts(0);
-    for (int i = 0; i < m_map->getGhosts().size(); i++) { 
+    for (int i = 0; i < m_map->getGhosts().size(); i++) {
         m_map->getGhosts()[i]->setSuper(true);
     }
 }
@@ -856,9 +878,9 @@ void GameManager::stateManager() {
             Mix_ResumeMusic();
             this->setState(GameManager::PacmanState::NORMAL);
             this->setEatenGhosts(0);
-            for (int i = 0; i < m_map->getGhosts().size(); i++) { 
+            for (int i = 0; i < m_map->getGhosts().size(); i++) {
                 m_map->getGhosts()[i]->setSuper(false);
-            } 
+            }
         }
     }
 }
@@ -877,7 +899,7 @@ void GameManager::eatGhost() {
     this->setEatenGhosts(this->getEatenGhosts()+1);
     switch (this->getEatenGhosts()) {
         case 1: m_player.gainPoints(200);
-            break; 
+            break;
         case 2: m_player.gainPoints(400);
             break;
         case 3: m_player.gainPoints(800);
@@ -899,7 +921,7 @@ void GameManager::activateFruit() {
     if (SDL_GetTicks() - m_fruitTimer > timer)  {
         if (!m_map->getFruits().empty())
         {
-            if (!m_map->getFruits()[0]->getAvailability() && m_map->getFruits()[0]->getFruit() != Edible::Fruit::NONE ) 
+            if (!m_map->getFruits()[0]->getAvailability() && m_map->getFruits()[0]->getFruit() != Edible::Fruit::NONE )
                 m_map->getFruits()[0]->setAvailability(true);
         }
     }
