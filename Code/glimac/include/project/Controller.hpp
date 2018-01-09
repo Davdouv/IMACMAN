@@ -15,9 +15,12 @@ public:
     Controller(SDLWindowManager* windowManager);
 
     // Update function, called each frame
-    void updateController(Pacman* pacman);
-    void updateInterfaceAction();
+    void updateController(Pacman* pacman, SDL_Event& e);
+    void updateInterfaceAction(SDL_Event& e);
     void switchFPS();
+
+    // Joystick Controller
+    void joystickController(SDL_Event& e);
 
     // Getters
     Key getPlayerAction() const;
@@ -48,8 +51,8 @@ private:
     bool isMouseUp();
     bool isMouseDown();
     // Update Actions, called each frame
-    void updatePlayerAction(Pacman* pacman);
-    void updateCameraAction();
+    void updatePlayerAction(Pacman* pacman, SDL_Event& e);
+    void updateCameraAction(SDL_Event& e);
 
     // Convert FPS key in TPS key
     Controller::Key getFPSkey(Pacman* pacman);

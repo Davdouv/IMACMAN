@@ -42,62 +42,108 @@ bool Controller::isMouseDown()
 }
 
 // Update Player Action Key
-void Controller::updatePlayerAction(Pacman* pacman)
+void Controller::updatePlayerAction(Pacman* pacman, SDL_Event& e)
 {
-	if(!FPS)
+	bool z = false;
+	bool q = false;
+	bool s = false;
+	bool d = false;
+
+	if (e.type == SDL_JOYHATMOTION)
 	{
-		if (m_windowManager->isKeyPressed(SDLK_z))
-			playerAction = Z;
-		else if (m_windowManager->isKeyPressed(SDLK_q))
-			playerAction = Q;
-		else if (m_windowManager->isKeyPressed(SDLK_s))
-			playerAction = S;
-		else if (m_windowManager->isKeyPressed(SDLK_d))
-			playerAction = D;
+		if (e.jhat.hat == 0)
+		{
+			switch(e.jhat.value)
+			{
+				case SDL_HAT_UP:
+					playerAction = Z;
+					if(!FPS) return;
+					z = true;
+					break;
+				case SDL_HAT_DOWN:
+					playerAction = S;
+					if(!FPS) return;
+					s = true;
+					break;
+				case SDL_HAT_LEFT:
+					playerAction = Q;
+					if(!FPS) return;
+					q = true;
+					break;
+				case SDL_HAT_RIGHT:
+					playerAction = D;
+					if(!FPS) return;
+					d = true;
+					break;
+				default:
+					break;
+			}
+		}
 	}
+
+	if (m_windowManager->isKeyPressed(SDLK_z))
+	{
+		playerAction = Z;
+		z = true;
+	}
+	else if (m_windowManager->isKeyPressed(SDLK_q))
+	{
+		playerAction = Q;
+		q = true;
+	}	
+	else if (m_windowManager->isKeyPressed(SDLK_s))
+	{
+		playerAction = S;
+		s = true;
+	}
+	else if (m_windowManager->isKeyPressed(SDLK_d))
+	{
+		playerAction = D;
+		d = true;
+	}	
 	// If we are in FPS mode, we look always forward so Keys must changes
-	else
+	if(FPS)
 	{
 		switch(pacman->getOrientation())
 		{
 			case Object::Orientation::UP:
-				if (m_windowManager->isKeyPressed(SDLK_z))
+				if (z)
 					playerAction = Z;
-				else if (m_windowManager->isKeyPressed(SDLK_q))
+				else if (q)
 					playerAction = Q;
-				else if (m_windowManager->isKeyPressed(SDLK_s))
+				else if (s)
 					playerAction = S;
-				else if (m_windowManager->isKeyPressed(SDLK_d))
+				else if (d)
 					playerAction = D;
 				break;
 			case Object::Orientation::LEFT:
-				if (m_windowManager->isKeyPressed(SDLK_z))
+				if (z)
 					playerAction = Q;
-				else if (m_windowManager->isKeyPressed(SDLK_q))
+				else if (q)
 					playerAction = S;
-				else if (m_windowManager->isKeyPressed(SDLK_s))
+				else if (s)
 					playerAction = D;
-				else if (m_windowManager->isKeyPressed(SDLK_d))
+				else if (d)
 					playerAction = Z;
 				break;
 			case Object::Orientation::RIGHT:
-				if (m_windowManager->isKeyPressed(SDLK_z))
+				if (z)
 					playerAction = D;
-				else if (m_windowManager->isKeyPressed(SDLK_q))
+				else if (q)
 					playerAction = Z;
-				else if (m_windowManager->isKeyPressed(SDLK_s))
+				else if (s)
 					playerAction = Q;
-				else if (m_windowManager->isKeyPressed(SDLK_d))
+				else if (d)
 					playerAction = S;
 				break;
 			case Object::Orientation::DOWN:
-				if (m_windowManager->isKeyPressed(SDLK_z))
+				if (z)
 					playerAction = S;
-				else if (m_windowManager->isKeyPressed(SDLK_q))
+				else if (q)
 					playerAction = D;
-				else if (m_windowManager->isKeyPressed(SDLK_s))
+				else if (s)
 					playerAction = Z;
-				else if (m_windowManager->isKeyPressed(SDLK_d))
+				else if (d)
 					playerAction = Q;
 				break;
 			default:
@@ -107,8 +153,27 @@ void Controller::updatePlayerAction(Pacman* pacman)
 }
 
 // Update Camera Action Key
-void Controller::updateCameraAction()
+void Controller::updateCameraAction(SDL_Event& e)
 {
+	if(e.type == SDL_JOYAXISMOTION)
+	{
+		if (e.jaxis.axis == 5)	// LT
+		{
+			if (e.jaxis.value > -20000)
+			{
+				cameraAction = UP;
+				return;
+			}
+		}
+		if (e.jaxis.axis == 2)	// RT
+		{
+			if (e.jaxis.value > -20000)
+			{
+				cameraAction = DOWN;
+				return;
+			}
+		}
+	}
 	// If Right Click
 	if (m_windowManager->isMouseButtonPressed(SDL_BUTTON_RIGHT))
     {
@@ -120,25 +185,8 @@ void Controller::updateCameraAction()
 		{
 			cameraAction = UP;
 		}
-	}
-	// Else check keys
-	/*
-    else if (m_windowManager->isKeyPressed(SDLK_UP))
-	{
-		cameraAction = UP;
-	}
-	else if (m_windowManager->isKeyPressed(SDLK_DOWN))
-	{
-		cameraAction = DOWN;
-	}
-	else if (m_windowManager->isKeyPressed(SDLK_LEFT))
-	{
-		cameraAction = LEFT;
-	}
-	else if (m_windowManager->isKeyPressed(SDLK_RIGHT))
-	{
-		cameraAction = RIGHT;
-	}*/
+	}	
+
     else
     {
         cameraAction = NONE;
@@ -146,8 +194,42 @@ void Controller::updateCameraAction()
 }
 
 // Update Interface Action Key
-void Controller::updateInterfaceAction()
+void Controller::updateInterfaceAction(SDL_Event& e)
 {
+	if (e.type == SDL_JOYBUTTONDOWN)
+	{
+			switch(e.jbutton.button)
+			{
+				case 0 :	// ENTER
+					interfaceAction = ENTER;
+					return;
+				case 2 :	// CAMERA SWITCH
+					interfaceAction = C;
+					return;
+				case 3 :	// PAUSE
+					interfaceAction = ESCAPE;
+					return;
+				default:
+					break;
+			}
+	}
+	else if (e.type == SDL_JOYHATMOTION)
+	{
+		if (e.jhat.hat == 0)
+		{
+			switch(e.jhat.value)
+			{
+				case SDL_HAT_UP:
+					interfaceAction = UP;
+					return;
+				case SDL_HAT_DOWN:
+					interfaceAction = DOWN;
+					return;
+				default:
+					break;
+			}
+		}
+	}
     if (m_windowManager->isKeyPressed(SDLK_ESCAPE))
 	{
 		interfaceAction = ESCAPE;
@@ -184,11 +266,11 @@ void Controller::updateInterfaceAction()
 }
 
 // Call all the updates functions
-void Controller::updateController(Pacman* pacman)
+void Controller::updateController(Pacman* pacman, SDL_Event& e)
 {
-    updatePlayerAction(pacman);
-    updateCameraAction();
-    updateInterfaceAction();
+    updatePlayerAction(pacman, e);
+    updateCameraAction(e);
+    updateInterfaceAction(e);
 }
 
 // Getters
@@ -240,6 +322,7 @@ void Controller::setPlayerAction(Key key)
 }
 
 // If we are in FPS mode, we go forward but keys have other interpretations
+/*
 Controller::Key Controller::getFPSkey(Pacman* pacman)
 {
 	Key action;
@@ -280,6 +363,11 @@ Controller::Key Controller::getFPSkey(Pacman* pacman)
     }
 
     return action;
+}*/
+
+void Controller::joystickController(SDL_Event& e)
+{
+
 }
 
 }
