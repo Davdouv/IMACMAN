@@ -140,8 +140,6 @@ SDL_Surface* RenderManager::createTextTexture(GLuint* textImg, std::string text,
   int colors = m_SP_Surface->format->BytesPerPixel;
   SDL_Rect area;
   area.x = 0; area.y = 0; area.w = m_SP_Surface->w; area.h = m_SP_Surface->h;
-  m_SP_RGBSurface = SDL_CreateRGBSurface(SDL_HWSURFACE | SDL_SRCALPHA, m_SP_Surface->w, m_SP_Surface->h, 32,0x000000ff, 0x0000ff00, 0x00ff0000, 0x000000ff);
-  SDL_BlitSurface(m_SP_Surface, &area, m_SP_RGBSurface, NULL);
   GLenum texture_format = GL_RGBA;
 
   glDisable(GL_TEXTURE);
@@ -160,8 +158,7 @@ SDL_Surface* RenderManager::createTextTexture(GLuint* textImg, std::string text,
                 0,
                 texture_format,
                 GL_UNSIGNED_BYTE,
-                //m_SP_RGBSurface->pixels
-                m_SP_RGBSurface->pixels
+                m_SP_Surface->pixels
               );
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
