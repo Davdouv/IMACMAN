@@ -50,13 +50,13 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_GumTexture = new Texture("../Code/assets/textures/gum.jpg");
     m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.jpg");
     m_FruitTexture = new Texture("../Code/assets/textures/fruit.jpg");
-      m_SkyboxTexture = new CubeMap("../Code/assets/textures/VolcanoCM/negz.jpg",
-                                    "../Code/assets/textures/VolcanoCM/posz.jpg",
-                                    "../Code/assets/textures/VolcanoCM/posy.jpg",
-                                    "../Code/assets/textures/VolcanoCM/negy.jpg",
-                                    "../Code/assets/textures/VolcanoCM/negx.jpg",
-                                  "../Code/assets/textures/VolcanoCM/posx.jpg"
-                                );
+    m_SkyboxTexture = new CubeMap("../Code/assets/textures/VolcanoCM/posy.jpg", // En haut
+                                  "../Code/assets/textures/VolcanoCM/negy.jpg", // En bas
+                                  "../Code/assets/textures/VolcanoCM/posz.jpg", // Au fond
+                                  "../Code/assets/textures/VolcanoCM/negz.jpg", // Derrière
+                                  "../Code/assets/textures/VolcanoCM/posx.jpg", // A gauche
+                                  "../Code/assets/textures/VolcanoCM/negx.jpg" // A droite
+                              );
     m_FloorTexture = new Texture("../Code/assets/textures/lava2.jpg");
 
     m_RenderTargetTexture = new Texture();
