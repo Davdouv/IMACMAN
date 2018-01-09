@@ -269,6 +269,7 @@ void RenderManager::drawScorePanel(int points)
 {
   useProgram(TEXTURE);
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_BLEND);
   glm::mat4 original_matrix = m_MVMatrix;
   original_matrix = glm::translate(original_matrix, glm::vec3(-3.5f, -0.6f, 2.0f));  // Some values set to adjust the plane
   original_matrix = glm::rotate(original_matrix, (float)-90 * glm::pi<float>()/180, glm::vec3(1, 0, 0));
@@ -298,6 +299,7 @@ void RenderManager::drawScorePanel(int points)
   if (m_SP_timeScoreSurface == NULL)
     m_SP_timeScoreSurface = createTextTexture(&m_SP_timeScoreImg, m_time, {255,255,255});
   drawText(m_SP_timeScoreSurface, m_SP_timeScoreImg, 3.5f, matrix);
+  glDisable(GL_BLEND);
 }
 
 // ---------------
