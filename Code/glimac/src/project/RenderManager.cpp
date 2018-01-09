@@ -50,12 +50,12 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_GumTexture = new Texture("../Code/assets/textures/gum.jpg");
     m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.jpg");
     m_FruitTexture = new Texture("../Code/assets/textures/fruit.jpg");
-    m_SkyboxTexture = new CubeMap("../Code/assets/textures/darkness.jpg",
-                                  "../Code/assets/textures/darkness.jpg",
-                                  "../Code/assets/textures/darkness.jpg",
-                                  "../Code/assets/textures/darkness.jpg",
-                                  "../Code/assets/textures/darkness.jpg",
-                                  "../Code/assets/textures/darkness.jpg"
+    m_SkyboxTexture = new CubeMap("../Code/assets/textures/posx.jpg",
+                                  "../Code/assets/textures/negx.jpg",
+                                  "../Code/assets/textures/posy.jpg",
+                                  "../Code/assets/textures/negy.jpg",
+                                  "../Code/assets/textures/posz.jpg",
+                                  "../Code/assets/textures/negz.jpg"
                                 );
     m_FloorTexture = new Texture("../Code/assets/textures/lava2.jpg");
 
@@ -181,10 +181,12 @@ void RenderManager::drawText(SDL_Surface* textSurface, GLuint textImg, float siz
   applyTransformations(TEXTURE, matrix);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, textImg);
+  glEnable(GL_BLEND);
   glEnable(GL_TEXTURE_2D);
   m_plane.drawPlane();
   disableTexture(TEXTURE, false);
   glDisable(GL_TEXTURE_2D);
+  glDisable(GL_BLEND);
   debindVAO();
 }
 
@@ -268,7 +270,6 @@ void RenderManager::createScorePanel(int points)
 void RenderManager::drawScorePanel(int points)
 {
   useProgram(TEXTURE);
-  glEnable(GL_BLEND);
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   glm::mat4 original_matrix = m_MVMatrix;
   original_matrix = glm::translate(original_matrix, glm::vec3(-3.5f, -0.6f, 2.0f));  // Some values set to adjust the plane
@@ -299,7 +300,6 @@ void RenderManager::drawScorePanel(int points)
   if (m_SP_timeScoreSurface == NULL)
     m_SP_timeScoreSurface = createTextTexture(&m_SP_timeScoreImg, m_time, {255,255,255});
   drawText(m_SP_timeScoreSurface, m_SP_timeScoreImg, 3.5f, matrix);
-  glDisable(GL_BLEND);
 }
 
 // ---------------
