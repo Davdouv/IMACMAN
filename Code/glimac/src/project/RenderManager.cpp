@@ -13,9 +13,6 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // Camera
     // m_ffCamera = camera;
 
-    // Skybox
-    m_skybox = new StaticObject('K', 15.f, 20.f, 250.f, 250.f);
-
     // Plane
     m_plane = Plane();
     m_planeVBO = m_plane.getVBO();
@@ -86,12 +83,13 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // State
     m_state = GameManager::PacmanState::NORMAL;
 
-    // SP
+    // Score Panel
     m_SP_titleSurface = NULL;
 		m_SP_pointsSurface = NULL;
 	  m_SP_timeSurface = NULL;
 	  m_SP_pointsScoreSurface = NULL;
-	  m_SP_timeScoreSurface = NULL;
+    m_SP_timeScoreSurface = NULL;
+	  m_SP_Surface = NULL;
 
     m_stop = 0.f;
 }
@@ -108,6 +106,7 @@ RenderManager::~RenderManager()
     glDeleteBuffers(1, &m_planeVBO);
     glDeleteVertexArrays(1, &m_planeVAO);
 
+    // Textures
     delete(m_PacmanTexture);
     delete(m_GhostTexture);
     delete(m_WallTexture);
@@ -116,11 +115,12 @@ RenderManager::~RenderManager()
     delete(m_FruitTexture);
     delete(m_SkyboxTexture);
     delete(m_FloorTexture);
+    delete(m_RenderTargetTexture);
 
+    // Static Objects
     delete(m_skybox);
     delete(m_floor);
-
-    delete(m_scoreSurface);
+    delete(m_miniMap);
 
     Text::clean();
 }
@@ -136,12 +136,12 @@ void RenderManager::loadFont()
 
 SDL_Surface* RenderManager::createTextTexture(GLuint* textImg, std::string text, SDL_Color color)
 {
-  SDL_Surface* surface = SDL_DisplayFormatAlpha(TTF_RenderUTF8_Blended( m_font, text.data(), color ));
-  int colors = surface->format->BytesPerPixel;
+  m_SP_Surface = SDL_DisplayFormatAlpha(TTF_RenderUTF8_Blended( m_font, text.data(), color ));
+  int colors = m_SP_Surface->format->BytesPerPixel;
   SDL_Rect area;
-  area.x = 0; area.y = 0; area.w = surface->w; area.h = surface->h;
-  SDL_Surface* temp = SDL_CreateRGBSurface(SDL_HWSURFACE | SDL_SRCALPHA, surface->w, surface->h, 32,0x000000ff, 0x0000ff00, 0x00ff0000, 0x000000ff);
-  SDL_BlitSurface(surface, &area, temp, NULL);
+  area.x = 0; area.y = 0; area.w = m_SP_Surface->w; area.h = m_SP_Surface->h;
+  m_SP_RGBSurface = SDL_CreateRGBSurface(SDL_HWSURFACE | SDL_SRCALPHA, m_SP_Surface->w, m_SP_Surface->h, 32,0x000000ff, 0x0000ff00, 0x00ff0000, 0x000000ff);
+  SDL_BlitSurface(m_SP_Surface, &area, m_SP_RGBSurface, NULL);
   GLenum texture_format = GL_RGBA;
 
   glDisable(GL_TEXTURE);
@@ -155,24 +155,24 @@ SDL_Surface* RenderManager::createTextTexture(GLuint* textImg, std::string text,
   glTexImage2D( GL_TEXTURE_2D,
                 0,
                 colors,
-                surface->w,
-                surface->h,
+                m_SP_Surface->w,
+                m_SP_Surface->h,
                 0,
                 texture_format,
                 GL_UNSIGNED_BYTE,
-                temp->pixels
+                m_SP_RGBSurface->pixels
               );
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glBindTexture(GL_TEXTURE_2D, 0);
+  glDisable(GL_BLEND);
   *textImg = img;
 
-  return surface;
+  return m_SP_Surface;
 }
 
 void RenderManager::drawText(SDL_Surface* textSurface, GLuint textImg, float size, float x, float y)
 {
-  //createTextTexture();
   useProgram(TEXTURE);
   bindPlaneVAO();
   glm::mat4 matrix = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, -5.0f));
@@ -190,7 +190,6 @@ void RenderManager::drawText(SDL_Surface* textSurface, GLuint textImg, float siz
 
 void RenderManager::drawText(SDL_Surface* textSurface, GLuint textImg, float size, glm::mat4 matrix)
 {
-  //createTextTexture();
   useProgram(TEXTURE);
   bindPlaneVAO();
   float ratio = floatDivision(textSurface->w, textSurface->h);
@@ -300,6 +299,7 @@ void RenderManager::drawScorePanel(int points)
   if (m_SP_timeScoreSurface == NULL)
     m_SP_timeScoreSurface = createTextTexture(&m_SP_timeScoreImg, m_time, {255,255,255});
   drawText(m_SP_timeScoreSurface, m_SP_timeScoreImg, 3.5f, matrix);
+  glDisable(GL_BLEND);
 }
 
 // ---------------

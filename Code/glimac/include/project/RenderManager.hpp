@@ -72,6 +72,8 @@ private:
 	  SDL_Surface* m_SP_timeSurface;
 	  SDL_Surface* m_SP_pointsScoreSurface;
 	  SDL_Surface* m_SP_timeScoreSurface;
+		SDL_Surface* m_SP_Surface;
+		SDL_Surface* m_SP_RGBSurface;
 		GLuint m_SP_titleImg;
 		GLuint m_SP_pointsImg;
 	  GLuint m_SP_timeImg;
