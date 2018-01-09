@@ -978,16 +978,15 @@ void RenderManager::drawMenu(Menu* menu)
 
 // ---- UI ---- //
 
-std::string RenderManager::getTimeString(Uint32 start_game_time, Uint32 pause_time)
+std::string RenderManager::getTimeString(Uint32 final_time)
 {
   std::string current_time;
-  Uint32 total_time = SDL_GetTicks() - start_game_time - pause_time;
-  if (total_time > 1000000000)
-    current_time = "0:0:0";
+  if (final_time > 1000000000)
+    current_time = "-:-:-";
   else {
-    int m_time  = total_time/(60*1000);
-    int s_time  = ((total_time%(60*1000))/1000);
-    int ms_time = (((total_time%(60*10000))%1000) / 100);
+    int m_time  = final_time/(60*1000);
+    int s_time  = ((final_time%(60*1000))/1000);
+    int ms_time = (((final_time%(60*10000))%1000) / 100);
     //current_time = std::to_string(m_time) + ":" + std::to_string(s_time) + ":" + std::to_string(ms_time);
     current_time = std::to_string(m_time) + ":" + std::to_string(s_time);
   }
@@ -995,7 +994,7 @@ std::string RenderManager::getTimeString(Uint32 start_game_time, Uint32 pause_ti
   return current_time;
 }
 
-void RenderManager::drawUI(UI* ui, Uint32 start_game_time, Uint32 pause_time)
+void RenderManager::drawUI(UI* ui, Uint32 start_game_time, Uint32 pause_time, Uint32 total_time)
 {
     FS shader = TEXTURE;
     bindPlaneVAO();
@@ -1023,9 +1022,10 @@ void RenderManager::drawUI(UI* ui, Uint32 start_game_time, Uint32 pause_time)
              5.5f, 2.5f);
 
     // Time
-    if (((((SDL_GetTicks() - start_game_time - pause_time)%(60*10000))%1000) / 100) == 0)
+    Uint32 final_time = SDL_GetTicks() - start_game_time - pause_time + total_time;
+    if ((((final_time%(60*10000))%1000) / 100) == 0)
     {
-      m_timeSurface = createTextTexture(&m_timeImg, getTimeString(start_game_time, pause_time), {255,255,255});
+      m_timeSurface = createTextTexture(&m_timeImg, getTimeString(final_time), {255,255,255});
     }
     if (m_timeSurface != NULL)
       drawText(m_timeSurface, m_timeImg, 0.25f,

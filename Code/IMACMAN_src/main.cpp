@@ -284,7 +284,7 @@ int main(int argc, char** argv) {
             // Render UI (life, score)
             if(!gameManager.isLost() && !gameManager.isPause())
             {
-                renderManager.drawUI(&ui, gameManager.getStartTime(), gameManager.getPauseTime());
+                renderManager.drawUI(&ui, gameManager.getStartTime(), gameManager.getPauseTime(), gameManager.getTotalTime());
             }
 
 

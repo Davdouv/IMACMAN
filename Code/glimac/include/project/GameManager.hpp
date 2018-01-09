@@ -21,6 +21,7 @@ private:
     uint32_t m_startTime;
     uint32_t m_pauseTime;
     uint32_t m_pauseStartTime;
+    uint32_t m_totalTime;
     uint32_t m_superTimer;
     uint32_t m_fruitTimer;
 
@@ -42,6 +43,7 @@ public:
     uint32_t getPauseStartTime() const;
     uint32_t getSuperTimer() const;
     uint32_t getFruitTimer() const;
+    Uint32 getTotalTime() const;
     bool isPause();
     bool isLost();
     int getEatenGhosts() const;
@@ -52,6 +54,7 @@ public:
     void setState(PacmanState);
     void setStartTime(uint32_t);
     void setPauseTime(uint32_t);
+    void setTotalTime();
     void setPauseStartTime(uint32_t);
     void setSuperTimer(uint32_t);
     void setFruitTimer(uint32_t);

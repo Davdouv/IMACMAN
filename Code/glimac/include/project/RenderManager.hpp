@@ -219,6 +219,6 @@ public:
     void drawMenu(Menu*);
 
     // UI
-		std::string getTimeString(Uint32 start_game_time, Uint32 pause_time);
-    void drawUI(UI*,Uint32 start_game_time, Uint32 pause_time);
+		std::string getTimeString(Uint32 final_time);
+    void drawUI(UI*,Uint32 start_game_time, Uint32 pause_time, Uint32 total_time);
 };

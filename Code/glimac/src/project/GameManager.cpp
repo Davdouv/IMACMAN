@@ -17,6 +17,7 @@ GameManager::GameManager(Map* map)
     m_lost = false;
     m_pauseTime = 0;
     m_pauseStartTime = 0;
+    m_totalTime = 0;
 }
 
 GameManager::PacmanState GameManager::getState() const { return m_state;}
@@ -25,6 +26,7 @@ uint32_t GameManager::getPauseTime() const { return m_pauseTime; }
 uint32_t GameManager::getPauseStartTime() const { return m_pauseStartTime; }
 uint32_t GameManager::getSuperTimer() const { return m_superTimer; }
 uint32_t GameManager::getFruitTimer() const { return m_fruitTimer; }
+Uint32 GameManager::getTotalTime() const { return m_totalTime; }
 bool GameManager::isPause() { return m_pause; }
 bool GameManager::isLost() { return m_lost; }
 int GameManager::getEatenGhosts() const { return m_eatenGhosts; }
@@ -32,6 +34,10 @@ Player* GameManager::getPlayer() { return &m_player; }
 Map* GameManager::getMap() { return m_map; }
 void GameManager::setState(PacmanState state) { m_state = state;}
 void GameManager::setStartTime(uint32_t t) { m_startTime = t;}
+void GameManager::setTotalTime() {
+  m_totalTime += SDL_GetTicks() - m_startTime - m_pauseTime;
+}
+
 void GameManager::setPauseTime(uint32_t t) {
   if (m_pause == false && m_pauseTimeRecording == true)
   {
@@ -71,8 +77,10 @@ void GameManager::play(Controller* controller, AudioManager* audioManager) {
         {
             controller->setPlayerAction(Controller::Key::Q);
         }
+
         if(won())
         {
+            setTotalTime();
             newLevel(controller);
         }
         if(lost())
@@ -80,6 +88,8 @@ void GameManager::play(Controller* controller, AudioManager* audioManager) {
             m_lost = true;
             std::cout << "Player Score : " << m_player.getPoints() << std::endl;
         }
+
+
     }
     pause(controller);
 }
@@ -514,6 +524,8 @@ bool GameManager::pacmanGhostCollision(AudioManager* audioManager) {
                 {
                     std::cout << m_player.getLife() << std::endl;
                     m_map->getPacman()->reset();
+                    setTotalTime();
+                    std::cout << "Time = " << getTotalTime() << std::endl;
                     setStartTime(SDL_GetTicks());
                     audioManager->playSound(2,1);
                 }
