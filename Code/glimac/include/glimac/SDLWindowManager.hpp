@@ -44,6 +44,8 @@ private:
 
     uint32_t lastTickTime;
     uint32_t deltaTime;
+
+    SDL_Joystick *m_joystick;
 };
 
 }

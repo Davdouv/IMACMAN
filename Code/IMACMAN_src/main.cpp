@@ -130,15 +130,15 @@ int main(int argc, char** argv) {
     while(game)
     {
         // --- EVENTS --- //
-        SDL_Event e_m;
-        while(windowManager.pollEvent(e_m)) {
-            if(e_m.type == SDL_QUIT)
+        SDL_Event e;
+        while(windowManager.pollEvent(e)) {
+            if(e.type == SDL_QUIT)
             {
                 game = false; // Leave the loop after this iteration
             }
-
             // Update controller with key events each frame
-            controller.updateInterfaceAction();
+            controller.updateInterfaceAction(e);
+            controller.joystickController(e);
         }
         menu.selectButton(&controller, &audioManager);
 
@@ -207,7 +207,8 @@ int main(int argc, char** argv) {
                 }
 
                 // Update controller with key & mouse events each frame
-                controller.updateController(gameManager.getMap()->getPacman());
+                controller.updateController(gameManager.getMap()->getPacman(), e);
+                //controller.joystickController(e);
             }
 
             // If game paused, use menuPause
