@@ -988,7 +988,8 @@ std::string RenderManager::getTimeString(Uint32 start_game_time, Uint32 pause_ti
     int m_time  = total_time/(60*1000);
     int s_time  = ((total_time%(60*1000))/1000);
     int ms_time = (((total_time%(60*10000))%1000) / 100);
-    current_time = std::to_string(m_time) + ":" + std::to_string(s_time) + ":" + std::to_string(ms_time);
+    //current_time = std::to_string(m_time) + ":" + std::to_string(s_time) + ":" + std::to_string(ms_time);
+    current_time = std::to_string(m_time) + ":" + std::to_string(s_time);
   }
   m_time = current_time;
   return current_time;
@@ -1022,7 +1023,11 @@ void RenderManager::drawUI(UI* ui, Uint32 start_game_time, Uint32 pause_time)
              5.5f, 2.5f);
 
     // Time
-    m_timeSurface = createTextTexture(&m_timeImg, getTimeString(start_game_time, pause_time), {255,255,255});
-    drawText(m_timeSurface, m_timeImg, 0.25f,
+    if (((((SDL_GetTicks() - start_game_time - pause_time)%(60*10000))%1000) / 100) == 0)
+    {
+      m_timeSurface = createTextTexture(&m_timeImg, getTimeString(start_game_time, pause_time), {255,255,255});
+    }
+    if (m_timeSurface != NULL)
+      drawText(m_timeSurface, m_timeImg, 0.25f,
              5.3f, 2.0f);
 }
