@@ -50,12 +50,12 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_GumTexture = new Texture("../Code/assets/textures/gum.jpg");
     m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.jpg");
     m_FruitTexture = new Texture("../Code/assets/textures/fruit.jpg");
-    m_SkyboxTexture = new CubeMap("../Code/assets/textures/posx.jpg",
-                                  "../Code/assets/textures/negx.jpg",
-                                  "../Code/assets/textures/posy.jpg",
-                                  "../Code/assets/textures/negy.jpg",
-                                  "../Code/assets/textures/posz.jpg",
-                                  "../Code/assets/textures/negz.jpg"
+      m_SkyboxTexture = new CubeMap("../Code/assets/textures/VolcanoCM/negz.jpg",
+                                    "../Code/assets/textures/VolcanoCM/posz.jpg",
+                                    "../Code/assets/textures/VolcanoCM/posy.jpg",
+                                    "../Code/assets/textures/VolcanoCM/negy.jpg",
+                                    "../Code/assets/textures/VolcanoCM/negx.jpg",
+                                  "../Code/assets/textures/VolcanoCM/posx.jpg"
                                 );
     m_FloorTexture = new Texture("../Code/assets/textures/lava2.jpg");
 
@@ -136,7 +136,7 @@ void RenderManager::loadFont()
 
 SDL_Surface* RenderManager::createTextTexture(GLuint* textImg, std::string text, SDL_Color color)
 {
-  m_SP_Surface = SDL_DisplayFormatAlpha(TTF_RenderUTF8_Blended( m_font, text.data(), color ));
+  m_SP_Surface = SDL_DisplayFormatAlpha(TTF_RenderUTF8_Solid( m_font, text.data(), color ));
   int colors = m_SP_Surface->format->BytesPerPixel;
   SDL_Rect area;
   area.x = 0; area.y = 0; area.w = m_SP_Surface->w; area.h = m_SP_Surface->h;
@@ -160,6 +160,7 @@ SDL_Surface* RenderManager::createTextTexture(GLuint* textImg, std::string text,
                 0,
                 texture_format,
                 GL_UNSIGNED_BYTE,
+                //m_SP_RGBSurface->pixels
                 m_SP_RGBSurface->pixels
               );
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
