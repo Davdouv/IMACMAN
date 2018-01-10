@@ -138,7 +138,6 @@ int main(int argc, char** argv) {
             }
             // Update controller with key events each frame
             controller.updateInterfaceAction(e);
-            controller.joystickController(e);
         }
         menu.selectButton(&controller, &audioManager);
 
@@ -150,11 +149,6 @@ int main(int argc, char** argv) {
                 game = false;
 
                 audioManager.playMusic(1);  // Change Music
-
-                // if (menu.getButton() == Menu::Button::PLAY)
-                //     gameManager.load(true);
-                // else
-                //     gameManager.load(false);
 
                 if (menu.getButton() == Menu::Button::PLAY)
                     gameManager.load(true);
@@ -208,7 +202,6 @@ int main(int argc, char** argv) {
 
                 // Update controller with key & mouse events each frame
                 controller.updateController(gameManager.getMap()->getPacman(), e);
-                //controller.joystickController(e);
             }
 
             // If game paused, use menuPause
@@ -244,7 +237,7 @@ int main(int argc, char** argv) {
             *  ------------------ */
 
             // Send the keys to the camera and the map
-            tpsCamera.cameraController(&controller);
+            tpsCamera.cameraController(&controller, windowManager.getDeltaTime());
             // Ask the camera to track pacman
             fpsCamera.setCameraOnCharacter(gameManager.getMap()->getPacman(), gameSize);
             // Switch Camera FPS / TPS if C button is pressed

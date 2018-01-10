@@ -23,7 +23,7 @@ public:
 	glm::mat4 getViewMatrix(glm::mat4) const; // calcule la ViewMatrix de la caméra
 	glm::mat4 getViewMatrix(Character*, glm::vec2 gameSize) const; // calcule la ViewMatrix de la caméra
 
-	void cameraController(Controller* controller);
+	void cameraController(Controller* controller, uint32_t deltaTime);
 
 private:
 	float m_fDistance;		// Distance par rapport au centre de la scène

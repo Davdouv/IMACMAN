@@ -81,10 +81,10 @@ bool TrackballCamera::zoomMin()
 }
 
 // Control the camera
-void TrackballCamera::cameraController(Controller* controller)
+void TrackballCamera::cameraController(Controller* controller, uint32_t deltaTime)
 {
 	Controller::Key action = controller->getCameraAction();
-	float speed = -0.05;
+	float speed = -0.05*deltaTime;
 
 	switch (action)
 	{
