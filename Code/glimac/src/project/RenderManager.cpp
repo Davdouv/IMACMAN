@@ -48,7 +48,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_GhostTexture = new Texture("../Code/assets/textures/ghost.jpg");
     m_WallTexture = new Texture("../Code/assets/textures/dungeon.png");
     m_GumTexture = new Texture("../Code/assets/textures/gum.jpg");
-    m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.jpg");
+    m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum3.jpg");
     m_FruitTexture = new Texture("../Code/assets/textures/fruit.jpg");
     m_SkyboxTexture = new CubeMap("../Code/assets/textures/VolcanoCM/posy.jpg", // En haut
                                   "../Code/assets/textures/VolcanoCM/negy.jpg", // En bas
@@ -936,6 +936,12 @@ void RenderManager::drawMenu(Menu* menu)
         disableTexture(shader, false);
 
         //alpha = true;
+    }
+
+    if (menu->isHidden())
+    {
+        debindVAO();
+        return;
     }
 
     float zDistance = 4.5f;

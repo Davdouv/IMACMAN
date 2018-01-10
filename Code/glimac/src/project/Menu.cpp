@@ -27,6 +27,8 @@ Menu::Menu(bool mainMenu)
 
     for (unsigned int i = 0; i < 7; ++i)
         m_texture[i]->loadTexture();
+
+    m_hide = false;
 }
 
 Menu::~Menu()
@@ -52,9 +54,18 @@ bool Menu::isMainMenu() const
 
 void Menu::selectButton(Controller* controller, AudioManager* audioManager)
 {
+    // Hide Menu
+    if (controller->getInterfaceAction() == Controller::Key::H)
+    {
+        switchHide();
+        controller->setInterfaceAction(Controller::Key::NONE);
+        return;
+    }
+    
     if ((controller->getInterfaceAction() == Controller::Key::DOWN) || (controller->getInterfaceAction() == Controller::Key::UP))
     {
         audioManager->playSound(0,1);
+
         if (controller->getInterfaceAction() == Controller::Key::UP)
         {
             if(m_button == EXIT)
@@ -72,4 +83,9 @@ void Menu::selectButton(Controller* controller, AudioManager* audioManager)
             controller->setInterfaceAction(Controller::Key::NONE);   
         }
     }
+}
+
+void Menu::switchHide()
+{
+    m_hide = !m_hide;
 }

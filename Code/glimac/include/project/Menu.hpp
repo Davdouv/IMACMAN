@@ -15,6 +15,9 @@ private:
     Button m_button;
     Texture* m_texture[7];
     bool m_mainMenu;
+    bool m_hide;
+    
+    void switchHide();
 
 public:
     //Menu();
@@ -27,4 +30,5 @@ public:
     bool isMainMenu() const;
     // Setter for button
     void selectButton(Controller* controller, AudioManager* audioManager);
+    bool isHidden() const { return m_hide; }
 };

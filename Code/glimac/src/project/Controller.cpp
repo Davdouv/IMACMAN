@@ -203,6 +203,9 @@ void Controller::updateInterfaceAction(SDL_Event& e)
 				case 0 :	// ENTER
 					interfaceAction = ENTER;
 					return;
+				case 1 :	// HIDE MENU
+					interfaceAction = H;
+					return;
 				case 2 :	// CAMERA SWITCH
 					interfaceAction = C;
 					return;
@@ -258,6 +261,10 @@ void Controller::updateInterfaceAction(SDL_Event& e)
 	else if (m_windowManager->isKeyPressed(SDLK_RETURN))
 	{
 		interfaceAction = ENTER;
+	}
+	else if (m_windowManager->isKeyPressed(SDLK_h))
+	{
+		interfaceAction = H;
 	}
     else
     {
