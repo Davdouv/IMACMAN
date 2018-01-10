@@ -13,7 +13,7 @@ public:
 
 private:
     Button m_button;
-    Texture* m_texture[5];
+    Texture* m_texture[7];
     bool m_mainMenu;
 
 public:
