@@ -255,6 +255,11 @@ int main(int argc, char** argv) {
                 }
                 controller.setInterfaceAction(Controller::NONE);
             }
+            if (gameManager.lost())
+            {
+                camera = &tpsCamera;
+                controller.setFPS(false);
+            }
 
             /* --------------------------------------------------------------------------
             *   PLAY FUNCTION : Move characters, Check for collision, Update Player infos
@@ -270,7 +275,7 @@ int main(int argc, char** argv) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             // Update The View Matrix each time we enter the while loop
-            renderManager.updateMVMatrix(camera, gameManager.getMap()->getPacman(), gameManager.lost());
+            renderManager.updateMVMatrix(camera, gameManager.getMap()->getPacman(), gameManager.lost(), windowManager.getDeltaTime());
 
             // Render the map (objects, skybox and ground)
             renderManager.drawMap(gameManager.getMap(), &controller);

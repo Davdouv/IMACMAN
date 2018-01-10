@@ -403,14 +403,15 @@ void RenderManager::updateMVMatrix(Camera* camera)
     m_MVMatrix = camera->getViewMatrix();
 }
 
-void RenderManager::updateMVMatrix(Camera* camera, Character* character, bool lost)
+void RenderManager::updateMVMatrix(Camera* camera, Character* character, bool lost, uint32_t deltaTime)
 {
     m_MVMatrix = camera->getViewMatrix(character, m_gameCorner);
+    // If lost, Rotate the map
     if (lost)
     {
         if (m_stop < 1)
         {
-            m_stop += 0.0005;
+            m_stop += 0.0005*deltaTime;
         }
         m_MVMatrix = glm::rotate(m_MVMatrix,m_stop* glm::pi<float>(), glm::vec3(0, 0, 1));
     }

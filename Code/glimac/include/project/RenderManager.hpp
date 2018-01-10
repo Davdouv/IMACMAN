@@ -172,7 +172,7 @@ public:
     glm::mat4 getNormalMatrix() const;
     // Update
     void updateMVMatrix(Camera* camera);
-    void updateMVMatrix(Camera* camera, Character* character, bool lost);
+    void updateMVMatrix(Camera* camera, Character* character, bool lost, uint32_t deltaTime);
 
     // Texture functions
     void loadTextures() const;
