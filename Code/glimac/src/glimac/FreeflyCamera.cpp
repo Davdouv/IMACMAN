@@ -89,18 +89,19 @@ glm::mat4 FreeflyCamera::getViewMatrix(Character* character, glm::vec2 gameSize)
 	return MVMatrix;
 }
 
-void FreeflyCamera::interpolate(Character* character)
+void FreeflyCamera::interpolate(Character* character, uint32_t deltaTime)
 {
 	// If we change angle
 	if (m_fPhi != (float)character->getOrientation() * glm::pi<float>()/180)
 	{
+		float speed = 0.01 * deltaTime;
 		//std::cout << "Change angle " << std::endl;
 		int dif = m_prevOrientation - character->getOrientation();
 		// LEFT TO RIGHT
 		if (dif == 90)
 		{
 			if (m_prevPhi > (float)character->getOrientation() * glm::pi<float>()/180)
-				m_prevPhi -= 0.01;
+				m_prevPhi -= speed;
 			else
 			{
 				m_prevOrientation = character->getOrientation();
@@ -111,7 +112,7 @@ void FreeflyCamera::interpolate(Character* character)
 		else if (dif == -270)
 		{
 			if (m_prevPhi > (-90 * glm::pi<float>()/180))
-				m_prevPhi -= 0.01;
+				m_prevPhi -= speed;
 			else
 			{
 				m_prevOrientation = character->getOrientation();
@@ -122,7 +123,7 @@ void FreeflyCamera::interpolate(Character* character)
 		else if (dif == -90)
 		{
 			if (m_prevPhi < (float)character->getOrientation() * glm::pi<float>()/180)
-				m_prevPhi += 0.01;
+				m_prevPhi += speed;
 			else
 			{
 				m_prevOrientation = character->getOrientation();
@@ -133,7 +134,7 @@ void FreeflyCamera::interpolate(Character* character)
 		else if (dif == 270)
 		{
 			if (m_prevPhi < (360 * glm::pi<float>()/180))
-				m_prevPhi += 0.01;
+				m_prevPhi += speed;
 			else
 			{
 				m_prevOrientation = character->getOrientation();
@@ -145,7 +146,7 @@ void FreeflyCamera::interpolate(Character* character)
 		else if (dif == 180)
 		{
 			if (m_prevPhi > (character->getOrientation() * glm::pi<float>()/180))
-				m_prevPhi -= 0.02;
+				m_prevPhi -= 2*speed;
 			else
 			{
 				m_prevOrientation = character->getOrientation();
@@ -155,7 +156,7 @@ void FreeflyCamera::interpolate(Character* character)
 		else
 		{
 			if (m_prevPhi < (character->getOrientation() * glm::pi<float>()/180))
-				m_prevPhi += 0.02;
+				m_prevPhi += 2*speed;
 			else
 			{
 				m_prevOrientation = character->getOrientation();
@@ -165,7 +166,7 @@ void FreeflyCamera::interpolate(Character* character)
 	}
 }
 
-void FreeflyCamera::setCameraOnCharacter(Character* character, glm::vec2 gameSize)
+void FreeflyCamera::setCameraOnCharacter(Character* character, glm::vec2 gameSize, uint32_t deltaTime)
 {
 	float x, y;
 	switch(character->getOrientation())
@@ -193,7 +194,7 @@ void FreeflyCamera::setCameraOnCharacter(Character* character, glm::vec2 gameSiz
 	}
 	m_Position = glm::vec3(character->getPosX()-(gameSize.x/2)+x, 0.5, character->getPosY()-(gameSize.y/2)+character->getHeight()+y);
 
-	interpolate(character);
+	interpolate(character, deltaTime);
 		
 	m_fPhi = m_prevPhi;
 

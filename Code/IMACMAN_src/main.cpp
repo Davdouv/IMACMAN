@@ -239,7 +239,7 @@ int main(int argc, char** argv) {
             // Send the keys to the camera and the map
             tpsCamera.cameraController(&controller, windowManager.getDeltaTime());
             // Ask the camera to track pacman
-            fpsCamera.setCameraOnCharacter(gameManager.getMap()->getPacman(), gameSize);
+            fpsCamera.setCameraOnCharacter(gameManager.getMap()->getPacman(), gameSize, windowManager.getDeltaTime());
             // Switch Camera FPS / TPS if C button is pressed
             if (controller.getInterfaceAction() == Controller::C)
             {

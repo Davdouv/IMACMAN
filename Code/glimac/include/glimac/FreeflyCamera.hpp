@@ -23,7 +23,7 @@ public:
 	glm::mat4 getViewMatrix(Character*, glm::vec2 gameSize) const;
 
 	// Set the camera on the camera to have a FPS view
-	void setCameraOnCharacter(Character* character, glm::vec2 gameSize);
+	void setCameraOnCharacter(Character* character, glm::vec2 gameSize, uint32_t deltaTime);
 
 private:
 	glm::vec3 m_Position;		// la position de la caméra
@@ -37,7 +37,7 @@ private:
 
 	void computeDirectionVectors();	// calcule les vecteurs F, L, U à partir des coordonnées spheriques
 
-	void interpolate(Character* character);
+	void interpolate(Character* character, uint32_t deltaTime);
 };
 
 }
