@@ -207,6 +207,7 @@ int GameManager::load(bool newGame) {
         }
         m_map->setStaticObjects(vec);
         m_map->setNbX(i-1); // number of rows in the maze
+        m_map->initDoors();
     }
     file.close();
     return 1;
