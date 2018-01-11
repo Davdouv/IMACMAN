@@ -42,6 +42,6 @@ vec3 blinnPhong(vec3 Kd, vec3 Ks, float shininess, vec3 lightDirection, vec3 Li,
 void main() {
     vec4 textureColor = texture(uTexture, vFragTexCoords);
     //fFragColor = blinnPhong(uKd, uKs, uShininess, uLightDir_vs, uLightIntensity, normalize(vFragNormal))*vec3(textureColor);
-    //fFragColor = blinnPhong(uKd, uKs, uShininess, uLightDir_vs, uLightIntensity, normalize(vFragNormal)) * vec3(textureColor) * uColor;
-    fFragColor = vFragNormal;
+    fFragColor = blinnPhong(uKd, uKs, uShininess, uLightDir_vs, uLightIntensity, normalize(vFragNormal)) * vec3(textureColor) * uColor;
+    //fFragColor = vFragNormal;
 }
