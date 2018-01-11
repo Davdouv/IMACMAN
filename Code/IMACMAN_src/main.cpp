@@ -26,12 +26,8 @@ int main(int argc, char** argv) {
     *   INIT WINDOW
     *  ------------- */
 
-    // Default window size
-    glm::vec2 defaultWindowSize = glm::vec2(1280,720);
-    //glm::vec2 defaultWindowSize = glm::vec2(1024,768);
-
     // Initialize SDL and open a window
-    SDLWindowManager windowManager(defaultWindowSize.x, defaultWindowSize.y, "IMACMAN");
+    SDLWindowManager windowManager("MAGMAN");
 
     // Initialize glew for OpenGL3+ support
     GLenum glewInitError = glewInit();

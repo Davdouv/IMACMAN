@@ -3,25 +3,32 @@
 
 namespace glimac {
 
-SDLWindowManager::SDLWindowManager(uint32_t width, uint32_t height, const char* title) {
+SDLWindowManager::SDLWindowManager(const char* title) {
     if(0 != SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK)) {
         std::cerr << SDL_GetError() << std::endl;
         return;
     }
-    if(!SDL_SetVideoMode(width, height, 32, SDL_OPENGL/* | SDL_FULLSCREEN*/)) {
+    SDL_Surface *MWindow;
+    MWindow = SDL_SetVideoMode(0, 0, 32, SDL_OPENGL | SDL_FULLSCREEN);
+    if(!MWindow) {
         std::cerr << SDL_GetError() << std::endl;
         return;
-    }
+    } 
     SDL_WM_SetCaption(title, nullptr);
-    m_width = width;
-    m_height = height;
+    
+    m_width = MWindow->w;
+    m_height = MWindow->h;
     lastTickTime = 0;
     deltaTime = 0;
+
+    std::cout << "Screen Width : " << m_width << std::endl;
+    std::cout << "Screen Height : " << m_height << std::endl;
+    //SDL_SetVideoMode(m_width, m_height, 32, SDL_OPENGL); // Go back to windowed
 
     std::cout << "Number of joysticks : " << SDL_NumJoysticks() << std::endl;
     m_joystick = SDL_JoystickOpen(0);
 
-    std::cout << "Number of buttons of joystick : " << SDL_JoystickNumButtons(m_joystick) << std::endl;
+    //std::cout << "Number of buttons of joystick : " << SDL_JoystickNumButtons(m_joystick) << std::endl;
 
     // S'il y a un joystick connecté, activer les événements du joystick
     if (SDL_NumJoysticks)

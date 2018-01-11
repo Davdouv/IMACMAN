@@ -576,12 +576,14 @@ bool GameManager::wallCollisionUP(float fposY, int iposY, int iposX, float speed
                 character->setPosY((float)iposY);
                 return true;
             }
+            // Check if it's a spawn gate
             else if (!character->inSpawn() && m_map->getStaticObjects()[iposY-1][iposX]->getType()=='X')
             {
                 // It's the spawn gate, return true -> it's a collision, put the character on the top of the cell
                 character->setPosY((float)iposY);
                 return true;
             }
+            // We can move
             else
             {
                 // Put the character on the left edge of the cell
