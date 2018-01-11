@@ -39,7 +39,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     // Projection Matrix (world) : vertical view angle, window ratio, near, far
     m_ProjMatrix = glm::perspective(glm::radians(70.f), windowManager->getRatio(), 0.1f, 300.f);
     // ModelView Matrix (camera)
-    m_MVMatrix = camera->getViewMatrix();
+    m_MVMatrix = m_OriginalMatrix = camera->getViewMatrix();
     // Normal Matrix in the camera landmark
     m_NormalMatrix = glm::transpose(glm::inverse(m_MVMatrix));
 
@@ -50,12 +50,12 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_GumTexture = new Texture("../Code/assets/textures/gum.jpg");
     m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum3.jpg");
     m_FruitTexture = new Texture("../Code/assets/textures/fruit.jpg");
-    m_SkyboxTexture = new CubeMap("../Code/assets/textures/VolcanoCM/posy.jpg", // En haut
-                                  "../Code/assets/textures/VolcanoCM/negy.jpg", // En bas
-                                  "../Code/assets/textures/VolcanoCM/posz.jpg", // Au fond
-                                  "../Code/assets/textures/VolcanoCM/negz.jpg", // Derrière
-                                  "../Code/assets/textures/VolcanoCM/posx.jpg", // A gauche
-                                  "../Code/assets/textures/VolcanoCM/negx.jpg" // A droite
+    m_SkyboxTexture = new CubeMap("../Code/assets/textures/VolcanoCM/posx.jpg", // En haut
+                                  "../Code/assets/textures/VolcanoCM/negx.jpg", // En bas
+                                  "../Code/assets/textures/VolcanoCM/posy.jpg", // Au fond
+                                  "../Code/assets/textures/VolcanoCM/negy.jpg", // Derrière
+                                  "../Code/assets/textures/VolcanoCM/posz.jpg", // A gauche
+                                  "../Code/assets/textures/VolcanoCM/negz.jpg" // A droite
                               );
     m_FloorTexture = new Texture("../Code/assets/textures/lava2.jpg");
 
@@ -72,7 +72,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_gameCorner = glm::vec2(-(gameSize.x / 2), -(gameSize.y / 2));
 
     // Skybox
-    m_skybox = new StaticObject('K', gameSize.y/2, gameSize.x/2, 300.f, 300.f);
+    m_skybox = new StaticObject('K', gameSize.y/2, gameSize.x/2, 300.f, 300.f, StaticObject::Orientation::UP);
 
     // Floor
     m_floor = new StaticObject('F', gameSize.y/2, gameSize.x/2, gameSize.y, gameSize.x);
@@ -542,7 +542,8 @@ void RenderManager::applyTransformations(FS shader, glm::mat4 matrix)
             // White Color to keep the correct color
             glUniform3f(m_programList->directionnalLightProgram->uColor, 1.0,1.0,1.0);
 
-            lightMatrix = glm::rotate(m_MVMatrix, 180.f, glm::vec3(1,1,1));
+            //lightMatrix = glm::rotate(m_MVMatrix, 180.f, glm::vec3(1,1,1));
+            lightMatrix = glm::rotate(m_OriginalMatrix, 180.f, glm::vec3(1,1,1));
             lightVector = glm::normalize(glm::vec4(1,1,1,0)*lightMatrix);
             glUniform3f(m_programList->directionnalLightProgram->uLightDir_vs, lightVector.x, lightVector.y, lightVector.z);
 
@@ -792,8 +793,26 @@ void RenderManager::initSkybox()
   applyTransformations(CUBEMAP, transformationMatrix);
 }
 
-void RenderManager::drawSkybox()
+void RenderManager::drawSkybox(Controller* controller)
 {
+  if(controller->isFPSactive())
+  {
+    glm::mat4 transformationMatrix = transformMatrix(m_skybox);
+    //transformationMatrix = glm::rotate(transformationMatrix, 90 * glm::pi<float>()/180, glm::vec3(0, 0, 0));
+    transformationMatrix = glm::rotate(transformationMatrix, 90 * glm::pi<float>()/180, glm::vec3(0, 0, 0));
+    applyTransformations(CUBEMAP, transformationMatrix);
+  }
+  else {
+    glm::mat4 matrix = m_OriginalMatrix;
+    matrix = glm::translate(matrix, glm::vec3(m_gameCorner.x + m_skybox->getPosX(), 0, m_gameCorner.y + m_skybox->getPosY()));
+    // Rotate the object - Orientation
+    matrix = glm::rotate(matrix, (float)m_skybox->getOrientation() * glm::pi<float>()/180, glm::vec3(0, 1, 0));
+    // Scale the object
+    matrix = glm::scale(matrix, glm::vec3(m_skybox->getWidth(), m_skybox->getHeight(), m_skybox->getWidth()));
+    applyTransformations(CUBEMAP, matrix);
+  }
+
+
   glDepthMask(GL_FALSE);
   //useProgram(CUBEMAP);
   glActiveTexture(GL_TEXTURE0);
@@ -871,7 +890,7 @@ void RenderManager::drawMap(Map* map, Controller* controller)
     bindCubeVAO();
 
     useProgram(CUBEMAP);
-    drawSkybox();
+    drawSkybox(controller);
 
     // if (m_state == GameManager::PacmanState::NORMAL)
     //     shader = DIRECTIONNAL_LIGHT;

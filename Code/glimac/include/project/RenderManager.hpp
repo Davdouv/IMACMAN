@@ -89,6 +89,7 @@ private:
     glm::mat4 m_ProjMatrix;
     glm::mat4 m_MVMatrix;
     glm::mat4 m_NormalMatrix;
+		glm::mat4 m_OriginalMatrix;
 
     // Textures
     Texture* m_PacmanTexture;
@@ -200,7 +201,7 @@ public:
     void drawPacGommes(std::vector<Edible*>, FS shader = NORMAL);
     void drawSuperPacGommes(std::vector<Edible*>, FS shader = NORMAL);
     void drawFruits(std::vector<Edible*>, FS shader = NORMAL);
-    void drawSkybox();
+    void drawSkybox(Controller* controller);
     void drawFloor(FS shader);
 
     // Mini-map
