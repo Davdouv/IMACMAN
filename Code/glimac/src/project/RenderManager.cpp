@@ -691,6 +691,7 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
         enableTexture(shader, m_GumTexture/*m_GhostTexture*/, true);
 
         glm::mat4 transformationMatrix = transformMatrix(ghost[i]);
+        transformationMatrix = glm::translate(transformationMatrix, glm::vec3(0, 0.5, 0));
         transformationMatrix = glm::rotate(transformationMatrix, -1.57f, glm::vec3(0,1,0));
         applyTransformations(shader, transformationMatrix);
         materialTransformations(shader, 1.0, 0.0, 100);
