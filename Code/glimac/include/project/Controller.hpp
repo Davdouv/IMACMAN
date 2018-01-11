@@ -8,7 +8,7 @@ namespace glimac {
 class Controller {
 public:
     // Every key player can use
-    enum Key {NONE, Z, Q, S, D, UP, LEFT, DOWN, RIGHT, C, ESCAPE, ENTER, H};
+    enum Key {NONE, Z, Q, S, D, UP, LEFT, DOWN, RIGHT, C, ESCAPE, ENTER, H, I};
     
 public:
     // Constructor

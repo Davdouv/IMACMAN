@@ -23,17 +23,18 @@ Menu::Menu(bool mainMenu)
     m_texture[4] = new Texture("../Code/assets/textures/buttons/quit-on.png");
     m_texture[5] = new Texture("../Code/assets/textures/buttons/quit-off.png");
     m_texture[6] = new Texture("../Code/assets/textures/ghost.jpg");    // Background
-    //m_texture[7] = new Texture("../Code/assets/textures/gum.jpg");  // Select Button
+    m_texture[7] = new Texture("../Code/assets/textures/gum.jpg");  // Select Button
 
-    for (unsigned int i = 0; i < 7; ++i)
+    for (unsigned int i = 0; i < 8; ++i)
         m_texture[i]->loadTexture();
 
     m_hide = false;
+    m_infos = false;
 }
 
 Menu::~Menu()
 {
-    for (unsigned int i = 0; i < 7; ++i)
+    for (unsigned int i = 0; i < 8; ++i)
         delete(m_texture[i]);
 }
 
@@ -54,6 +55,14 @@ bool Menu::isMainMenu() const
 
 void Menu::selectButton(Controller* controller, AudioManager* audioManager)
 {
+    // Game Infos
+    if (controller->getInterfaceAction() == Controller::Key::I)
+    {
+        switchInfos();
+        controller->setInterfaceAction(Controller::Key::NONE);
+        return;
+    }
+
     // Hide Menu
     if (controller->getInterfaceAction() == Controller::Key::H)
     {
@@ -88,4 +97,9 @@ void Menu::selectButton(Controller* controller, AudioManager* audioManager)
 void Menu::switchHide()
 {
     m_hide = !m_hide;
+}
+
+void Menu::switchInfos()
+{
+    m_infos = !m_infos;
 }
