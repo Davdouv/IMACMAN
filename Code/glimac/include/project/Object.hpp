@@ -16,7 +16,7 @@ private:
 
 public:
 
-    // constructor 
+    // constructor
     Object(char, float, float, float = 1.0, float = 1.0, Orientation = LEFT);
     Object();
 
