@@ -26,3 +26,13 @@ Player* UI::getPlayer()
 {
     return m_player;
 }
+
+int UI::getRecordedPoints()
+{
+  return m_recordedPoints;
+}
+
+void UI::setRecordedPoints(int points)
+{
+  m_recordedPoints = points;
+}

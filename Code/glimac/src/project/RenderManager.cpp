@@ -691,6 +691,7 @@ void RenderManager::drawGhosts(std::vector<Ghost*> ghost, FS shader)
         enableTexture(shader, m_GumTexture/*m_GhostTexture*/, true);
 
         glm::mat4 transformationMatrix = transformMatrix(ghost[i]);
+        transformationMatrix = glm::translate(transformationMatrix, glm::vec3(0,0.5f,0));
         transformationMatrix = glm::rotate(transformationMatrix, -1.57f, glm::vec3(0,1,0));
         applyTransformations(shader, transformationMatrix);
         materialTransformations(shader, 1.0, 0.0, 100);
@@ -798,17 +799,12 @@ void RenderManager::drawSkybox(Controller* controller)
   if(controller->isFPSactive())
   {
     glm::mat4 transformationMatrix = transformMatrix(m_skybox);
-    // -> Trouver la bonne rotation et AFFICHER
-    //transformationMatrix = glm::rotate(transformationMatrix, 90 * glm::pi<float>()/180, glm::vec3(0, 0, 0));
-    transformationMatrix = glm::rotate(transformationMatrix, 90 * glm::pi<float>()/180, glm::vec3(0, 0, 0));
     applyTransformations(CUBEMAP, transformationMatrix);
   }
   else {
     glm::mat4 matrix = m_OriginalMatrix;
     matrix = glm::translate(matrix, glm::vec3(m_gameCorner.x + m_skybox->getPosX(), 0, m_gameCorner.y + m_skybox->getPosY()));
-    // Rotate the object - Orientation
     matrix = glm::rotate(matrix, (float)m_skybox->getOrientation() * glm::pi<float>()/180, glm::vec3(0, 1, 0));
-    // Scale the object
     matrix = glm::scale(matrix, glm::vec3(m_skybox->getWidth(), m_skybox->getHeight(), m_skybox->getWidth()));
     applyTransformations(CUBEMAP, matrix);
   }
@@ -1056,8 +1052,11 @@ void RenderManager::drawUI(UI* ui, Uint32 start_game_time, Uint32 pause_time, Ui
     debindVAO();
 
     // Points
-    // -> Pas créer une surface à chaque loop
-    m_scoreSurface = createTextTexture(&m_scoreImg, std::to_string( ui->getPlayer()->getPoints()), {255,255,255});
+    if (ui->getRecordedPoints() != ui->getPlayer()->getPoints())
+    {
+      ui->setRecordedPoints(ui->getPlayer()->getPoints());
+      m_scoreSurface = createTextTexture(&m_scoreImg, std::to_string( ui->getPlayer()->getPoints()), {255,255,255});
+    }
     drawText(m_scoreSurface, m_scoreImg, 0.3f,
              5.5f, 2.5f);
 

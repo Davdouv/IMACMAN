@@ -27,7 +27,8 @@ int main(int argc, char** argv) {
     *  ------------- */
 
     // Default window size
-    glm::vec2 defaultWindowSize = glm::vec2(1280,720);
+    glm::vec2 defaultWindowSize = glm::vec2(1920,1080);
+    //glm::vec2 defaultWindowSize = glm::vec2(1024,768);
 
     // Initialize SDL and open a window
     SDLWindowManager windowManager(defaultWindowSize.x, defaultWindowSize.y, "IMACMAN");
@@ -188,7 +189,6 @@ int main(int argc, char** argv) {
 
             windowManager.updateDeltaTime();
             gameManager.updateSpeed(windowManager.getDeltaTime());
-            std::cout << "Delta time = " << windowManager.getDeltaTime() << std::endl;
 
             /* ------------------
             *   EVENT LOOP
