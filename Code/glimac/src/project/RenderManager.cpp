@@ -44,11 +44,11 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
     m_NormalMatrix = glm::transpose(glm::inverse(m_MVMatrix));
 
     // Textures
-    m_PacmanTexture = new Texture("../Code/assets/textures/pacman2.png");
+    m_PacmanTexture = new Texture("../Code/assets/textures/pacman.png");
     m_GhostTexture = new Texture("../Code/assets/textures/ghost.jpg");
     m_WallTexture = new Texture("../Code/assets/textures/dungeon.png");
     m_GumTexture = new Texture("../Code/assets/textures/gum.jpg");
-    m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum3.jpg");
+    m_SuperGumTexture = new Texture("../Code/assets/textures/superpacgum.jpg");
     m_FruitTexture = new Texture("../Code/assets/textures/fruit.jpg");
     m_SkyboxTexture = new CubeMap("../Code/assets/textures/VolcanoCM/posx.jpg", // En haut
                                   "../Code/assets/textures/VolcanoCM/negx.jpg", // En bas
@@ -57,7 +57,7 @@ RenderManager::RenderManager(SDLWindowManager* windowManager, Camera* camera, Pr
                                   "../Code/assets/textures/VolcanoCM/posz.jpg", // A gauche
                                   "../Code/assets/textures/VolcanoCM/negz.jpg" // A droite
                               );
-    m_FloorTexture = new Texture("../Code/assets/textures/lava2.jpg");
+    m_FloorTexture = new Texture("../Code/assets/textures/lava.jpg");
 
     m_RenderTargetTexture = new Texture();
 
@@ -934,6 +934,7 @@ void RenderManager::updateState(GameManager::PacmanState state)
 void RenderManager::drawMenu(Menu* menu)
 {
     bool alpha = false;
+    float up = 0;
     FS shader = TEXTURE;
     bindPlaneVAO();
 
@@ -953,6 +954,8 @@ void RenderManager::drawMenu(Menu* menu)
 
         //alpha = true;
     }
+    else
+        up = 0.075;
 
     if (menu->isHidden())
     {
@@ -964,8 +967,8 @@ void RenderManager::drawMenu(Menu* menu)
 
     // Play | Restart
     matrix = originMatrix;
-    matrix = glm::translate(matrix, glm::vec3(0.0f, 0.2f, zDistance));
-    matrix = glm::scale(matrix, glm::vec3(0.2f, 0.10f, 1.f));
+    matrix = glm::translate(matrix, glm::vec3(0.0f, 0.05f+2*up, zDistance));
+    matrix = glm::scale(matrix, glm::vec3(0.350f, 0.105f, 1.f));
     applyTransformations(shader, matrix);
     if(menu->getButton() == Menu::Button::PLAY)
         enableTexture(shader, menu->getTextures()[0], alpha);
@@ -976,8 +979,8 @@ void RenderManager::drawMenu(Menu* menu)
 
     // Continue | Save
     matrix = originMatrix;
-    matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, zDistance));
-    matrix = glm::scale(matrix, glm::vec3(0.2f, 0.10f, 1.f));
+    matrix = glm::translate(matrix, glm::vec3(0.0f, -0.075f+up, zDistance));
+    matrix = glm::scale(matrix, glm::vec3(0.350f, 0.105f, 1.f));
     applyTransformations(shader, matrix);
     if(menu->getButton() == Menu::Button::CONTINUE)
         enableTexture(shader, menu->getTextures()[2], alpha);
@@ -988,8 +991,8 @@ void RenderManager::drawMenu(Menu* menu)
 
     // Exit
     matrix = originMatrix;
-    matrix = glm::translate(matrix, glm::vec3(0.0f, -0.2f, zDistance));
-    matrix = glm::scale(matrix, glm::vec3(0.2f, 0.10f, 1.f));
+    matrix = glm::translate(matrix, glm::vec3(0.0f, -0.20f, zDistance));
+    matrix = glm::scale(matrix, glm::vec3(0.350f, 0.105f, 1.f));
     applyTransformations(shader, matrix);
     if(menu->getButton() == Menu::Button::EXIT)
         enableTexture(shader, menu->getTextures()[4], alpha);
@@ -1013,8 +1016,8 @@ void RenderManager::drawMenu(Menu* menu)
     if(menu->getInfos())
     {
         matrix = originMatrix;
-        matrix = glm::translate(matrix, glm::vec3(0.0f, -0.2f, 4.6f));
-        matrix = glm::scale(matrix, glm::vec3(12.8f, 7.2f, 1.f));
+        matrix = glm::translate(matrix, glm::vec3(0.0f, 0.f, 4.501f));
+        matrix = glm::scale(matrix, glm::vec3(1.1f, 0.62f, 1.f));
         applyTransformations(shader, matrix);
         enableTexture(shader, menu->getTextures()[7], false);
         m_plane.drawPlane();

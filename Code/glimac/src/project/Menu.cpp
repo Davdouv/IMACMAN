@@ -15,15 +15,15 @@ Menu::Menu(bool mainMenu)
     }
     else    // Pause Menu
     {
-        m_texture[0] = new Texture("../Code/assets/textures/buttons/new-game-on.png");
-        m_texture[1] = new Texture("../Code/assets/textures/buttons/new-game-off.png");
+        m_texture[0] = new Texture("../Code/assets/textures/buttons/restart-on.png");
+        m_texture[1] = new Texture("../Code/assets/textures/buttons/restart-off.png");
         m_texture[2] = new Texture("../Code/assets/textures/buttons/save-on.png");
         m_texture[3] = new Texture("../Code/assets/textures/buttons/save-off.png");
     }
     m_texture[4] = new Texture("../Code/assets/textures/buttons/quit-on.png");
     m_texture[5] = new Texture("../Code/assets/textures/buttons/quit-off.png");
-    m_texture[6] = new Texture("../Code/assets/textures/ghost.jpg");    // Background
-    m_texture[7] = new Texture("../Code/assets/textures/gum.jpg");  // Select Button
+    m_texture[6] = new Texture("../Code/assets/textures/MAIN_MENU.png");    // Background
+    m_texture[7] = new Texture("../Code/assets/textures/HELP MENU.png");  // Help
 
     for (unsigned int i = 0; i < 8; ++i)
         m_texture[i]->loadTexture();
