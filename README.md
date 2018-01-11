@@ -24,9 +24,7 @@ $ sudo apt-get install libsdl-image1.2 libsdl-image1.2-dev libsdl-ttf2.0-0 libsd
 
 This projects works on Linux OS. Here are the instructions for the compilation in your bash.
 
-To compile, create a "Build" folder next to the "Code" folder.
-
-Open the console inside of this new folder and write :
+Open the console inside the "Build" folder next to the "Code" folder and write :
 
 
 ```sh
