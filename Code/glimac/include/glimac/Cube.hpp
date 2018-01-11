@@ -26,7 +26,7 @@ public:
 
     // Returns the number of vertices
     size_t getVertexCount() const {
-        return 16;
+        return 24;
     }
 
     // Returns the address of the IBO
@@ -50,7 +50,7 @@ public:
     GLuint getVAO(GLuint* ibo, GLuint* vbo);
 
 private:
-    Vertex3D m_VertexBuffer[16];
+    Vertex3D m_VertexBuffer[24];
     uint32_t m_IndexBuffer[36];
 };
 
