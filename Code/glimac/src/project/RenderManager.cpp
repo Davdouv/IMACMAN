@@ -798,6 +798,7 @@ void RenderManager::drawSkybox(Controller* controller)
   if(controller->isFPSactive())
   {
     glm::mat4 transformationMatrix = transformMatrix(m_skybox);
+    // -> Trouver la bonne rotation et AFFICHER
     //transformationMatrix = glm::rotate(transformationMatrix, 90 * glm::pi<float>()/180, glm::vec3(0, 0, 0));
     transformationMatrix = glm::rotate(transformationMatrix, 90 * glm::pi<float>()/180, glm::vec3(0, 0, 0));
     applyTransformations(CUBEMAP, transformationMatrix);
@@ -1055,6 +1056,7 @@ void RenderManager::drawUI(UI* ui, Uint32 start_game_time, Uint32 pause_time, Ui
     debindVAO();
 
     // Points
+    // -> Pas créer une surface à chaque loop
     m_scoreSurface = createTextTexture(&m_scoreImg, std::to_string( ui->getPlayer()->getPoints()), {255,255,255});
     drawText(m_scoreSurface, m_scoreImg, 0.3f,
              5.5f, 2.5f);

@@ -188,6 +188,7 @@ int main(int argc, char** argv) {
 
             windowManager.updateDeltaTime();
             gameManager.updateSpeed(windowManager.getDeltaTime());
+            std::cout << "Delta time = " << windowManager.getDeltaTime() << std::endl;
 
             /* ------------------
             *   EVENT LOOP
