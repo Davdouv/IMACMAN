@@ -1012,6 +1012,19 @@ void RenderManager::drawMenu(Menu* menu)
     m_plane.drawPlane();
     disableTexture(shader, false);
     */
+
+    // Game Infos
+    if(menu->getInfos())
+    {
+        matrix = originMatrix;
+        matrix = glm::translate(matrix, glm::vec3(0.0f, -0.2f, 4.6f));
+        matrix = glm::scale(matrix, glm::vec3(12.8f, 7.2f, 1.f));
+        applyTransformations(shader, matrix);
+        enableTexture(shader, menu->getTextures()[7], false);
+        m_plane.drawPlane();
+        disableTexture(shader, false);
+    }
+
     debindVAO();
 }
 

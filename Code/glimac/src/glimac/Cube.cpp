@@ -90,37 +90,6 @@ void Cube::build(GLfloat width = 1.0, GLfloat height = 1.0, GLfloat thickness = 
         m_VertexBuffer[i+3].texCoords = glm::vec2(0,0);
     }
 
-/*
-    m_VertexBuffer[0].texCoords = glm::vec2(0,1);
-    m_VertexBuffer[1].texCoords = glm::vec2(1,1);
-    m_VertexBuffer[2].texCoords = glm::vec2(1,0);
-    m_VertexBuffer[3].texCoords = glm::vec2(0,0);
-    
-    m_VertexBuffer[4].texCoords = glm::vec2(0,1);
-    m_VertexBuffer[5].texCoords = glm::vec2(1,1);
-    m_VertexBuffer[6].texCoords = glm::vec2(1,0);
-    m_VertexBuffer[7].texCoords = glm::vec2(0,0);
-    
-    m_VertexBuffer[8].texCoords = glm::vec2(0,1);
-    m_VertexBuffer[9].texCoords = glm::vec2(1,1);
-    m_VertexBuffer[10].texCoords = glm::vec2(1,0);
-    m_VertexBuffer[11].texCoords = glm::vec2(0,0);
-    
-    m_VertexBuffer[12].texCoords = glm::vec2(0,1);
-    m_VertexBuffer[13].texCoords = glm::vec2(1,1);
-    m_VertexBuffer[14].texCoords = glm::vec2(1,0);
-    m_VertexBuffer[15].texCoords = glm::vec2(0,0);
-    
-    m_VertexBuffer[16].texCoords = glm::vec2(0,1);
-    m_VertexBuffer[17].texCoords = glm::vec2(1,1);
-    m_VertexBuffer[18].texCoords = glm::vec2(1,0);
-    m_VertexBuffer[19].texCoords = glm::vec2(0,0);
-    
-    m_VertexBuffer[20].texCoords = glm::vec2(0,1);
-    m_VertexBuffer[21].texCoords = glm::vec2(1,1);
-    m_VertexBuffer[22].texCoords = glm::vec2(1,0);
-    m_VertexBuffer[23].texCoords = glm::vec2(0,0);
-*/
     // Front face
     m_IndexBuffer[0] = 0;
     m_IndexBuffer[1] = 1;

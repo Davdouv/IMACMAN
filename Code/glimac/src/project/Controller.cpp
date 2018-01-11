@@ -212,6 +212,9 @@ void Controller::updateInterfaceAction(SDL_Event& e)
 				case 3 :	// PAUSE
 					interfaceAction = ESCAPE;
 					return;
+				case 7 :	// INFOS
+					interfaceAction = I;
+					return;
 				default:
 					break;
 			}
@@ -265,6 +268,10 @@ void Controller::updateInterfaceAction(SDL_Event& e)
 	else if (m_windowManager->isKeyPressed(SDLK_h))
 	{
 		interfaceAction = H;
+	}
+	else if (m_windowManager->isKeyPressed(SDLK_i))
+	{
+		interfaceAction = I;
 	}
     else
     {
